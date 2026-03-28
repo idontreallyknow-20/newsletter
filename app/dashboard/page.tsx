@@ -7,19 +7,19 @@ import { eq, count, desc } from 'drizzle-orm'
 
 async function getStats() {
   try {
-    const [activeRow] = await db.select({ count: count() }).from(subscribers).where(eq(subscribers.status, 'active'))
-    const [totalSubRow] = await db.select({ count: count() }).from(subscribers)
-    const [sentRow] = await db.select({ count: count() }).from(sentEmails)
-    const recentEmails = await db
-      .select({ id: sentEmails.id, subject: sentEmails.subject, sentAt: sentEmails.sentAt, recipientCount: sentEmails.recipientCount, status: sentEmails.status })
-      .from(sentEmails)
-      .orderBy(desc(sentEmails.sentAt))
-      .limit(5)
-    const [latestDraft] = await db
-      .select({ subject: drafts.subject, updatedAt: drafts.updatedAt })
-      .from(drafts)
-      .orderBy(desc(drafts.updatedAt))
-      .limit(1)
+    const [[activeRow], [totalSubRow], [sentRow], recentEmails, [latestDraft]] = await Promise.all([
+      db.select({ count: count() }).from(subscribers).where(eq(subscribers.status, 'active')),
+      db.select({ count: count() }).from(subscribers),
+      db.select({ count: count() }).from(sentEmails),
+      db.select({ id: sentEmails.id, subject: sentEmails.subject, sentAt: sentEmails.sentAt, recipientCount: sentEmails.recipientCount, status: sentEmails.status })
+        .from(sentEmails)
+        .orderBy(desc(sentEmails.sentAt))
+        .limit(5),
+      db.select({ subject: drafts.subject, updatedAt: drafts.updatedAt })
+        .from(drafts)
+        .orderBy(desc(drafts.updatedAt))
+        .limit(1),
+    ])
     return {
       activeSubscribers: activeRow.count,
       totalSubscribers: totalSubRow.count,

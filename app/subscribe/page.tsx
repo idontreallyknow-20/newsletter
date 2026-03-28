@@ -1,19 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-
-type Language = 'en' | 'zh'
-type Frequency = 'weekly' | 'daily'
-
-const LANGUAGES: { value: Language; label: string; sub: string }[] = [
-  { value: 'en', label: 'English', sub: 'English' },
-  { value: 'zh', label: '中文', sub: 'Simplified Chinese' },
-]
-
-const FREQUENCIES: { value: Frequency; label: string; sub: string }[] = [
-  { value: 'weekly', label: 'Weekly deep-dive', sub: 'One long-form article every week' },
-  { value: 'daily', label: 'Daily updates', sub: 'AI & economy briefing every day' },
-]
+import { LANGUAGES, FREQUENCIES, type Language, type SubscriberFrequency } from '@/lib/preferences'
 
 function SelectOption({
   selected,
@@ -52,7 +40,7 @@ export default function SubscribePage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [language, setLanguage] = useState<Language>('en')
-  const [frequency, setFrequency] = useState<Frequency>('weekly')
+  const [frequency, setFrequency] = useState<SubscriberFrequency>('weekly')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState('')
 
@@ -78,6 +66,7 @@ export default function SubscribePage() {
     }
   }
 
+  const freqLabel = frequency === 'both' ? 'Weekly + Daily' : frequency === 'daily' ? 'Daily' : 'Weekly'
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
 
   if (status === 'success') {
@@ -90,9 +79,11 @@ export default function SubscribePage() {
               You&apos;re in.
             </h1>
             <p className="font-sans text-sm leading-relaxed mb-4" style={{ color: 'var(--muted)' }}>
-              {frequency === 'weekly'
-                ? 'Your first weekly deep-dive lands next issue day.'
-                : 'Your first daily briefing arrives tomorrow morning.'}
+              {frequency === 'daily'
+                ? 'Your first daily briefing arrives tomorrow morning.'
+                : frequency === 'both'
+                ? 'Your weekly deep-dive and daily briefings are on their way.'
+                : 'Your first weekly deep-dive lands next issue day.'}
               <br />Check your spam folder if it doesn&apos;t arrive.
             </p>
             <div className="flex items-center justify-center gap-3 mt-6">
@@ -100,7 +91,7 @@ export default function SubscribePage() {
                 {language === 'zh' ? '中文' : 'English'}
               </span>
               <span className="font-mono text-[10px] tracking-[0.15em] uppercase px-2 py-1" style={{ border: '1px solid var(--border-accent)', color: 'var(--accent)' }}>
-                {frequency === 'weekly' ? 'Weekly' : 'Daily'}
+                {freqLabel}
               </span>
             </div>
             <div className="h-px w-16 mx-auto mt-8" style={{ background: 'var(--accent)', opacity: 0.3 }} />
@@ -174,7 +165,7 @@ export default function SubscribePage() {
             <p className="font-mono text-[9px] tracking-[0.25em] uppercase mb-3" style={{ color: 'var(--muted)', opacity: 0.6 }}>
               Frequency
             </p>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {FREQUENCIES.map(opt => (
                 <SelectOption
                   key={opt.value}
@@ -239,7 +230,7 @@ export default function SubscribePage() {
               border: '1px solid var(--accent)',
             }}
           >
-            {status === 'loading' ? 'Joining…' : `Subscribe — ${frequency === 'weekly' ? 'weekly' : 'daily'} · ${language === 'zh' ? '中文' : 'English'}`}
+            {status === 'loading' ? 'Joining…' : `Subscribe — ${freqLabel} · ${language === 'zh' ? '中文' : 'English'}`}
           </button>
 
           {status === 'error' && (

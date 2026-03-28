@@ -2,12 +2,11 @@
 
 import { usePathname } from 'next/navigation'
 import Sidebar from './Sidebar'
-
-const PUBLIC_PREFIXES = ['/', '/login', '/subscribe', '/issues']
+import { PUBLIC_PAGE_PREFIXES } from '@/lib/public-paths'
 
 function isPublicPath(pathname: string): boolean {
   if (pathname === '/') return true
-  return PUBLIC_PREFIXES.slice(1).some(p => pathname === p || pathname.startsWith(p + '/'))
+  return PUBLIC_PAGE_PREFIXES.slice(1).some(p => pathname === p || pathname.startsWith(p + '/'))
 }
 
 export default function DashboardShell({ children }: { children: React.ReactNode }) {

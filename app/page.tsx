@@ -20,14 +20,15 @@ const TOPICS = [
 
 async function getData() {
   try {
-    const [subRow] = await db.select({ count: count() }).from(subscribers).where(eq(subscribers.status, 'active'))
-    const [sentRow] = await db.select({ count: count() }).from(sentEmails)
-    const dbIssues = await db
-      .select({ id: sentEmails.id, subject: sentEmails.subject, slug: sentEmails.slug, sentAt: sentEmails.sentAt })
-      .from(sentEmails)
-      .where(isNotNull(sentEmails.slug))
-      .orderBy(desc(sentEmails.sentAt))
-      .limit(10)
+    const [[subRow], [sentRow], dbIssues] = await Promise.all([
+      db.select({ count: count() }).from(subscribers).where(eq(subscribers.status, 'active')),
+      db.select({ count: count() }).from(sentEmails),
+      db.select({ id: sentEmails.id, subject: sentEmails.subject, slug: sentEmails.slug, sentAt: sentEmails.sentAt })
+        .from(sentEmails)
+        .where(isNotNull(sentEmails.slug))
+        .orderBy(desc(sentEmails.sentAt))
+        .limit(10),
+    ])
     return { subCount: subRow.count, sentCount: sentRow.count, dbIssues }
   } catch {
     return { subCount: 0, sentCount: 0, dbIssues: [] }

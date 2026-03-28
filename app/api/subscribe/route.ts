@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     if (!email) return NextResponse.json({ error: 'Email is required' }, { status: 400 })
 
     const lang = language === 'zh' ? 'zh' : 'en'
-    const freq = frequency === 'daily' ? 'daily' : 'weekly'
+    const freq = frequency === 'daily' ? 'daily' : frequency === 'both' ? 'both' : 'weekly'
 
     const existing = await db.select().from(subscribers).where(eq(subscribers.email, email))
     if (existing.length > 0) {

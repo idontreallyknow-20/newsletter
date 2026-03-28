@@ -1,24 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-
-type Language = 'en' | 'zh'
-type Frequency = 'weekly' | 'daily'
-
-const LANGUAGES: { value: Language; label: string; sub: string }[] = [
-  { value: 'en', label: 'English', sub: 'English' },
-  { value: 'zh', label: '中文', sub: 'Simplified Chinese' },
-]
-
-const FREQUENCIES: { value: Frequency; label: string; sub: string }[] = [
-  { value: 'weekly', label: 'Weekly deep-dive', sub: 'One long-form article per week' },
-  { value: 'daily', label: 'Daily updates', sub: 'AI & economy briefing every day' },
-]
+import { LANGUAGES, FREQUENCIES, type Language, type SubscriberFrequency } from '@/lib/preferences'
 
 export default function PublicSubscribeForm() {
   const [email, setEmail] = useState('')
   const [language, setLanguage] = useState<Language>('en')
-  const [frequency, setFrequency] = useState<Frequency>('weekly')
+  const [frequency, setFrequency] = useState<SubscriberFrequency>('weekly')
   const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
   const [errMsg, setErrMsg] = useState('')
 
@@ -45,6 +33,9 @@ export default function PublicSubscribeForm() {
     }
   }
 
+  const freqLabel = frequency === 'both' ? 'Weekly + Daily' : frequency === 'daily' ? 'Daily' : 'Weekly'
+  const langLabel = language === 'zh' ? '中文' : 'English'
+
   if (status === 'done') {
     return (
       <div style={{ textAlign: 'center' }}>
@@ -53,34 +44,30 @@ export default function PublicSubscribeForm() {
           <span>You&apos;re in! Check your inbox.</span>
         </p>
         <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '12px', fontFamily: 'var(--font-dm)' }}>
-          {frequency === 'weekly' ? 'Weekly' : 'Daily'} · {language === 'zh' ? '中文' : 'English'}
+          {freqLabel} · {langLabel}
         </p>
       </div>
     )
   }
 
+  const optionStyle = (selected: boolean) => ({
+    padding: '12px 14px',
+    background: selected ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.04)',
+    border: `1px solid ${selected ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.1)'}`,
+    color: selected ? '#f5f0e8' : 'rgba(245,240,232,0.45)',
+    fontFamily: 'var(--font-dm)',
+    cursor: 'pointer' as const,
+    textAlign: 'left' as const,
+    transition: 'all 0.15s',
+    position: 'relative' as const,
+  })
+
   return (
     <div style={{ maxWidth: '480px', margin: '0 auto' }}>
-      {/* Preference selectors */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '16px' }}>
-        {/* Language */}
+      {/* Language */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
         {LANGUAGES.map(opt => (
-          <button
-            key={opt.value}
-            type="button"
-            onClick={() => setLanguage(opt.value)}
-            style={{
-              padding: '12px 14px',
-              background: language === opt.value ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.04)',
-              border: `1px solid ${language === opt.value ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.1)'}`,
-              color: language === opt.value ? '#f5f0e8' : 'rgba(245,240,232,0.45)',
-              fontFamily: 'var(--font-dm)',
-              cursor: 'pointer',
-              textAlign: 'left',
-              transition: 'all 0.15s',
-              position: 'relative',
-            }}
-          >
+          <button key={opt.value} type="button" onClick={() => setLanguage(opt.value)} style={optionStyle(language === opt.value)}>
             {language === opt.value && (
               <span style={{ position: 'absolute', top: '8px', right: '10px', fontSize: '10px', color: '#4ade80' }}>✓</span>
             )}
@@ -90,25 +77,10 @@ export default function PublicSubscribeForm() {
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '20px' }}>
-        {/* Frequency */}
+      {/* Frequency */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '20px' }}>
         {FREQUENCIES.map(opt => (
-          <button
-            key={opt.value}
-            type="button"
-            onClick={() => setFrequency(opt.value)}
-            style={{
-              padding: '12px 14px',
-              background: frequency === opt.value ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.04)',
-              border: `1px solid ${frequency === opt.value ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.1)'}`,
-              color: frequency === opt.value ? '#f5f0e8' : 'rgba(245,240,232,0.45)',
-              fontFamily: 'var(--font-dm)',
-              cursor: 'pointer',
-              textAlign: 'left',
-              transition: 'all 0.15s',
-              position: 'relative',
-            }}
-          >
+          <button key={opt.value} type="button" onClick={() => setFrequency(opt.value)} style={optionStyle(frequency === opt.value)}>
             {frequency === opt.value && (
               <span style={{ position: 'absolute', top: '8px', right: '10px', fontSize: '10px', color: '#4ade80' }}>✓</span>
             )}
