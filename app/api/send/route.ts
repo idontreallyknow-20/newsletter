@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { subscribers, sentEmails, settings } from '@/lib/schema'
-import { eq, inArray } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import { buildEmailHtml, sendToRecipients } from '@/lib/email'
 import { markdownToHtml } from '@/lib/markdown'
 import { slugify } from '@/lib/slug'
