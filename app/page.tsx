@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import { db } from '@/lib/db'
 import { subscribers, sentEmails } from '@/lib/schema'
-import { eq, count } from 'drizzle-orm'
+import { eq, count, desc, isNotNull } from 'drizzle-orm'
 import HeroTypewriter from '@/components/HeroTypewriter'
 import PublicSubscribeForm from '@/components/PublicSubscribeForm'
 import { ARTICLES } from '@/lib/articles'
@@ -21,14 +21,20 @@ async function getData() {
   try {
     const [subRow] = await db.select({ count: count() }).from(subscribers).where(eq(subscribers.status, 'active'))
     const [sentRow] = await db.select({ count: count() }).from(sentEmails)
-    return { subCount: subRow.count, sentCount: sentRow.count }
+    const dbIssues = await db
+      .select({ id: sentEmails.id, subject: sentEmails.subject, slug: sentEmails.slug, sentAt: sentEmails.sentAt })
+      .from(sentEmails)
+      .where(isNotNull(sentEmails.slug))
+      .orderBy(desc(sentEmails.sentAt))
+      .limit(10)
+    return { subCount: subRow.count, sentCount: sentRow.count, dbIssues }
   } catch {
-    return { subCount: 0, sentCount: 0 }
+    return { subCount: 0, sentCount: 0, dbIssues: [] }
   }
 }
 
 export default async function HomePage() {
-  const { subCount, sentCount } = await getData()
+  const { subCount, sentCount, dbIssues } = await getData()
 
   return (
     <>
@@ -131,14 +137,23 @@ export default async function HomePage() {
             </div>
 
             <div>
-              {ARTICLES.map(article => (
-                <a key={article.slug} href={`/issues/${article.slug}`} className="pub-issue-row" style={{ textDecoration: 'none' }}>
-                  <span className="pub-issue-num">{article.num}</span>
-                  <span className="pub-issue-title">{article.title}</span>
-                  <span className="pub-issue-tag">{article.tag}</span>
-                  <span className="pub-issue-date">{article.date.replace('March', 'Mar').replace('February', 'Feb')}</span>
-                </a>
-              ))}
+              {dbIssues.length > 0
+                ? dbIssues.map((issue, i) => (
+                    <a key={issue.id} href={`/issues/${issue.slug}`} className="pub-issue-row" style={{ textDecoration: 'none' }}>
+                      <span className="pub-issue-num">#{String(dbIssues.length - i).padStart(3, '0')}</span>
+                      <span className="pub-issue-title">{issue.subject}</span>
+                      <span className="pub-issue-date">{new Date(issue.sentAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                    </a>
+                  ))
+                : ARTICLES.map(article => (
+                    <a key={article.slug} href={`/issues/${article.slug}`} className="pub-issue-row" style={{ textDecoration: 'none' }}>
+                      <span className="pub-issue-num">{article.num}</span>
+                      <span className="pub-issue-title">{article.title}</span>
+                      <span className="pub-issue-tag">{article.tag}</span>
+                      <span className="pub-issue-date">{article.date.replace('March', 'Mar').replace('February', 'Feb')}</span>
+                    </a>
+                  ))
+              }
             </div>
           </div>
         </div>

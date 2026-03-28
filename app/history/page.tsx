@@ -83,7 +83,7 @@ export default function HistoryPage() {
             </div>
             <div className="flex-1 overflow-hidden">
               {preview.bodyHtml ? (
-                <iframe srcDoc={preview.bodyHtml} title="Email preview" className="w-full h-full min-h-[400px]" sandbox="allow-same-origin" />
+                <iframe srcDoc={preview.bodyHtml} title="Email preview" className="w-full h-full min-h-[400px]" sandbox="" />
               ) : (
                 <div className="p-6 text-sm font-sans" style={{ color: 'var(--muted)' }}>No HTML preview available.</div>
               )}

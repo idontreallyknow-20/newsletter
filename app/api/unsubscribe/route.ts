@@ -2,8 +2,14 @@ import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { subscribers } from '@/lib/schema'
 import { eq } from 'drizzle-orm'
+import { rateLimit } from '@/lib/rate-limit'
 
 export async function GET(req: Request) {
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
+  if (!rateLimit(`unsubscribe:${ip}`, 10, 60_000)) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
+
   try {
     const { searchParams } = new URL(req.url)
     const email = searchParams.get('email')

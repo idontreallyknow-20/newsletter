@@ -3,6 +3,16 @@ import type { NextRequest } from 'next/server'
 
 const PUBLIC_PATHS = ['/', '/login', '/subscribe', '/issues', '/api/subscribe', '/api/unsubscribe', '/_next', '/favicon.ico']
 
+// Constant-time string comparison for Edge runtime (no Node crypto available)
+function safeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false
+  let result = 0
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i)
+  }
+  return result === 0
+}
+
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
 
@@ -18,7 +28,8 @@ export function middleware(req: NextRequest) {
 
   // Check session cookie
   const session = req.cookies.get('nhq_session')
-  if (session?.value === process.env.DASHBOARD_PASSWORD) {
+  const stored = process.env.DASHBOARD_PASSWORD ?? ''
+  if (session?.value && safeEqual(session.value, stored)) {
     return NextResponse.next()
   }
 

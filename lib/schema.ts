@@ -14,6 +14,7 @@ export const sentEmails = pgTable('sent_emails', {
   previewText: text('preview_text'),
   bodyHtml: text('body_html'),
   bodyMarkdown: text('body_markdown'),
+  slug: text('slug'),
   sentAt: timestamp('sent_at').defaultNow().notNull(),
   recipientCount: integer('recipient_count'),
   status: text('status').notNull().default('sent'),
