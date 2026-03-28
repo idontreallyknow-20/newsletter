@@ -27,6 +27,7 @@ export default function HeroTypewriter() {
       letterSpacing: '-0.02em',
       color: 'var(--ink)',
       marginBottom: '28px',
+      minHeight: '2.1em',
     }}>
       {displayed}
       {!done && (

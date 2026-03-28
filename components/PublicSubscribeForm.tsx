@@ -9,10 +9,18 @@ export default function PublicSubscribeForm() {
   const [frequency, setFrequency] = useState<SubscriberFrequency>('weekly')
   const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
   const [errMsg, setErrMsg] = useState('')
+  const [inputError, setInputError] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!email) return
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setInputError(true)
+      setErrMsg('Please enter a valid email address.')
+      setStatus('error')
+      return
+    }
+    setInputError(false)
+    setErrMsg('')
     setStatus('loading')
     try {
       const res = await fetch('/api/subscribe', {
@@ -95,14 +103,13 @@ export default function PublicSubscribeForm() {
         <input
           type="email"
           value={email}
-          onChange={e => setEmail(e.target.value)}
+          onChange={e => { setEmail(e.target.value); if (inputError) { setInputError(false); setErrMsg(''); setStatus('idle') } }}
           placeholder="your@email.com"
-          required
           style={{
             flex: 1,
             padding: '14px 18px',
             background: 'rgba(255,255,255,0.07)',
-            border: '1px solid rgba(255,255,255,0.15)',
+            border: `1px solid ${inputError ? '#fca5a5' : 'rgba(255,255,255,0.15)'}`,
             borderRight: 'none',
             color: '#f5f0e8',
             fontFamily: 'var(--font-dm)',

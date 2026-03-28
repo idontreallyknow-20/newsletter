@@ -193,10 +193,9 @@ export default async function HomePage() {
       <footer className="pub-footer">
         <span className="pub-footer-copy">© 2026 Joseph. Made with curiosity.</span>
         <nav className="pub-footer-links">
-          <a href="#issues">Archive</a>
-          <a href="#subscribe">Subscribe</a>
-          <a href="#about">About</a>
-          <a href="/login" style={{ opacity: 0.5 }}>Admin</a>
+          <a href="/#issues">Archive</a>
+          <a href="/#subscribe">Subscribe</a>
+          <a href="/#about">About</a>
         </nav>
       </footer>
     </>

@@ -19,10 +19,10 @@ export default function PublicNav() {
       <nav className="pub-nav" style={scrolled ? { boxShadow: '0 2px 16px rgba(0,0,0,0.06)' } : {}}>
         <a href="/" className="pub-logo">Joseph<span>.</span></a>
         <ul className="pub-nav-links">
-          <li><a href="#about" onClick={close}>About</a></li>
-          <li><a href="#topics" onClick={close}>Topics</a></li>
-          <li><a href="#issues" onClick={close}>Issues</a></li>
-          <li><a href="#subscribe" onClick={close}>Subscribe</a></li>
+          <li><a href="/#about" onClick={close}>About</a></li>
+          <li><a href="/#topics" onClick={close}>Topics</a></li>
+          <li><a href="/#issues" onClick={close}>Issues</a></li>
+          <li><a href="/#subscribe" onClick={close}>Subscribe</a></li>
         </ul>
         <button className="pub-nav-toggle" onClick={() => setOpen(o => !o)} aria-label="Toggle menu">
           {open ? 'Close' : 'Menu'}
@@ -38,10 +38,10 @@ export default function PublicNav() {
           </div>
           <nav className="px-6 pt-10 flex flex-col gap-2">
             {[
-              { href: '#about', label: 'About' },
-              { href: '#topics', label: 'Topics' },
-              { href: '#issues', label: 'Issues' },
-              { href: '#subscribe', label: 'Subscribe' },
+              { href: '/#about', label: 'About' },
+              { href: '/#topics', label: 'Topics' },
+              { href: '/#issues', label: 'Issues' },
+              { href: '/#subscribe', label: 'Subscribe' },
             ].map(item => (
               <a
                 key={item.href}
@@ -55,7 +55,7 @@ export default function PublicNav() {
               </a>
             ))}
             <div className="mt-8">
-              <a href="#subscribe" onClick={close} className="pub-btn-primary" style={{ display: 'inline-block' }}>
+              <a href="/#subscribe" onClick={close} className="pub-btn-primary" style={{ display: 'inline-block' }}>
                 Subscribe free →
               </a>
             </div>
