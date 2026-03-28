@@ -7,7 +7,6 @@ import HeroTypewriter from '@/components/HeroTypewriter'
 import PublicSubscribeForm from '@/components/PublicSubscribeForm'
 import PublicNav from '@/components/PublicNav'
 import { ARTICLES } from '@/lib/articles'
-import { ARTICLE_ILLUSTRATIONS } from '@/components/ArticleIllustrations'
 import TopicsFilter from '@/components/TopicsFilter'
 import ArticleListClient, { type ArticleItem } from '@/components/ArticleListClient'
 
