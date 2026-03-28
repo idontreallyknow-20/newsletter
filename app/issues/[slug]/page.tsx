@@ -133,7 +133,7 @@ export default async function IssuePage({ params }: { params: { slug: string } }
                   <h2 style={{
                     fontFamily: 'var(--font-playfair), Georgia, serif',
                     fontSize: '22px', fontWeight: 700,
-                    color: 'var(--ink)', marginBottom: '14px', lineHeight: 1.25,
+                    color: 'var(--ink)', marginTop: '2.25rem', marginBottom: '0.75rem', lineHeight: 1.25,
                   }}>
                     {section.heading}
                   </h2>
@@ -149,6 +149,8 @@ export default async function IssuePage({ params }: { params: { slug: string } }
               </div>
             ))}
           </div>
+
+          <ShareRow title={article.title} />
 
           <hr style={{ border: 'none', borderTop: '1px solid var(--border)', margin: '40px 0' }} />
 
