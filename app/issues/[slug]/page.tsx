@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { ARTICLES, getArticle } from '@/lib/articles'
 import PublicSubscribeForm from '@/components/PublicSubscribeForm'
+import PublicNav from '@/components/PublicNav'
 import type { Metadata } from 'next'
 import { db } from '@/lib/db'
 import { sentEmails } from '@/lib/schema'
@@ -54,16 +55,7 @@ export default async function IssuePage({ params }: { params: { slug: string } }
 
     return (
       <>
-        {/* Nav */}
-        <nav className="pub-nav">
-          <a href="/" className="pub-logo">Joseph<span>.</span></a>
-          <ul className="pub-nav-links">
-            <li><a href="/#about">About</a></li>
-            <li><a href="/#topics">Topics</a></li>
-            <li><a href="/#issues">Issues</a></li>
-            <li><a href="/#subscribe">Subscribe</a></li>
-          </ul>
-        </nav>
+        <PublicNav />
 
         {/* Article */}
         <article style={{ maxWidth: '720px', margin: '0 auto', padding: '120px 48px 96px' }}>
@@ -170,15 +162,7 @@ export default async function IssuePage({ params }: { params: { slug: string } }
 
   return (
     <>
-      <nav className="pub-nav">
-        <a href="/" className="pub-logo">Joseph<span>.</span></a>
-        <ul className="pub-nav-links">
-          <li><a href="/#about">About</a></li>
-          <li><a href="/#topics">Topics</a></li>
-          <li><a href="/#issues">Issues</a></li>
-          <li><a href="/#subscribe">Subscribe</a></li>
-        </ul>
-      </nav>
+      <PublicNav />
 
       <article style={{ maxWidth: '720px', margin: '0 auto', padding: '120px 48px 96px' }}>
         <div style={{ marginBottom: '40px' }}>
