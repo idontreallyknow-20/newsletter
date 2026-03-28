@@ -7,7 +7,7 @@ import { db } from '@/lib/db'
 import { sentEmails } from '@/lib/schema'
 import { eq } from 'drizzle-orm'
 import { markdownToHtml } from '@/lib/markdown'
-import { ARTICLE_ILLUSTRATIONS, type IllustrationPos } from '@/components/ArticleIllustrations'
+import { ARTICLE_ILLUSTRATIONS } from '@/components/ArticleIllustrations'
 import ReadingProgress from '@/components/ReadingProgress'
 
 export const dynamic = 'force-dynamic'
@@ -223,20 +223,6 @@ export default async function IssuePage({ params }: { params: { slug: string } }
   )
 }
 
-function ArticleIllustration({ svg, pos }: { svg: React.ReactNode; pos: IllustrationPos }) {
-  const wrapStyle: React.CSSProperties =
-    pos === 'center'
-      ? { maxWidth: '480px', margin: '32px auto', padding: '32px', background: 'var(--pub-cream-2)', border: '1px solid var(--pub-border)', color: 'var(--tan)' }
-      : pos === 'left'
-      ? { float: 'left', width: 'min(240px, 45%)', margin: '4px 28px 16px 0', padding: '24px', background: 'var(--pub-cream-2)', border: '1px solid var(--pub-border)', color: 'var(--tan)', aspectRatio: '200/130' }
-      : { float: 'right', width: 'min(240px, 45%)', margin: '4px 0 16px 28px', padding: '24px', background: 'var(--pub-cream-2)', border: '1px solid var(--pub-border)', color: 'var(--tan)', aspectRatio: '200/130' }
-  return (
-    <>
-      <div className="article-illus-wrap" style={wrapStyle}>{svg}</div>
-      {pos !== 'center' && <div style={{ clear: 'none' }} />}
-    </>
-  )
-}
 
 function SubscribeCta() {
   return (
