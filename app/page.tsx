@@ -2,9 +2,10 @@ export const dynamic = 'force-dynamic'
 
 import { db } from '@/lib/db'
 import { subscribers, sentEmails } from '@/lib/schema'
-import { eq, count, desc } from 'drizzle-orm'
+import { eq, count } from 'drizzle-orm'
 import HeroTypewriter from '@/components/HeroTypewriter'
 import PublicSubscribeForm from '@/components/PublicSubscribeForm'
+import { ARTICLES } from '@/lib/articles'
 
 const TOPICS = [
   { icon: '📈', title: 'Macro & Markets', desc: 'Interest rates, inflation, central bank policy, and what it all means for your wallet and the broader economy.' },
@@ -15,27 +16,19 @@ const TOPICS = [
   { icon: '📰', title: 'Weekly Digest', desc: 'Five links worth your time, one chart that matters, and one thing everyone got wrong this week.' },
 ]
 
-const PLACEHOLDER_ISSUES = [
-  { num: '#041', title: "The Fed's Impossible Dilemma: Growth vs. Inflation in 2026", tag: 'Economics', date: 'Mar 24, 2026' },
-  { num: '#040', title: 'GPT-5 and the Arms Race Nobody Is Talking About', tag: 'AI', date: 'Mar 17, 2026' },
-  { num: '#039', title: 'Why Every Recession Prediction Has Been Wrong (So Far)', tag: 'Markets', date: 'Mar 10, 2026' },
-  { num: '#038', title: 'The Quiet AI Takeover of White-Collar Work', tag: 'AI', date: 'Mar 3, 2026' },
-  { num: '#037', title: 'Deglobalization: Myth or Megatrend?', tag: 'Global', date: 'Feb 24, 2026' },
-]
 
 async function getData() {
   try {
     const [subRow] = await db.select({ count: count() }).from(subscribers).where(eq(subscribers.status, 'active'))
     const [sentRow] = await db.select({ count: count() }).from(sentEmails)
-    const recent = await db.select().from(sentEmails).orderBy(desc(sentEmails.sentAt)).limit(5)
-    return { subCount: subRow.count, sentCount: sentRow.count, recent }
+    return { subCount: subRow.count, sentCount: sentRow.count }
   } catch {
-    return { subCount: 0, sentCount: 0, recent: [] }
+    return { subCount: 0, sentCount: 0 }
   }
 }
 
 export default async function HomePage() {
-  const { subCount, sentCount, recent } = await getData()
+  const { subCount, sentCount } = await getData()
 
   return (
     <>
@@ -137,30 +130,16 @@ export default async function HomePage() {
               <a href="#subscribe" className="pub-issues-link">Subscribe for more →</a>
             </div>
 
-            {recent.length > 0 ? (
-              <div>
-                {recent.map((email, i) => (
-                  <div key={email.id} className="pub-issue-row">
-                    <span className="pub-issue-num">#{String(recent.length - i).padStart(3, '0')}</span>
-                    <span className="pub-issue-title">{email.subject}</span>
-                    <span className="pub-issue-date">
-                      {new Date(email.sentAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div>
-                {PLACEHOLDER_ISSUES.map(issue => (
-                  <div key={issue.num} className="pub-issue-row">
-                    <span className="pub-issue-num">{issue.num}</span>
-                    <span className="pub-issue-title">{issue.title}</span>
-                    <span className="pub-issue-tag">{issue.tag}</span>
-                    <span className="pub-issue-date">{issue.date}</span>
-                  </div>
-                ))}
-              </div>
-            )}
+            <div>
+              {ARTICLES.map(article => (
+                <a key={article.slug} href={`/issues/${article.slug}`} className="pub-issue-row" style={{ textDecoration: 'none' }}>
+                  <span className="pub-issue-num">{article.num}</span>
+                  <span className="pub-issue-title">{article.title}</span>
+                  <span className="pub-issue-tag">{article.tag}</span>
+                  <span className="pub-issue-date">{article.date.replace('March', 'Mar').replace('February', 'Feb')}</span>
+                </a>
+              ))}
+            </div>
           </div>
         </div>
       </section>
