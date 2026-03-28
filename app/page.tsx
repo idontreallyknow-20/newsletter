@@ -7,14 +7,15 @@ import HeroTypewriter from '@/components/HeroTypewriter'
 import PublicSubscribeForm from '@/components/PublicSubscribeForm'
 import PublicNav from '@/components/PublicNav'
 import { ARTICLES } from '@/lib/articles'
+import { IconMarkets, IconAI, IconGlobe, IconWork, IconAnalysis, IconDigest } from '@/components/TopicIcons'
 
 const TOPICS = [
-  { icon: '📈', title: 'Macro & Markets', desc: 'Interest rates, inflation, central bank policy, and what it all means for your wallet and the broader economy.' },
-  { icon: '🤖', title: 'AI & Technology', desc: 'Model releases, capability jumps, and the business of artificial intelligence — stripped of the hype.' },
-  { icon: '🌐', title: 'Global Economy', desc: 'Trade flows, geopolitical shifts, and the economic forces reshaping how nations compete and collaborate.' },
-  { icon: '🔮', title: 'Future of Work', desc: 'How automation, remote culture, and AI are rewriting the rules of employment and productivity.' },
-  { icon: '💡', title: 'Ideas & Analysis', desc: 'Original takes on big questions — why economic predictions fail, what history tells us, and what to watch next.' },
-  { icon: '📰', title: 'Weekly Digest', desc: 'Five links worth your time, one chart that matters, and one thing everyone got wrong this week.' },
+  { icon: <IconMarkets />, title: 'Macro & Markets', desc: 'Interest rates, inflation, central bank policy, and what it all means for your wallet and the broader economy.' },
+  { icon: <IconAI />, title: 'AI & Technology', desc: 'Model releases, capability jumps, and the business of artificial intelligence — stripped of the hype.' },
+  { icon: <IconGlobe />, title: 'Global Economy', desc: 'Trade flows, geopolitical shifts, and the economic forces reshaping how nations compete and collaborate.' },
+  { icon: <IconWork />, title: 'Future of Work', desc: 'How automation, remote culture, and AI are rewriting the rules of employment and productivity.' },
+  { icon: <IconAnalysis />, title: 'Ideas & Analysis', desc: 'Original takes on big questions — why economic predictions fail, what history tells us, and what to watch next.' },
+  { icon: <IconDigest />, title: 'Weekly Digest', desc: 'Five links worth your time, one chart that matters, and one thing everyone got wrong this week.' },
 ]
 
 
@@ -105,7 +106,7 @@ export default async function HomePage() {
             <div className="pub-topics-grid">
               {TOPICS.map(t => (
                 <div key={t.title} className="pub-topic">
-                  <span className="pub-topic-icon">{t.icon}</span>
+                  <div className="pub-topic-icon-wrap">{t.icon}</div>
                   <div className="pub-topic-title">{t.title}</div>
                   <p className="pub-topic-desc">{t.desc}</p>
                 </div>

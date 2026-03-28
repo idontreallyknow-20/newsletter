@@ -179,7 +179,17 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
   transition: box-shadow 0.18s, border-color 0.18s, transform 0.18s; cursor: default;
 }
 .pub-topic:hover { box-shadow: 5px 5px 0 var(--ink); border-color: var(--ink); transform: translate(-2px, -2px); }
-.pub-topic-icon { font-size: 28px; margin-bottom: 18px; display: block; }
+.pub-topic-icon-wrap {
+  width: 52px; height: 52px; margin-bottom: 22px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(26,26,26,0.12);
+  color: #8a7355;
+  background: rgba(26,26,26,0.03);
+  transition: border-color 0.18s, color 0.18s, background 0.18s;
+}
+.pub-topic:hover .pub-topic-icon-wrap {
+  border-color: var(--ink); color: var(--ink); background: rgba(26,26,26,0.06);
+}
 .pub-topic-title {
   font-family: var(--font-playfair), Georgia, serif;
   font-size: 18px; font-weight: 700; color: var(--ink); margin-bottom: 10px; line-height: 1.25;
