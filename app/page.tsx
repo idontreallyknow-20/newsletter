@@ -35,6 +35,9 @@ export default async function HomePage() {
     <>
       <PublicNav />
 
+      {/* Skip-link target */}
+      <span id="main-content" aria-hidden="true" style={{ position: 'absolute', top: 0 }} />
+
       {/* Hero */}
       <section id="about">
         <div className="pub-hero">
@@ -108,7 +111,7 @@ export default async function HomePage() {
           <div className="pub-wrap">
             <div className="pub-issues-head">
               <div>
-                <p className="pub-label">Recent Issues</p>
+                <p className="pub-label">Archive</p>
                 <h2 className="pub-heading">From the archive.</h2>
               </div>
               <a href="#subscribe" className="pub-issues-link">Subscribe for more →</a>

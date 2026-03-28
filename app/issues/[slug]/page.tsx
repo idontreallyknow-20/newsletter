@@ -12,23 +12,31 @@ import ReadingProgress from '@/components/ReadingProgress'
 
 export const dynamic = 'force-dynamic'
 
+function toIsoDate(dateStr: string): string {
+  try { return new Date(dateStr).toISOString() } catch { return dateStr }
+}
+
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const article = getArticle(params.slug)
   if (article) {
     const title = `${article.title} — Joseph`
+    const images = [{ url: '/opengraph-image', width: 1200, height: 630, alt: title }]
     return {
       title,
       description: article.intro,
+      alternates: { canonical: `/issues/${params.slug}` },
       openGraph: {
         title,
         description: article.intro,
         type: 'article',
-        publishedTime: article.date,
+        publishedTime: toIsoDate(article.date),
+        images,
       },
       twitter: {
-        card: 'summary',
+        card: 'summary_large_image',
         title,
         description: article.intro,
+        images: ['/opengraph-image'],
       },
     }
   }
@@ -38,11 +46,13 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   if (!email) return {}
   const title = `${email.subject} — Joseph`
   const description = email.previewText ?? undefined
+  const images = [{ url: '/opengraph-image', width: 1200, height: 630 }]
   return {
     title,
     description,
-    openGraph: { title, description, type: 'article' },
-    twitter: { card: 'summary', title, description },
+    alternates: { canonical: `/issues/${params.slug}` },
+    openGraph: { title, description, type: 'article', images },
+    twitter: { card: 'summary_large_image', title, description, images: ['/opengraph-image'] },
   }
 }
 

@@ -5,10 +5,21 @@ import { useState, useEffect } from 'react'
 const HEADLINE = 'Where economics meets the age of AI.'
 
 export default function HeroTypewriter() {
-  const [displayed, setDisplayed] = useState('')
-  const [done, setDone] = useState(false)
+  // Start with full text — prevents CLS on SSR and for returning visitors
+  const [displayed, setDisplayed] = useState(HEADLINE)
+  const [done, setDone] = useState(true)
 
   useEffect(() => {
+    // Only animate on first visit — returning visitors see the text instantly
+    try {
+      if (localStorage.getItem('jtw_seen')) return
+      localStorage.setItem('jtw_seen', '1')
+    } catch {
+      return
+    }
+
+    setDisplayed('')
+    setDone(false)
     let i = 0
     const id = setInterval(() => {
       i++
@@ -18,18 +29,16 @@ export default function HeroTypewriter() {
     return () => clearInterval(id)
   }, [])
 
-  const h1Style: React.CSSProperties = {
-    fontFamily: 'var(--font-playfair), Georgia, serif',
-    fontSize: 'clamp(42px, 7vw, 82px)',
-    fontWeight: 900,
-    lineHeight: 1.05,
-    letterSpacing: '-0.02em',
-    color: 'var(--ink)',
-    marginBottom: '28px',
-  }
-
   return (
-    <h1 style={h1Style}>
+    <h1 style={{
+      fontFamily: 'var(--font-playfair), Georgia, serif',
+      fontSize: 'clamp(42px, 7vw, 82px)',
+      fontWeight: 900,
+      lineHeight: 1.05,
+      letterSpacing: '-0.02em',
+      color: 'var(--ink)',
+      marginBottom: '28px',
+    }}>
       {displayed}
       {!done && (
         <span style={{
