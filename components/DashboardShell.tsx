@@ -2,17 +2,17 @@
 
 import { usePathname } from 'next/navigation'
 import Sidebar from './Sidebar'
-import { PUBLIC_PAGE_PREFIXES } from '@/lib/public-paths'
 
-function isPublicPath(pathname: string): boolean {
-  if (pathname === '/') return true
-  return PUBLIC_PAGE_PREFIXES.slice(1).some(p => pathname === p || pathname.startsWith(p + '/'))
+const ADMIN_PATHS = ['/dashboard', '/compose', '/subscribers', '/schedule', '/history', '/settings']
+
+function isAdminPath(pathname: string): boolean {
+  return ADMIN_PATHS.some(p => pathname === p || pathname.startsWith(p + '/'))
 }
 
 export default function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
-  if (isPublicPath(pathname)) {
+  if (!isAdminPath(pathname)) {
     return <>{children}</>
   }
 

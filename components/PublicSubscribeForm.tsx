@@ -116,8 +116,8 @@ export default function PublicSubscribeForm() {
             fontSize: '15px',
             outline: 'none',
           }}
-          onFocus={e => (e.target.style.borderColor = 'rgba(255,255,255,0.35)')}
-          onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
+          onFocus={e => (e.target.style.borderColor = inputError ? '#fca5a5' : 'rgba(255,255,255,0.35)')}
+          onBlur={e => (e.target.style.borderColor = inputError ? '#fca5a5' : 'rgba(255,255,255,0.15)')}
         />
         <button
           type="submit"

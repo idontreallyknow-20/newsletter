@@ -8,6 +8,7 @@ import { sentEmails } from '@/lib/schema'
 import { eq } from 'drizzle-orm'
 import { markdownToHtml } from '@/lib/markdown'
 import { ARTICLE_ILLUSTRATIONS, type IllustrationPos } from '@/components/ArticleIllustrations'
+import ReadingProgress from '@/components/ReadingProgress'
 
 export const dynamic = 'force-dynamic'
 
@@ -56,6 +57,7 @@ export default async function IssuePage({ params }: { params: { slug: string } }
 
     return (
       <>
+        <ReadingProgress />
         <PublicNav />
 
         {/* Article */}
@@ -96,15 +98,21 @@ export default async function IssuePage({ params }: { params: { slug: string } }
             </p>
           </div>
 
-          {/* Illustration */}
-          {ARTICLE_ILLUSTRATIONS[article.slug] && (
-            <ArticleIllustration
-              svg={ARTICLE_ILLUSTRATIONS[article.slug].svg}
-              pos={ARTICLE_ILLUSTRATIONS[article.slug].pos}
-            />
-          )}
-
           <hr style={{ border: 'none', borderTop: '1px solid var(--border)', margin: '40px 0' }} />
+
+          {/* Illustration — centered hero between intro and body */}
+          {ARTICLE_ILLUSTRATIONS[article.slug] && (
+            <div style={{
+              maxWidth: '480px', margin: '0 auto 40px',
+              padding: '32px',
+              background: 'var(--pub-cream-2)',
+              border: '1px solid var(--pub-border)',
+              color: 'var(--tan)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              {ARTICLE_ILLUSTRATIONS[article.slug].svg}
+            </div>
+          )}
 
           {/* Body */}
           <div>
@@ -134,24 +142,29 @@ export default async function IssuePage({ params }: { params: { slug: string } }
           <hr style={{ border: 'none', borderTop: '1px solid var(--border)', margin: '40px 0' }} />
 
           {/* Prev / Next */}
-          <div style={{ display: 'flex', justifyContent: prev && next ? 'space-between' : 'center', gap: '24px', marginBottom: '64px' }}>
-            {prev && (
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', marginBottom: '64px' }}>
+            {prev ? (
               <a href={`/issues/${prev.slug}`} style={{
                 fontFamily: 'var(--font-dm)', fontSize: '13px', color: 'var(--tan)',
-                textDecoration: 'none', flex: prev && next ? 1 : undefined,
+                textDecoration: 'none', flex: 1,
               }}>
                 <div style={{ fontSize: '10px', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px', opacity: 0.6 }}>← Previous</div>
                 <div style={{ color: 'var(--ink)', fontWeight: 500, lineHeight: 1.3 }}>{prev.title}</div>
               </a>
-            )}
-            {next && (
+            ) : <div style={{ flex: 1 }} />}
+            {next ? (
               <a href={`/issues/${next.slug}`} style={{
                 fontFamily: 'var(--font-dm)', fontSize: '13px', color: 'var(--tan)',
-                textDecoration: 'none', flex: prev && next ? 1 : undefined, textAlign: 'right',
+                textDecoration: 'none', flex: 1, textAlign: 'right',
               }}>
                 <div style={{ fontSize: '10px', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px', opacity: 0.6 }}>Next →</div>
                 <div style={{ color: 'var(--ink)', fontWeight: 500, lineHeight: 1.3 }}>{next.title}</div>
               </a>
+            ) : (
+              <div style={{ flex: 1, textAlign: 'right' }}>
+                <div style={{ fontSize: '10px', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px', opacity: 0.35, fontFamily: 'var(--font-dm)' }}>You&apos;re up to date</div>
+                <div style={{ color: 'var(--tan)', fontWeight: 500, lineHeight: 1.3, fontFamily: 'var(--font-dm)', fontSize: '13px', opacity: 0.4 }}>Latest issue ✓</div>
+              </div>
             )}
           </div>
         </article>
