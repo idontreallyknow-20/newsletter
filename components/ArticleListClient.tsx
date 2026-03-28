@@ -36,23 +36,7 @@ export default function ArticleListClient({ items }: { items: ArticleItem[] }) {
             <a key={item.slug} href={`/issues/${item.slug}`} className="pub-article-card" style={{ textDecoration: 'none' }}>
               <div className="pub-article-img">
                 {illus ? illus.svg : (
-                  <div style={{ textAlign: 'center' }}>
-                    {item.tag && (
-                      <div style={{
-                        fontFamily: 'var(--font-dm)', fontSize: '10px', fontWeight: 500,
-                        letterSpacing: '0.15em', textTransform: 'uppercase',
-                        color: 'var(--red)', marginBottom: '8px',
-                      }}>
-                        {item.tag}
-                      </div>
-                    )}
-                    <div style={{
-                      fontFamily: 'var(--font-dm)', fontSize: '12px',
-                      color: 'var(--tan)', opacity: 0.65,
-                    }}>
-                      {shortMonth(item.displayDate)}
-                    </div>
-                  </div>
+                  <span style={{ fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '36px', fontWeight: 900, color: 'var(--ink)', opacity: 0.1 }}>J.</span>
                 )}
               </div>
               <div className="pub-article-body">
@@ -88,7 +72,7 @@ export default function ArticleListClient({ items }: { items: ArticleItem[] }) {
             onClick={() => setShown(s => s + PAGE_SIZE)}
             className="show-more-btn"
           >
-            Show more{remaining > 0 ? ` — ${remaining} issue${remaining !== 1 ? 's' : ''} left` : ''}
+            Load {remaining} more →
           </button>
         </div>
       )}

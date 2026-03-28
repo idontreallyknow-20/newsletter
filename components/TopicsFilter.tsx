@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { ARTICLES } from '@/lib/articles'
 import { ARTICLE_ILLUSTRATIONS } from '@/components/ArticleIllustrations'
 import { IconMarkets, IconAI, IconGlobe, IconWork, IconAnalysis, IconDigest } from '@/components/TopicIcons'
@@ -25,16 +25,17 @@ const TOPIC_DESCS: Record<string, string> = {
 
 export default function TopicsFilter() {
   const [activeTag, setActiveTag] = useState<string | null>(null)
+  const filteredRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (activeTag && filteredRef.current) {
+      filteredRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }, [activeTag])
 
   function handleTopicClick(tags: string[]) {
     const key = tags[0]
-    if (activeTag === key) {
-      setActiveTag(null)
-    } else {
-      setActiveTag(key)
-      // Scroll to issues section
-      document.getElementById('issues')?.scrollIntoView({ behavior: 'smooth' })
-    }
+    setActiveTag(prev => prev === key ? null : key)
   }
 
   const filtered = activeTag
@@ -47,6 +48,7 @@ export default function TopicsFilter() {
   return (
     <>
       {/* Topics grid */}
+      <p className="pub-filter-hint">Filter by topic ↓</p>
       <div className="pub-topics-grid">
         {TOPICS.map(t => {
           const isActive = activeTag === t.tags[0]
@@ -58,8 +60,8 @@ export default function TopicsFilter() {
               className="pub-topic"
               style={{
                 textAlign: 'left',
-                background: isActive ? 'var(--ink)' : undefined,
-                borderColor: isActive ? 'var(--ink)' : undefined,
+                background: isActive ? '#2c1810' : undefined,
+                borderColor: isActive ? '#2c1810' : undefined,
                 cursor: hasArticles ? 'pointer' : 'default',
                 transform: isActive ? 'translate(-2px, -2px)' : undefined,
                 boxShadow: isActive ? '5px 5px 0 var(--red)' : undefined,
@@ -82,7 +84,7 @@ export default function TopicsFilter() {
 
       {/* Filtered issues list */}
       {activeTag && (
-        <div id="issues" style={{ marginTop: '64px' }}>
+        <div ref={filteredRef} style={{ marginTop: '64px', scrollMarginTop: '80px' }}>
           <div className="pub-wrap" style={{ paddingTop: 0 }}>
             <div className="pub-issues-head" style={{ marginBottom: '24px' }}>
               <div>
@@ -105,7 +107,9 @@ export default function TopicsFilter() {
                 return (
                   <a key={article.slug} href={`/issues/${article.slug}`} className="pub-article-card" style={{ textDecoration: 'none' }}>
                     <div className="pub-article-img">
-                      {illus ? illus.svg : <span className="pub-article-img-num">{article.num}</span>}
+                      {illus ? illus.svg : (
+                        <span style={{ fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '36px', fontWeight: 900, color: 'var(--ink)', opacity: 0.1 }}>J.</span>
+                      )}
                     </div>
                     <div className="pub-article-body">
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px', flexWrap: 'wrap' }}>

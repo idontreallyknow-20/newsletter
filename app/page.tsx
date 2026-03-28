@@ -114,7 +114,7 @@ export default async function HomePage() {
                 <p className="pub-label">Archive</p>
                 <h2 className="pub-heading">From the archive.</h2>
               </div>
-              <a href="#subscribe" className="pub-issues-link">Subscribe for more →</a>
+              <a href="#subscribe" className="pub-issues-link">Get all issues in your inbox →</a>
             </div>
 
             <ArticleListClient items={

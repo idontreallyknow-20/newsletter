@@ -199,6 +199,12 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
 
 /* ─── Topics ─── */
 .pub-topics { padding: 96px 0; background: var(--pub-cream-2); }
+.pub-filter-hint {
+  font-family: var(--font-dm), sans-serif;
+  font-size: 11px; font-weight: 500; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--tan);
+  text-align: center; margin-bottom: 20px;
+}
 .pub-topics-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px; }
 .pub-topic {
   background: var(--pub-cream); border: 1px solid var(--pub-border); padding: 32px 28px;
@@ -353,7 +359,7 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
   color: var(--ink); line-height: 1.2; letter-spacing: -0.015em;
 }
 .prose-issue h1 { font-size: clamp(24px, 4vw, 36px); font-weight: 900; margin: 2em 0 0.75em; }
-.prose-issue h2 { font-size: 22px; font-weight: 700; margin: 2em 0 0.75em; }
+.prose-issue h2 { font-size: 22px; font-weight: 700; margin-top: 2.5rem; margin-bottom: 0.75rem; }
 .prose-issue h3 { font-size: 18px; font-weight: 700; margin: 1.5em 0 0.5em; }
 .prose-issue p {
   font-size: 17px; font-weight: 300; color: var(--ink);
