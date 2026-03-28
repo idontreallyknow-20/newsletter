@@ -24,7 +24,7 @@ function LoginForm() {
         setError('Incorrect password')
         return
       }
-      const from = searchParams.get('from') || '/'
+      const from = searchParams.get('from') || '/dashboard'
       router.push(from)
     } catch {
       setError('Something went wrong')
