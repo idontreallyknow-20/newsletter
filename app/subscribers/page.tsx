@@ -64,26 +64,28 @@ export default function SubscribersPage() {
     if (!file) return
     setImporting(true)
     try {
+      const Papa = (await import('papaparse')).default
       const text = await file.text()
-      const lines = text.trim().split('\n')
-      const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/"/g, ''))
-      const nameIdx = headers.indexOf('name')
-      const emailIdx = headers.indexOf('email')
-      if (emailIdx === -1) throw new Error('CSV must have an "email" column')
+      const { data, errors } = Papa.parse<Record<string, string>>(text, {
+        header: true,
+        skipEmptyLines: true,
+        transformHeader: h => h.trim().toLowerCase(),
+      })
+      if (errors.length && !data.length) throw new Error('Could not parse CSV file')
+      if (!data.length || !('email' in data[0])) throw new Error('CSV must have an "email" column')
 
-      const rows = lines.slice(1).map(line => {
-        const cols = line.split(',').map(c => c.trim().replace(/"/g, ''))
-        return { name: nameIdx >= 0 ? cols[nameIdx] : '', email: cols[emailIdx] }
-      }).filter(r => r.email)
+      const rows = data
+        .map(row => ({ name: row.name?.trim() ?? '', email: row.email?.trim() ?? '' }))
+        .filter(r => r.email)
 
       const res = await fetch('/api/subscribers/import', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ rows }),
       })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error)
-      toast.success(`Imported ${data.inserted}, skipped ${data.skipped}`)
+      const result = await res.json()
+      if (!res.ok) throw new Error(result.error)
+      toast.success(`Imported ${result.inserted}, skipped ${result.skipped}`)
       load()
     } catch (err) {
       toast.error((err instanceof Error && err.message) || 'Import failed')

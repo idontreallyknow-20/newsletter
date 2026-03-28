@@ -5,6 +5,7 @@ import { eq } from 'drizzle-orm'
 import { shouldSendNow } from '@/lib/schedule'
 import { buildEmailHtml, sendToRecipients } from '@/lib/email'
 import { markdownToHtml } from '@/lib/markdown'
+import { slugify } from '@/lib/slug'
 
 export async function GET(req: Request) {
   // Verify cron secret to prevent unauthorized triggers
@@ -58,6 +59,7 @@ export async function GET(req: Request) {
       previewText: latestDraft.previewText,
       bodyHtml,
       bodyMarkdown: latestDraft.bodyMarkdown,
+      slug: slugify(subject),
       recipientCount: activeSubscribers.length,
       status: errorCount === 0 ? 'sent' : 'partial',
     })

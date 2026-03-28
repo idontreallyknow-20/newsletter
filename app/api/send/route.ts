@@ -4,6 +4,7 @@ import { subscribers, sentEmails, settings } from '@/lib/schema'
 import { eq } from 'drizzle-orm'
 import { buildEmailHtml, sendToRecipients } from '@/lib/email'
 import { markdownToHtml } from '@/lib/markdown'
+import { slugify } from '@/lib/slug'
 
 export async function POST(req: Request) {
   try {
@@ -51,6 +52,7 @@ export async function POST(req: Request) {
       previewText,
       bodyHtml: markdownToHtml(bodyMarkdown),
       bodyMarkdown,
+      slug: slugify(subject),
       recipientCount: activeSubscribers.length,
       status: errorCount === 0 ? 'sent' : 'partial',
     })
