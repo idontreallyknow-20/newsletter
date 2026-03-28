@@ -41,6 +41,7 @@ const statements = [
   sql`INSERT INTO settings (key, value) VALUES ('newsletter_name', 'AI & Economy') ON CONFLICT (key) DO NOTHING`,
   sql`INSERT INTO settings (key, value) VALUES ('from_name', 'Joseph') ON CONFLICT (key) DO NOTHING`,
   sql`INSERT INTO settings (key, value) VALUES ('from_email', 'onboarding@resend.dev') ON CONFLICT (key) DO NOTHING`,
+  sql`INSERT INTO settings (key, value) VALUES ('owner_email', 'josephislockedin@gmail.com') ON CONFLICT (key) DO NOTHING`,
 ]
 
 export async function GET() {
