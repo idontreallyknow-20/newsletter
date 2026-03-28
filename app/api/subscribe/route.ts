@@ -28,7 +28,8 @@ export async function POST(req: Request) {
 
     await db.insert(subscribers).values({ name, email, status: 'active', language: lang, frequency: freq })
     return NextResponse.json({ success: true })
-  } catch {
+  } catch (err) {
+    console.error('[subscribe]', err)
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }
 }
