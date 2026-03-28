@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 // Paths that start with these prefixes are public (no auth needed)
-const PUBLIC_PREFIXES = ['/login', '/subscribe', '/issues', '/api/subscribe', '/api/unsubscribe', '/api/logout', '/api/setup', '/_next', '/favicon.ico']
+const PUBLIC_PREFIXES = ['/login', '/subscribe', '/issues', '/api/login', '/api/subscribe', '/api/unsubscribe', '/api/logout', '/api/setup', '/_next', '/favicon.ico']
 
 // Constant-time string comparison for Edge runtime (no Node crypto available)
 function safeEqual(a: string, b: string): boolean {
