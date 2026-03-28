@@ -50,6 +50,10 @@
 }
 .dashboard-shell ::-webkit-scrollbar-track { background: var(--surface); }
 .dashboard-shell ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); }
+.dash-card { background: var(--surface); transition: background 0.15s; }
+.dash-card:hover { background: var(--surface-2); }
+.dash-action { background: var(--surface); border: 1px solid var(--border); transition: background 0.15s, border-color 0.15s; }
+.dash-action:hover { background: var(--surface-2); border-color: var(--border-accent); }
 
 /* ─── Animations ─── */
 @keyframes cursorBlink {

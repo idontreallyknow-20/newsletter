@@ -55,10 +55,7 @@ export default async function DashboardPage() {
       {/* Stat cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-px mb-px animate-fade-up delay-1" style={{ border: '1px solid var(--border)' }}>
         {statCards.map((card) => (
-          <Link key={card.label} href={card.href} className="block p-6 transition-colors group" style={{ background: 'var(--surface)' }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface-2)')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'var(--surface)')}
-          >
+          <Link key={card.label} href={card.href} className="dash-card block p-6 group">
             <div className="h-px w-8 mb-4" style={{ background: 'var(--border-accent)' }} />
             <p className="font-mono text-[9px] tracking-[0.2em] uppercase mb-3" style={{ color: 'var(--muted)' }}>{card.label}</p>
             <p className="font-display text-4xl font-bold leading-none mb-2 group-hover:text-[var(--accent)] transition-colors" style={{ color: 'var(--cream)' }}>
@@ -71,20 +68,14 @@ export default async function DashboardPage() {
 
       {/* Quick actions */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-8 mb-10 animate-fade-up delay-2">
-        <Link href="/compose" className="flex items-center gap-4 px-5 py-4 transition-all group" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--border-accent)'; e.currentTarget.style.background = 'var(--surface-2)' }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'var(--surface)' }}
-        >
+        <Link href="/compose" className="dash-action flex items-center gap-4 px-5 py-4">
           <div className="w-px h-6 flex-shrink-0" style={{ background: 'var(--accent)' }} />
           <div>
             <p className="font-sans text-sm font-medium" style={{ color: 'var(--cream)' }}>Write new issue →</p>
             <p className="font-mono text-[10px] tracking-widest mt-0.5" style={{ color: 'var(--muted)', opacity: 0.6 }}>Open compose editor</p>
           </div>
         </Link>
-        <Link href="/subscribers" className="flex items-center gap-4 px-5 py-4 transition-all group" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--border-accent)'; e.currentTarget.style.background = 'var(--surface-2)' }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'var(--surface)' }}
-        >
+        <Link href="/subscribers" className="dash-action flex items-center gap-4 px-5 py-4">
           <div className="w-px h-6 flex-shrink-0" style={{ background: 'var(--accent)' }} />
           <div>
             <p className="font-sans text-sm font-medium" style={{ color: 'var(--cream)' }}>Manage subscribers →</p>
