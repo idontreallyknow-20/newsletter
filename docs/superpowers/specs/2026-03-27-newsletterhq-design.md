@@ -133,6 +133,9 @@ Settings keys: `from_name`, `from_email`, `owner_email`, `newsletter_name`, `new
 | `/api/settings` | GET | Get all settings |
 | `/api/settings` | POST | Upsert settings keys |
 | `/api/cron/send` | POST | Called by Vercel Cron — reads schedule, sends if due |
+| `/api/unsubscribe` | GET | Sets subscriber status to `unsubscribed` via email link |
+| `/api/drafts/[id]` | GET | Load a specific draft into compose editor |
+| `/api/drafts/[id]` | DELETE | Delete a draft |
 
 ---
 
