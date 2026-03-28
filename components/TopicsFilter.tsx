@@ -28,6 +28,10 @@ export default function TopicsFilter() {
   const filteredRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    // Hide/show the main unfiltered archive section
+    const archiveEl = document.querySelector<HTMLElement>('.pub-issues')
+    if (archiveEl) archiveEl.style.display = activeTag ? 'none' : ''
+    // Scroll to filtered results after they render
     if (activeTag && filteredRef.current) {
       filteredRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
@@ -101,15 +105,26 @@ export default function TopicsFilter() {
                 Clear filter ×
               </button>
             </div>
+            {filtered.length === 0 && (
+              <div className="pub-empty-state">
+                <p style={{ fontFamily: 'var(--font-dm)', fontSize: '16px', color: 'var(--tan)', marginBottom: '16px' }}>
+                  No issues yet in this category.
+                </p>
+                <button
+                  onClick={() => setActiveTag(null)}
+                  style={{ fontFamily: 'var(--font-dm)', fontSize: '13px', fontWeight: 500, color: 'var(--red)', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px' }}
+                >
+                  Browse all issues →
+                </button>
+              </div>
+            )}
             <div className="pub-article-list">
               {filtered.map(article => {
                 const illus = ARTICLE_ILLUSTRATIONS[article.slug]
                 return (
                   <a key={article.slug} href={`/issues/${article.slug}`} className="pub-article-card" style={{ textDecoration: 'none' }}>
-                    <div className="pub-article-img">
-                      {illus ? illus.svg : (
-                        <span style={{ fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '36px', fontWeight: 900, color: 'var(--ink)', opacity: 0.1 }}>J.</span>
-                      )}
+                    <div className={`pub-article-img${illus ? '' : ' pub-article-img-placeholder'}`}>
+                      {illus ? illus.svg : null}
                     </div>
                     <div className="pub-article-body">
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px', flexWrap: 'wrap' }}>

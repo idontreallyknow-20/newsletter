@@ -10,10 +10,10 @@ export default function HeroTypewriter() {
   const [done, setDone] = useState(true)
 
   useEffect(() => {
-    // Only animate on first visit — returning visitors see the text instantly
+    // Only animate once per browser session — navigating back from articles won't replay
     try {
-      if (localStorage.getItem('jtw_seen')) return
-      localStorage.setItem('jtw_seen', '1')
+      if (sessionStorage.getItem('jtw_seen')) return
+      sessionStorage.setItem('jtw_seen', '1')
     } catch {
       return
     }

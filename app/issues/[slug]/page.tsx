@@ -9,6 +9,7 @@ import { eq } from 'drizzle-orm'
 import { markdownToHtml } from '@/lib/markdown'
 import { ARTICLE_ILLUSTRATIONS } from '@/components/ArticleIllustrations'
 import ReadingProgress from '@/components/ReadingProgress'
+import ShareRow from '@/components/ShareRow'
 
 export const dynamic = 'force-dynamic'
 
@@ -225,6 +226,8 @@ export default async function IssuePage({ params }: { params: { slug: string } }
           className="prose-issue"
           dangerouslySetInnerHTML={{ __html: bodyHtml }}
         />
+
+        <ShareRow title={email.subject} />
       </article>
 
       <SubscribeCta />

@@ -74,7 +74,7 @@ export default async function HomePage() {
                 {[
                   { n: sentCount > 0 ? `${sentCount}+` : '41+', l: 'Issues Published' },
                   { n: 'Weekly', l: 'Delivery Cadence' },
-                  { n: subCount > 0 ? `${subCount}` : '—', l: 'Readers' },
+                  { n: '5 min', l: 'Avg. Read' },
                   { n: 'Free', l: 'Always' },
                 ].map(s => (
                   <div key={s.l} className="pub-stat">

@@ -34,10 +34,8 @@ export default function ArticleListClient({ items }: { items: ArticleItem[] }) {
           const illus = ARTICLE_ILLUSTRATIONS[item.slug]
           return (
             <a key={item.slug} href={`/issues/${item.slug}`} className="pub-article-card" style={{ textDecoration: 'none' }}>
-              <div className="pub-article-img">
-                {illus ? illus.svg : (
-                  <span style={{ fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '36px', fontWeight: 900, color: 'var(--ink)', opacity: 0.1 }}>J.</span>
-                )}
+              <div className={`pub-article-img${illus ? '' : ' pub-article-img-placeholder'}`}>
+                {illus ? illus.svg : null}
               </div>
               <div className="pub-article-body">
                 {(item.tag || item.readTime) && (
