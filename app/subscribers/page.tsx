@@ -171,6 +171,8 @@ export default function SubscribersPage() {
               <tr style={{ borderBottom: '1px solid var(--border)' }}>
                 <th className="text-left px-4 py-3 font-normal font-mono text-[9px] tracking-[0.2em] uppercase" style={{ color: 'var(--muted)', opacity: 0.6 }}>Name</th>
                 <th className="text-left px-4 py-3 font-normal font-mono text-[9px] tracking-[0.2em] uppercase" style={{ color: 'var(--muted)', opacity: 0.6 }}>Email</th>
+                <th className="text-left px-4 py-3 font-normal font-mono text-[9px] tracking-[0.2em] uppercase hidden lg:table-cell" style={{ color: 'var(--muted)', opacity: 0.6 }}>Lang</th>
+                <th className="text-left px-4 py-3 font-normal font-mono text-[9px] tracking-[0.2em] uppercase hidden lg:table-cell" style={{ color: 'var(--muted)', opacity: 0.6 }}>Frequency</th>
                 <th className="text-left px-4 py-3 font-normal font-mono text-[9px] tracking-[0.2em] uppercase hidden sm:table-cell" style={{ color: 'var(--muted)', opacity: 0.6 }}>Added</th>
                 <th className="text-left px-4 py-3 font-normal font-mono text-[9px] tracking-[0.2em] uppercase" style={{ color: 'var(--muted)', opacity: 0.6 }}>Status</th>
                 <th className="px-4 py-3"></th>
@@ -181,6 +183,16 @@ export default function SubscribersPage() {
                 <tr key={s.id} className="transition-colors hover:bg-white/[0.02]" style={{ borderBottom: i < subscribers.length - 1 ? '1px solid var(--border)' : 'none' }}>
                   <td className="px-4 py-3 text-sm" style={{ color: 'var(--cream)' }}>{s.name || <span style={{ color: 'var(--muted)', opacity: 0.4 }}>—</span>}</td>
                   <td className="px-4 py-3 text-sm font-mono" style={{ color: 'var(--muted)', fontSize: '11px' }}>{s.email}</td>
+                  <td className="px-4 py-3 hidden lg:table-cell">
+                    <span className="font-mono text-[9px] tracking-widest uppercase px-2 py-1" style={{ color: 'var(--accent)', background: 'var(--accent-dim)', border: '1px solid var(--border-accent)' }}>
+                      {s.language === 'zh' ? '中文' : 'EN'}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 hidden lg:table-cell">
+                    <span className="font-mono text-[9px] tracking-widest uppercase px-2 py-1" style={{ color: 'var(--muted)', background: 'transparent', border: '1px solid var(--border)' }}>
+                      {s.frequency === 'daily' ? 'Daily' : 'Weekly'}
+                    </span>
+                  </td>
                   <td className="px-4 py-3 hidden sm:table-cell font-mono text-[10px]" style={{ color: 'var(--muted)', opacity: 0.6 }}>{new Date(s.createdAt).toLocaleDateString()}</td>
                   <td className="px-4 py-3">
                     <span className="font-mono text-[9px] tracking-widest uppercase px-2 py-1" style={{

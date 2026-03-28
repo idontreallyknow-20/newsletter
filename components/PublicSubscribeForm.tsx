@@ -1,10 +1,12 @@
 'use client'
 
 import { useState } from 'react'
+import { LANGUAGES, FREQUENCIES, type Language, type SubscriberFrequency } from '@/lib/preferences'
 
 export default function PublicSubscribeForm() {
   const [email, setEmail] = useState('')
-  const [name, setName] = useState('') // eslint-disable-line @typescript-eslint/no-unused-vars
+  const [language, setLanguage] = useState<Language>('en')
+  const [frequency, setFrequency] = useState<SubscriberFrequency>('weekly')
   const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
   const [errMsg, setErrMsg] = useState('')
 
@@ -16,7 +18,7 @@ export default function PublicSubscribeForm() {
       const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, name }),
+        body: JSON.stringify({ email, language, frequency }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -31,18 +33,65 @@ export default function PublicSubscribeForm() {
     }
   }
 
+  const freqLabel = frequency === 'both' ? 'Weekly + Daily' : frequency === 'daily' ? 'Daily' : 'Weekly'
+  const langLabel = language === 'zh' ? '中文' : 'English'
+
   if (status === 'done') {
     return (
-      <p style={{ color: '#4ade80', fontSize: '16px', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <span>✓</span>
-        <span>You&apos;re in! Check your inbox for a confirmation.</span>
-      </p>
+      <div style={{ textAlign: 'center' }}>
+        <p style={{ color: '#4ade80', fontSize: '16px', fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '8px' }}>
+          <span>✓</span>
+          <span>You&apos;re in! Check your inbox.</span>
+        </p>
+        <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '12px', fontFamily: 'var(--font-dm)' }}>
+          {freqLabel} · {langLabel}
+        </p>
+      </div>
     )
   }
 
+  const optionStyle = (selected: boolean) => ({
+    padding: '12px 14px',
+    background: selected ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.04)',
+    border: `1px solid ${selected ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.1)'}`,
+    color: selected ? '#f5f0e8' : 'rgba(245,240,232,0.45)',
+    fontFamily: 'var(--font-dm)',
+    cursor: 'pointer' as const,
+    textAlign: 'left' as const,
+    transition: 'all 0.15s',
+    position: 'relative' as const,
+  })
+
   return (
-    <>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', maxWidth: '480px', margin: '0 auto 12px' }}>
+    <div style={{ maxWidth: '480px', margin: '0 auto' }}>
+      {/* Language */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
+        {LANGUAGES.map(opt => (
+          <button key={opt.value} type="button" onClick={() => setLanguage(opt.value)} style={optionStyle(language === opt.value)}>
+            {language === opt.value && (
+              <span style={{ position: 'absolute', top: '8px', right: '10px', fontSize: '10px', color: '#4ade80' }}>✓</span>
+            )}
+            <div style={{ fontSize: '14px', fontWeight: 500, marginBottom: '2px' }}>{opt.label}</div>
+            <div style={{ fontSize: '11px', opacity: 0.6, letterSpacing: '0.03em' }}>{opt.sub}</div>
+          </button>
+        ))}
+      </div>
+
+      {/* Frequency */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '20px' }}>
+        {FREQUENCIES.map(opt => (
+          <button key={opt.value} type="button" onClick={() => setFrequency(opt.value)} style={optionStyle(frequency === opt.value)}>
+            {frequency === opt.value && (
+              <span style={{ position: 'absolute', top: '8px', right: '10px', fontSize: '10px', color: '#4ade80' }}>✓</span>
+            )}
+            <div style={{ fontSize: '14px', fontWeight: 500, marginBottom: '2px' }}>{opt.label}</div>
+            <div style={{ fontSize: '11px', opacity: 0.6, letterSpacing: '0.03em', lineHeight: 1.4 }}>{opt.sub}</div>
+          </button>
+        ))}
+      </div>
+
+      {/* Email + submit */}
+      <form onSubmit={handleSubmit} style={{ display: 'flex' }}>
         <input
           type="email"
           value={email}
@@ -77,14 +126,16 @@ export default function PublicSubscribeForm() {
             cursor: 'pointer',
             whiteSpace: 'nowrap',
             opacity: status === 'loading' ? 0.6 : 1,
+            transition: 'opacity 0.15s',
           }}
         >
           {status === 'loading' ? 'Joining…' : 'Subscribe →'}
         </button>
       </form>
+
       {status === 'error' && (
-        <p style={{ color: '#fca5a5', fontSize: '13px', textAlign: 'center' }}>{errMsg}</p>
+        <p style={{ color: '#fca5a5', fontSize: '13px', textAlign: 'center', marginTop: '10px' }}>{errMsg}</p>
       )}
-    </>
+    </div>
   )
 }

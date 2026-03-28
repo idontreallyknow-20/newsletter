@@ -31,6 +31,8 @@ function buildPreviewHtml(subject: string, bodyMarkdown: string): string {
 </div></body></html>`
 }
 
+type SendAudience = 'all' | 'weekly' | 'daily'
+
 export default function ComposePage() {
   const [subject, setSubject] = useState('')
   const [previewText, setPreviewText] = useState('')
@@ -40,6 +42,7 @@ export default function ComposePage() {
   const [testing, setTesting] = useState(false)
   const [saving, setSaving] = useState(false)
   const [confirmSend, setConfirmSend] = useState(false)
+  const [audience, setAudience] = useState<SendAudience>('all')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const previewHtml = buildPreviewHtml(subject, body)
@@ -89,7 +92,7 @@ export default function ComposePage() {
       const res = await fetch('/api/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subject, previewText, bodyMarkdown: body }),
+        body: JSON.stringify({ subject, previewText, bodyMarkdown: body, frequency: audience === 'all' ? undefined : audience }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
@@ -109,7 +112,17 @@ export default function ComposePage() {
           <p className="font-mono text-[9px] tracking-[0.25em] uppercase mb-1" style={{ color: 'var(--muted)', opacity: 0.5 }}>New Issue</p>
           <h2 className="font-display text-2xl font-bold" style={{ color: 'var(--cream)' }}>Compose</h2>
         </div>
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex gap-2 flex-wrap items-center">
+          <select
+            value={audience}
+            onChange={e => setAudience(e.target.value as SendAudience)}
+            className="px-3 py-2 text-xs font-mono tracking-wide"
+            style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--muted)', outline: 'none' }}
+          >
+            <option value="all">All subscribers</option>
+            <option value="weekly">Weekly subscribers</option>
+            <option value="daily">Daily subscribers</option>
+          </select>
           <button
             onClick={saveDraft}
             disabled={saving}
@@ -187,8 +200,8 @@ export default function ComposePage() {
 
       <ConfirmModal
         isOpen={confirmSend}
-        title="Send to all subscribers?"
-        message="This will immediately send this email to all active subscribers. You cannot undo this."
+        title="Send to subscribers?"
+        message={`This will immediately send to ${audience === 'all' ? 'all active' : `${audience} (+ both)`} subscribers. You cannot undo this.`}
         confirmLabel="Yes, Send Now"
         onConfirm={sendAll}
         onCancel={() => setConfirmSend(false)}

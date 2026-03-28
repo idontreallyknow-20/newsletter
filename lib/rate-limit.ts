@@ -9,9 +9,19 @@ interface Entry {
 }
 
 const store = new Map<string, Entry>()
+let lastClean = Date.now()
 
 export function rateLimit(key: string, limit: number, windowMs: number): boolean {
   const now = Date.now()
+
+  // Prune expired entries every 5 minutes to prevent unbounded growth
+  if (now - lastClean > 5 * 60_000) {
+    store.forEach((v, k) => {
+      if (v.resetAt < now) store.delete(k)
+    })
+    lastClean = now
+  }
+
   const entry = store.get(key)
 
   if (!entry || entry.resetAt < now) {

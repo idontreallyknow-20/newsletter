@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { settings, subscribers, sentEmails } from '@/lib/schema'
-import { eq } from 'drizzle-orm'
+import { settings, subscribers, sentEmails, drafts } from '@/lib/schema'
+import { eq, desc } from 'drizzle-orm'
 import { shouldSendNow } from '@/lib/schedule'
 import { buildEmailHtml, sendToRecipients } from '@/lib/email'
 import { markdownToHtml } from '@/lib/markdown'
 import { slugify } from '@/lib/slug'
+import { subscriberFrequenciesFor } from '@/lib/preferences'
 
 export async function GET(req: Request) {
   // Verify cron secret to prevent unauthorized triggers
@@ -15,7 +16,12 @@ export async function GET(req: Request) {
   }
 
   try {
-    const settingRows = await db.select().from(settings)
+    const [settingRows, [latestDraft], allActive] = await Promise.all([
+      db.select().from(settings),
+      db.select().from(drafts).orderBy(desc(drafts.updatedAt)).limit(1),
+      db.select().from(subscribers).where(eq(subscribers.status, 'active')),
+    ])
+
     const s: Record<string, string> = {}
     for (const row of settingRows) { if (row.value) s[row.key] = row.value }
 
@@ -23,18 +29,23 @@ export async function GET(req: Request) {
       return NextResponse.json({ skipped: true, reason: 'Not scheduled for this time' })
     }
 
-    // Use the most recent draft as the content to send
-    const { drafts } = await import('@/lib/schema')
-    const { desc } = await import('drizzle-orm')
-    const [latestDraft] = await db.select().from(drafts).orderBy(desc(drafts.updatedAt)).limit(1)
-
     if (!latestDraft || !latestDraft.bodyMarkdown) {
       return NextResponse.json({ skipped: true, reason: 'No draft available to send' })
     }
 
-    const activeSubscribers = await db.select().from(subscribers).where(eq(subscribers.status, 'active'))
-    if (activeSubscribers.length === 0) {
-      return NextResponse.json({ skipped: true, reason: 'No active subscribers' })
+    // Map cron schedule type → subscriber frequency filter
+    const scheduleFreq = s.schedule_frequency
+    const sendType: 'weekly' | 'daily' | null =
+      scheduleFreq === 'weekly' ? 'weekly' :
+      (scheduleFreq === 'daily' || scheduleFreq === 'weekdays') ? 'daily' :
+      null
+
+    const targets = sendType
+      ? allActive.filter(sub => subscriberFrequenciesFor(sendType).includes(sub.frequency as 'weekly' | 'daily' | 'both'))
+      : allActive
+
+    if (targets.length === 0) {
+      return NextResponse.json({ skipped: true, reason: 'No matching subscribers' })
     }
 
     const fromName = s.from_name || 'Newsletter'
@@ -45,7 +56,7 @@ export async function GET(req: Request) {
     const bodyHtml = markdownToHtml(latestDraft.bodyMarkdown)
 
     let errorCount = 0
-    for (const sub of activeSubscribers) {
+    for (const sub of targets) {
       const html = buildEmailHtml({ newsletterName, bodyHtml, recipientEmail: sub.email, baseUrl })
       try {
         await sendToRecipients({ to: [sub.email], subject, html, fromName, fromEmail })
@@ -60,11 +71,11 @@ export async function GET(req: Request) {
       bodyHtml,
       bodyMarkdown: latestDraft.bodyMarkdown,
       slug: slugify(subject),
-      recipientCount: activeSubscribers.length,
+      recipientCount: targets.length,
       status: errorCount === 0 ? 'sent' : 'partial',
     })
 
-    return NextResponse.json({ success: true, sent: activeSubscribers.length - errorCount })
+    return NextResponse.json({ success: true, sent: targets.length - errorCount })
   } catch {
     return NextResponse.json({ error: 'Cron send failed' }, { status: 500 })
   }

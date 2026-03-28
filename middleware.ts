@@ -1,7 +1,17 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-const PUBLIC_PATHS = ['/', '/login', '/subscribe', '/issues', '/api/subscribe', '/api/unsubscribe', '/_next', '/favicon.ico']
+const PUBLIC_PATHS = ['/', '/login', '/subscribe', '/issues', '/api/subscribe', '/api/unsubscribe', '/api/logout', '/_next', '/favicon.ico']
+
+// Constant-time string comparison for Edge runtime (no Node crypto available)
+function safeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false
+  let result = 0
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i)
+  }
+  return result === 0
+}
 
 // Constant-time string comparison for Edge runtime (no Node crypto available)
 function safeEqual(a: string, b: string): boolean {

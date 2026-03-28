@@ -1,20 +1,24 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { subscribers, sentEmails, settings } from '@/lib/schema'
-import { eq } from 'drizzle-orm'
+import { eq, inArray } from 'drizzle-orm'
 import { buildEmailHtml, sendToRecipients } from '@/lib/email'
 import { markdownToHtml } from '@/lib/markdown'
 import { slugify } from '@/lib/slug'
+import { subscriberFrequenciesFor } from '@/lib/preferences'
 
 export async function POST(req: Request) {
   try {
-    const { subject, previewText, bodyMarkdown } = await req.json()
+    const { subject, previewText, bodyMarkdown, frequency } = await req.json()
     if (!subject || !bodyMarkdown) {
       return NextResponse.json({ error: 'Subject and body are required' }, { status: 400 })
     }
 
-    // Fetch settings
-    const settingRows = await db.select().from(settings)
+    const [settingRows, allActive] = await Promise.all([
+      db.select().from(settings),
+      db.select().from(subscribers).where(eq(subscribers.status, 'active')),
+    ])
+
     const s: Record<string, string> = {}
     for (const row of settingRows) { if (row.value) s[row.key] = row.value }
 
@@ -23,21 +27,19 @@ export async function POST(req: Request) {
     const newsletterName = s.newsletter_name || 'Newsletter'
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
 
-    // Get active subscribers
-    const activeSubscribers = await db
-      .select()
-      .from(subscribers)
-      .where(eq(subscribers.status, 'active'))
+    // Filter by frequency preference if specified
+    const targets = (frequency === 'weekly' || frequency === 'daily')
+      ? allActive.filter(sub => subscriberFrequenciesFor(frequency).includes(sub.frequency as 'weekly' | 'daily' | 'both'))
+      : allActive
 
-    if (activeSubscribers.length === 0) {
-      return NextResponse.json({ error: 'No active subscribers' }, { status: 400 })
+    if (targets.length === 0) {
+      return NextResponse.json({ error: 'No matching subscribers' }, { status: 400 })
     }
 
     const bodyHtml = markdownToHtml(bodyMarkdown)
 
-    // Send to each subscriber with their personal unsubscribe link
     let errorCount = 0
-    for (const sub of activeSubscribers) {
+    for (const sub of targets) {
       const html = buildEmailHtml({ newsletterName, bodyHtml, recipientEmail: sub.email, baseUrl })
       try {
         await sendToRecipients({ to: [sub.email], subject, html, fromName, fromEmail })
@@ -46,20 +48,19 @@ export async function POST(req: Request) {
       }
     }
 
-    // Log to history
     await db.insert(sentEmails).values({
       subject,
       previewText,
-      bodyHtml: markdownToHtml(bodyMarkdown),
+      bodyHtml,
       bodyMarkdown,
       slug: slugify(subject),
-      recipientCount: activeSubscribers.length,
+      recipientCount: targets.length,
       status: errorCount === 0 ? 'sent' : 'partial',
     })
 
     return NextResponse.json({
       success: true,
-      sent: activeSubscribers.length - errorCount,
+      sent: targets.length - errorCount,
       errors: errorCount,
     })
   } catch {
