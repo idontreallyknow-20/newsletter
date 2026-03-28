@@ -5,6 +5,8 @@ export const subscribers = pgTable('subscribers', {
   name: text('name'),
   email: text('email').unique().notNull(),
   status: text('status').notNull().default('active'),
+  language: text('language').notNull().default('en'),   // 'en' | 'zh'
+  frequency: text('frequency').notNull().default('weekly'), // 'weekly' | 'daily'
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 
