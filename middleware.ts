@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-const PUBLIC_PATHS = ['/login', '/subscribe', '/api/subscribe', '/api/unsubscribe', '/_next', '/favicon.ico']
+const PUBLIC_PATHS = ['/', '/login', '/subscribe', '/api/subscribe', '/api/unsubscribe', '/_next', '/favicon.ico']
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
@@ -22,10 +22,8 @@ export function middleware(req: NextRequest) {
     return NextResponse.next()
   }
 
-  // Redirect to login
-  const loginUrl = new URL('/login', req.url)
-  loginUrl.searchParams.set('from', pathname)
-  return NextResponse.redirect(loginUrl)
+  // Redirect public visitors to the subscribe page
+  return NextResponse.redirect(new URL('/subscribe', req.url))
 }
 
 export const config = {

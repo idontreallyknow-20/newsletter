@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Joseph — Economics & AI Newsletter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #f5f0e8;
+      --cream-2: #ede8de;
+      --ink: #1a1a1a;
+      --red: #c8402a;
+      --tan: #6b6459;
+      --border: #d6cfc4;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: 'DM Sans', 'Helvetica Neue', sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── Animations ─── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+    .fade-up { animation: fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .d0  { animation-delay: 0s; }
+    .d1  { animation-delay: 0.15s; }
+    .d2  { animation-delay: 0.30s; }
+    .d3  { animation-delay: 0.45s; }
+    .d4  { animation-delay: 0.60s; }
+
+    /* ─── Nav ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(245, 240, 232, 0.82);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 60px;
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--ink);
+      text-decoration: none;
+      letter-spacing: -0.01em;
+    }
+    .nav-logo span { color: var(--red); }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--tan);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      transition: color 0.15s;
+    }
+    .nav-links a:hover { color: var(--ink); }
+
+    /* ─── Sections ─── */
+    section { width: 100%; }
+    .container { max-width: 1080px; margin: 0 auto; padding: 0 48px; }
+
+    /* ─── Hero ─── */
+    .hero {
+      padding: 140px 48px 100px;
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 28px;
+    }
+    .eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 24px;
+      height: 2px;
+      background: var(--red);
+    }
+    .hero-headline {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(42px, 7vw, 80px);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin-bottom: 28px;
+      min-height: 1.1em;
+    }
+    .cursor {
+      display: inline-block;
+      width: 3px;
+      height: 0.85em;
+      background: var(--red);
+      margin-left: 3px;
+      vertical-align: middle;
+      animation: blink 1s step-start infinite;
+    }
+    .hero-sub {
+      font-size: 18px;
+      font-weight: 300;
+      color: var(--tan);
+      max-width: 580px;
+      line-height: 1.7;
+      margin-bottom: 44px;
+    }
+    .hero-buttons { display: flex; gap: 14px; flex-wrap: wrap; }
+    .btn-primary {
+      padding: 14px 28px;
+      background: var(--ink);
+      color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      border: 2px solid var(--ink);
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+      letter-spacing: 0.01em;
+    }
+    .btn-primary:hover { background: var(--red); border-color: var(--red); }
+    .btn-ghost {
+      padding: 14px 28px;
+      background: transparent;
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      border: 2px solid var(--ink);
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+    }
+    .btn-ghost:hover { background: var(--ink); color: var(--cream); }
+
+    /* ─── Divider ─── */
+    .section-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+    }
+
+    /* ─── About ─── */
+    .about { padding: 96px 0; }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+    .section-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 20px;
+    }
+    .section-heading {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(28px, 3.5vw, 42px);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.015em;
+      color: var(--ink);
+      margin-bottom: 24px;
+    }
+    .about-copy {
+      font-size: 16px;
+      font-weight: 300;
+      color: var(--tan);
+      line-height: 1.75;
+      margin-bottom: 16px;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+    }
+    .stat-card {
+      background: var(--cream-2);
+      border: 1px solid var(--border);
+      padding: 24px 20px;
+    }
+    .stat-number {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 34px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--tan);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* ─── Topics ─── */
+    .topics { padding: 96px 0; background: var(--cream-2); }
+    .topics-header { margin-bottom: 48px; }
+    .topics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 2px;
+    }
+    .topic-card {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      padding: 32px 28px;
+      transition: box-shadow 0.15s, border-color 0.15s;
+      cursor: default;
+    }
+    .topic-card:hover {
+      box-shadow: 4px 4px 0 var(--ink);
+      border-color: var(--ink);
+    }
+    .topic-icon { font-size: 28px; margin-bottom: 16px; display: block; }
+    .topic-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 10px;
+      line-height: 1.25;
+    }
+    .topic-desc {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--tan);
+      line-height: 1.65;
+    }
+
+    /* ─── Issues ─── */
+    .issues { padding: 96px 0; }
+    .issues-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .issues-link {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--red);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      padding-bottom: 2px;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.15s;
+    }
+    .issues-link:hover { border-color: var(--red); }
+    .issue-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 20px 0;
+      border-top: 1px solid var(--border);
+      transition: padding-left 0.2s ease;
+      cursor: default;
+    }
+    .issue-row:last-child { border-bottom: 1px solid var(--border); }
+    .issue-row:hover { padding-left: 12px; }
+    .issue-row:hover .issue-title { color: var(--red); }
+    .issue-num {
+      font-family: 'DM Sans', monospace;
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--tan);
+      opacity: 0.7;
+      flex-shrink: 0;
+      width: 36px;
+      letter-spacing: 0.04em;
+    }
+    .issue-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--ink);
+      flex: 1;
+      line-height: 1.3;
+      transition: color 0.2s;
+    }
+    .issue-tag {
+      flex-shrink: 0;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--red);
+      background: rgba(200, 64, 42, 0.08);
+      border: 1px solid rgba(200, 64, 42, 0.2);
+      padding: 3px 8px;
+    }
+    .issue-date {
+      flex-shrink: 0;
+      font-size: 12px;
+      color: var(--tan);
+      opacity: 0.7;
+      white-space: nowrap;
+      width: 90px;
+      text-align: right;
+    }
+
+    /* ─── Subscribe ─── */
+    .subscribe-section {
+      background: var(--ink);
+      padding: 96px 48px;
+    }
+    .subscribe-inner {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .subscribe-heading {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 900;
+      color: var(--cream);
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+    .subscribe-sub {
+      font-size: 16px;
+      font-weight: 300;
+      color: #a09890;
+      line-height: 1.7;
+      margin-bottom: 40px;
+    }
+    .subscribe-form {
+      display: flex;
+      gap: 0;
+      max-width: 480px;
+      margin: 0 auto 20px;
+    }
+    .subscribe-input {
+      flex: 1;
+      padding: 14px 18px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-right: none;
+      color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .subscribe-input::placeholder { color: rgba(255,255,255,0.3); }
+    .subscribe-input:focus { border-color: rgba(255,255,255,0.35); }
+    .subscribe-btn {
+      padding: 14px 24px;
+      background: var(--red);
+      color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      border: 1px solid var(--red);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+      letter-spacing: 0.02em;
+    }
+    .subscribe-btn:hover { background: #a83422; }
+    .subscribe-confirm {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 500;
+      color: #6ee7b7;
+      margin-top: 8px;
+    }
+    .subscribe-fine {
+      font-size: 12px;
+      color: rgba(255,255,255,0.25);
+      margin-top: 12px;
+    }
+
+    /* ─── Footer ─── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-copy {
+      font-size: 13px;
+      color: var(--tan);
+    }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a {
+      font-size: 13px;
+      color: var(--tan);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .footer-links a:hover { color: var(--ink); }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 700px) {
+      nav { padding: 0 24px; }
+      .nav-links { display: none; }
+      .hero { padding: 100px 24px 72px; }
+      .container { padding: 0 24px; }
+      .about { padding: 64px 0; }
+      .about-grid { grid-template-columns: 1fr; gap: 48px; }
+      .topics { padding: 64px 0; }
+      .issues { padding: 64px 0; }
+      .issues-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .issue-date { display: none; }
+      .subscribe-section { padding: 72px 24px; }
+      .subscribe-form { flex-direction: column; }
+      .subscribe-input { border-right: 1px solid rgba(255,255,255,0.15); border-bottom: none; }
+      .subscribe-btn { border-top: none; }
+      footer { padding: 28px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<script type="text/babel">
+  const { useState, useEffect } = React;
+
+  const HEADLINE = "Where economics meets the age of AI.";
+
+  const TOPICS = [
+    { icon: "📈", title: "Macro & Markets", desc: "Interest rates, inflation, central bank policy, and what it all means for your wallet and the broader economy." },
+    { icon: "🤖", title: "AI & Technology", desc: "Model releases, capability jumps, and the business of artificial intelligence — stripped of the hype." },
+    { icon: "🌐", title: "Global Economy", desc: "Trade flows, geopolitical shifts, and the economic forces reshaping how nations compete and collaborate." },
+    { icon: "🔮", title: "Future of Work", desc: "How automation, remote culture, and AI are rewriting the rules of employment and productivity." },
+    { icon: "💡", title: "Ideas & Analysis", desc: "Original takes on big questions — why economic predictions fail, what history tells us, and what to watch next." },
+    { icon: "📰", title: "Weekly Digest", desc: "Five links worth your time, one chart that matters, and one thing everyone got wrong this week." },
+  ];
+
+  const ISSUES = [
+    { num: "#041", title: "The Fed's Impossible Dilemma: Growth vs. Inflation in 2026", tag: "Economics", date: "Mar 24, 2026" },
+    { num: "#040", title: "GPT-5 and the Arms Race Nobody Is Talking About", tag: "AI", date: "Mar 17, 2026" },
+    { num: "#039", title: "Why Every Recession Prediction Has Been Wrong (So Far)", tag: "Markets", date: "Mar 10, 2026" },
+    { num: "#038", title: "The Quiet AI Takeover of White-Collar Work", tag: "AI", date: "Mar 3, 2026" },
+    { num: "#037", title: "Deglobalization: Myth or Megatrend?", tag: "Global", date: "Feb 24, 2026" },
+  ];
+
+  function Nav() {
+    return (
+      <nav>
+        <a href="#" className="nav-logo">Joseph<span>.</span></a>
+        <ul className="nav-links">
+          <li><a href="#about">About</a></li>
+          <li><a href="#topics">Topics</a></li>
+          <li><a href="#issues">Issues</a></li>
+          <li><a href="#subscribe">Subscribe</a></li>
+        </ul>
+      </nav>
+    );
+  }
+
+  function Hero() {
+    const [displayed, setDisplayed] = useState("");
+    const [done, setDone] = useState(false);
+
+    useEffect(() => {
+      let i = 0;
+      const id = setInterval(() => {
+        i++;
+        setDisplayed(HEADLINE.slice(0, i));
+        if (i >= HEADLINE.length) { clearInterval(id); setDone(true); }
+      }, 45);
+      return () => clearInterval(id);
+    }, []);
+
+    return (
+      <section id="about">
+        <div className="hero">
+          <div className="eyebrow fade-up d0">Newsletter · Economics &amp; AI</div>
+          <h1 className="hero-headline fade-up d1">
+            {displayed}
+            {!done && <span className="cursor" />}
+          </h1>
+          <p className="hero-sub fade-up d2">
+            A weekly newsletter for curious minds — breaking down the economic forces and AI breakthroughs shaping our world, without the jargon.
+          </p>
+          <div className="hero-buttons fade-up d3">
+            <a href="#subscribe" className="btn-primary">Subscribe free →</a>
+            <a href="#issues" className="btn-ghost">Browse issues</a>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  function About() {
+    return (
+      <section>
+        <hr className="section-divider" />
+        <div className="about">
+          <div className="container">
+            <div className="about-grid">
+              <div>
+                <p className="section-label">About</p>
+                <h2 className="section-heading">Written for people who want to understand what's actually happening.</h2>
+                <p className="about-copy">
+                  Most financial and tech news is written for insiders. Joseph writes for everyone else — people with real jobs who still want a clear-eyed view of how AI and the global economy are changing the ground beneath their feet.
+                </p>
+                <p className="about-copy">
+                  Each issue takes one big topic, cuts through the noise, and tells you what it means. No buzzwords, no breathless predictions — just honest, well-researched analysis you can read in five minutes.
+                </p>
+              </div>
+              <div className="stats-grid">
+                {[
+                  { n: "41+", l: "Issues Published" },
+                  { n: "Weekly", l: "Delivery Cadence" },
+                  { n: "2", l: "Topics Covered" },
+                  { n: "Free", l: "Always" },
+                ].map(s => (
+                  <div key={s.l} className="stat-card">
+                    <div className="stat-number">{s.n}</div>
+                    <div className="stat-label">{s.l}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  function Topics() {
+    return (
+      <section id="topics">
+        <hr className="section-divider" />
+        <div className="topics">
+          <div className="container">
+            <div className="topics-header">
+              <p className="section-label">What you'll read</p>
+              <h2 className="section-heading">Six lenses on the same shifting world.</h2>
+            </div>
+            <div className="topics-grid">
+              {TOPICS.map(t => (
+                <div key={t.title} className="topic-card">
+                  <span className="topic-icon">{t.icon}</span>
+                  <div className="topic-title">{t.title}</div>
+                  <p className="topic-desc">{t.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  function Issues() {
+    return (
+      <section id="issues">
+        <hr className="section-divider" />
+        <div className="issues">
+          <div className="container">
+            <div className="issues-header">
+              <div>
+                <p className="section-label">Recent Issues</p>
+                <h2 className="section-heading">From the archive.</h2>
+              </div>
+              <a href="#subscribe" className="issues-link">All issues →</a>
+            </div>
+            <div>
+              {ISSUES.map(issue => (
+                <div key={issue.num} className="issue-row">
+                  <span className="issue-num">{issue.num}</span>
+                  <span className="issue-title">{issue.title}</span>
+                  <span className="issue-tag">{issue.tag}</span>
+                  <span className="issue-date">{issue.date}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  function Subscribe() {
+    const [email, setEmail] = useState("");
+    const [done, setDone] = useState(false);
+
+    function handleSubmit(e) {
+      e.preventDefault();
+      if (!email) return;
+      setDone(true);
+    }
+
+    return (
+      <section id="subscribe">
+        <hr className="section-divider" />
+        <div className="subscribe-section">
+          <div className="subscribe-inner">
+            <h2 className="subscribe-heading">Stay one step ahead.</h2>
+            <p className="subscribe-sub">
+              Join readers who get the clearest take on economics and AI — delivered to your inbox every week.
+            </p>
+            {done ? (
+              <div className="subscribe-confirm">
+                <span>✓</span>
+                <span>You're in! Check your inbox for a confirmation.</span>
+              </div>
+            ) : (
+              <form className="subscribe-form" onSubmit={handleSubmit}>
+                <input
+                  className="subscribe-input"
+                  type="email"
+                  placeholder="your@email.com"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  required
+                />
+                <button className="subscribe-btn" type="submit">Subscribe →</button>
+              </form>
+            )}
+            <p className="subscribe-fine">No spam. No tracking. Unsubscribe anytime.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  function Footer() {
+    return (
+      <footer>
+        <span className="footer-copy">© 2026 Joseph. Made with curiosity.</span>
+        <nav className="footer-links">
+          <a href="#">Twitter/X</a>
+          <a href="#">LinkedIn</a>
+          <a href="#">Archive</a>
+          <a href="#">RSS</a>
+        </nav>
+      </footer>
+    );
+  }
+
+  function App() {
+    return (
+      <>
+        <Nav />
+        <Hero />
+        <About />
+        <Topics />
+        <Issues />
+        <Subscribe />
+        <Footer />
+      </>
+    );
+  }
+
+  const root = ReactDOM.createRoot(document.getElementById("root"));
+  root.render(<App />);
+</script>
+</body>
+</html>

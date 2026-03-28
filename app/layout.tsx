@@ -1,35 +1,39 @@
 import type { Metadata } from 'next'
-import { Inter, Playfair_Display } from 'next/font/google'
+import { Playfair_Display, DM_Sans } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
-import Sidebar from '@/components/Sidebar'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
-const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' })
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-playfair',
+  weight: ['400', '700', '900'],
+  style: ['normal', 'italic'],
+})
+
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  variable: '--font-dm',
+  weight: ['300', '400', '500'],
+})
 
 export const metadata: Metadata = {
-  title: 'NewsletterHQ',
-  description: 'Newsletter management for the discerning sender',
+  title: 'Joseph — Economics & AI Newsletter',
+  description: 'A weekly newsletter breaking down economic forces and AI breakthroughs shaping our world.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
-      <body className="bg-bg text-cream min-h-screen font-sans">
-        <div className="flex min-h-screen">
-          <Sidebar />
-          <main className="flex-1 lg:ml-60 pt-14 lg:pt-0 min-h-screen">
-            {children}
-          </main>
-        </div>
+    <html lang="en" className={`${playfair.variable} ${dmSans.variable}`}>
+      <body>
+        {children}
         <Toaster
           position="bottom-right"
           toastOptions={{
             style: {
               background: '#1a1a1a',
-              color: '#F5F0E8',
-              border: '1px solid rgba(255,255,255,0.1)',
-              fontFamily: 'var(--font-inter)',
+              color: '#f5f0e8',
+              border: '1px solid rgba(255,255,255,0.12)',
+              fontFamily: 'var(--font-dm)',
               fontSize: '14px',
             },
           }}

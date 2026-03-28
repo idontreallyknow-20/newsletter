@@ -53,33 +53,36 @@ export default function SchedulePage() {
   }`
 
   return (
-    <div className="p-6 lg:p-10 max-w-2xl">
-      <div className="mb-8">
-        <h2 className="font-display text-3xl font-bold text-cream mb-1">Schedule</h2>
-        <p className="text-muted text-sm font-sans">Configure when newsletters are sent automatically.</p>
+    <div className="p-8 lg:p-12 max-w-2xl">
+      <div className="mb-10 animate-fade-up">
+        <p className="font-mono text-[9px] tracking-[0.25em] uppercase mb-3" style={{ color: 'var(--muted)', opacity: 0.5 }}>Configure</p>
+        <h2 className="font-display text-4xl font-bold" style={{ color: 'var(--cream)' }}>Schedule</h2>
       </div>
 
-      <div className="bg-amber-950/20 border border-amber-800/20 rounded-lg px-5 py-4 mb-8 text-sm font-sans text-amber-300/80">
-        The cron job fires every hour at :00. Changing the hour here takes effect immediately — no redeploy needed.
+      <div className="px-5 py-4 mb-8 text-xs font-sans animate-fade-up delay-1" style={{ background: 'rgba(200,169,110,0.06)', border: '1px solid rgba(200,169,110,0.2)', color: 'rgba(200,169,110,0.8)' }}>
+        The cron job fires daily at 8:00 UTC (Hobby plan). Changing frequency/hour here updates what the cron handler checks — no redeploy needed.
       </div>
 
       {loading ? (
-        <div className="text-center py-12 text-muted text-sm font-sans">Loading…</div>
+        <div className="py-16 text-center">
+          <p className="font-mono text-[10px] tracking-[0.2em] uppercase animate-pulse" style={{ color: 'var(--muted)', opacity: 0.5 }}>Loading…</p>
+        </div>
       ) : (
-        <div className="bg-surface border border-white/10 rounded-lg p-6 space-y-6">
+        <div className="animate-fade-up delay-2 p-6 space-y-6" style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}>
           {/* Frequency */}
           <div>
-            <label className="text-muted text-xs font-sans uppercase tracking-widest block mb-3">Frequency</label>
+            <label className="font-mono text-[9px] tracking-[0.2em] uppercase block mb-3" style={{ color: 'var(--muted)' }}>Frequency</label>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               {['daily', 'weekdays', 'weekly', 'manual'].map(f => (
                 <button
                   key={f}
                   onClick={() => setFrequency(f)}
-                  className={`px-3 py-2 rounded-md text-sm font-sans capitalize border transition-colors ${
-                    frequency === f
-                      ? 'bg-accent/20 text-accent border-accent/30'
-                      : 'text-muted border-white/10 hover:text-cream hover:border-white/20'
-                  }`}
+                  className="px-3 py-2 text-xs font-sans capitalize transition-all duration-150"
+                  style={{
+                    background: frequency === f ? 'var(--accent-dim)' : 'transparent',
+                    color: frequency === f ? 'var(--accent)' : 'var(--muted)',
+                    border: `1px solid ${frequency === f ? 'var(--border-accent)' : 'var(--border)'}`,
+                  }}
                 >
                   {f === 'weekdays' ? 'Weekdays' : f.charAt(0).toUpperCase() + f.slice(1)}
                 </button>
@@ -90,11 +93,12 @@ export default function SchedulePage() {
           {/* Time */}
           {frequency !== 'manual' && (
             <div>
-              <label className="text-muted text-xs font-sans uppercase tracking-widest block mb-3">Send Time</label>
+              <label className="font-mono text-[9px] tracking-[0.2em] uppercase block mb-3" style={{ color: 'var(--muted)' }}>Send Time</label>
               <select
                 value={hour}
                 onChange={e => setHour(e.target.value)}
-                className="w-full bg-surface-2 border border-white/10 rounded-md px-3 py-2 text-cream text-sm font-sans focus:outline-none focus:border-accent/40"
+                className="w-full px-3 py-2.5 text-sm font-sans"
+                style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--cream)', outline: 'none' }}
               >
                 {HOURS.map(h => <option key={h.value} value={h.value}>{h.label}</option>)}
               </select>
@@ -104,17 +108,18 @@ export default function SchedulePage() {
           {/* Day picker for weekly */}
           {frequency === 'weekly' && (
             <div>
-              <label className="text-muted text-xs font-sans uppercase tracking-widest block mb-3">Day of Week</label>
+              <label className="font-mono text-[9px] tracking-[0.2em] uppercase block mb-3" style={{ color: 'var(--muted)' }}>Day of Week</label>
               <div className="grid grid-cols-7 gap-1">
                 {DAYS.map((d, i) => (
                   <button
                     key={i}
                     onClick={() => setDay(String(i))}
-                    className={`py-2 rounded-md text-xs font-sans border transition-colors ${
-                      day === String(i)
-                        ? 'bg-accent/20 text-accent border-accent/30'
-                        : 'text-muted border-white/10 hover:text-cream hover:border-white/20'
-                    }`}
+                    className="py-2 text-xs font-sans transition-all duration-150"
+                    style={{
+                      background: day === String(i) ? 'var(--accent-dim)' : 'transparent',
+                      color: day === String(i) ? 'var(--accent)' : 'var(--muted)',
+                      border: `1px solid ${day === String(i) ? 'var(--border-accent)' : 'var(--border)'}`,
+                    }}
                   >
                     {d.slice(0, 3)}
                   </button>
@@ -125,14 +130,15 @@ export default function SchedulePage() {
 
           {/* Cron expression */}
           <div>
-            <label className="text-muted text-xs font-sans uppercase tracking-widest block mb-2">Cron Expression</label>
-            <code className="text-accent text-sm font-mono bg-surface-2 px-3 py-2 rounded-md block">{cronExpr}</code>
+            <label className="font-mono text-[9px] tracking-[0.2em] uppercase block mb-2" style={{ color: 'var(--muted)' }}>Cron Expression</label>
+            <code className="text-sm font-mono px-3 py-2.5 block" style={{ background: 'var(--surface-2)', color: 'var(--accent)', border: '1px solid var(--border)' }}>{cronExpr}</code>
           </div>
 
           <button
             onClick={save}
             disabled={saving}
-            className="w-full px-4 py-2.5 text-sm font-sans bg-accent/20 hover:bg-accent/30 text-accent border border-accent/30 rounded-md transition-colors disabled:opacity-50"
+            className="w-full px-4 py-2.5 text-sm font-sans tracking-wide transition-all duration-150 disabled:opacity-40"
+            style={{ background: 'var(--accent-dim)', color: 'var(--accent)', border: '1px solid var(--border-accent)' }}
           >
             {saving ? 'Saving…' : 'Save Schedule'}
           </button>
@@ -141,13 +147,16 @@ export default function SchedulePage() {
 
       {/* Next sends */}
       {nextTimes.length > 0 && (
-        <div className="mt-8">
-          <h3 className="font-display text-lg font-bold text-cream mb-4">Next 5 Scheduled Sends</h3>
-          <div className="bg-surface border border-white/10 rounded-lg overflow-hidden">
+        <div className="mt-8 animate-fade-up delay-3">
+          <div className="flex items-center gap-4 mb-5">
+            <h3 className="font-display text-lg font-bold" style={{ color: 'var(--cream)' }}>Upcoming Sends</h3>
+            <div className="h-px flex-1" style={{ background: 'var(--border)' }} />
+          </div>
+          <div style={{ border: '1px solid var(--border)' }}>
             {nextTimes.map((t, i) => (
-              <div key={i} className={`px-5 py-3 text-sm font-sans text-muted flex items-center gap-3 ${i < nextTimes.length - 1 ? 'border-b border-white/5' : ''}`}>
-                <span className="text-muted/50 text-xs w-4">{i + 1}</span>
-                <span className="text-cream">{t}</span>
+              <div key={i} className="px-5 py-3 flex items-center gap-4" style={{ borderBottom: i < nextTimes.length - 1 ? '1px solid var(--border)' : 'none' }}>
+                <span className="font-mono text-[10px] w-4 flex-shrink-0" style={{ color: 'var(--muted)', opacity: 0.4 }}>{i + 1}</span>
+                <span className="font-mono text-[11px]" style={{ color: 'var(--cream)' }}>{t}</span>
               </div>
             ))}
           </div>

@@ -42,19 +42,21 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="p-6 lg:p-10 max-w-xl">
-      <div className="mb-8">
-        <h2 className="font-display text-3xl font-bold text-cream mb-1">Settings</h2>
-        <p className="text-muted text-sm font-sans">Configure your newsletter identity.</p>
+    <div className="p-8 lg:p-12 max-w-xl">
+      <div className="mb-10 animate-fade-up">
+        <p className="font-mono text-[9px] tracking-[0.25em] uppercase mb-3" style={{ color: 'var(--muted)', opacity: 0.5 }}>Configure</p>
+        <h2 className="font-display text-4xl font-bold" style={{ color: 'var(--cream)' }}>Settings</h2>
       </div>
 
       {loading ? (
-        <div className="text-center py-12 text-muted text-sm font-sans">Loading…</div>
+        <div className="py-16 text-center">
+          <p className="font-mono text-[10px] tracking-[0.2em] uppercase animate-pulse" style={{ color: 'var(--muted)', opacity: 0.5 }}>Loading…</p>
+        </div>
       ) : (
-        <form onSubmit={save} className="bg-surface border border-white/10 rounded-lg p-6 space-y-5">
+        <form onSubmit={save} className="animate-fade-up delay-1 p-6 space-y-5" style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}>
           {FIELDS.map(field => (
             <div key={field.key}>
-              <label className="text-muted text-xs font-sans uppercase tracking-widest block mb-1.5">
+              <label className="font-mono text-[9px] tracking-[0.2em] uppercase block mb-2" style={{ color: 'var(--muted)' }}>
                 {field.label}
               </label>
               <input
@@ -62,22 +64,26 @@ export default function SettingsPage() {
                 value={values[field.key] || ''}
                 onChange={e => setValues(v => ({ ...v, [field.key]: e.target.value }))}
                 placeholder={field.placeholder}
-                className="w-full bg-surface-2 border border-white/10 rounded-md px-3 py-2.5 text-cream text-sm font-sans placeholder:text-muted focus:outline-none focus:border-accent/40 transition-colors"
+                className="w-full px-3 py-2.5 text-sm font-sans"
+                style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--cream)', outline: 'none' }}
+                onFocus={e => (e.target.style.borderColor = 'var(--border-accent)')}
+                onBlur={e => (e.target.style.borderColor = 'var(--border)')}
               />
             </div>
           ))}
 
-          <div className="pt-2">
-            <div className="bg-surface-2 border border-white/10 rounded-lg px-4 py-3 mb-5">
-              <p className="text-muted text-xs font-sans leading-relaxed">
-                <span className="text-cream font-medium">Resend API Key</span> — Set this in your Vercel dashboard under Environment Variables as{' '}
-                <code className="text-accent font-mono">RESEND_API_KEY</code>. It&apos;s a secret and cannot be stored here.
-              </p>
+          <div className="pt-2 space-y-4">
+            <div className="px-4 py-3 text-xs font-sans leading-relaxed" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
+              <span style={{ color: 'var(--cream)', fontWeight: 500 }}>Resend API Key</span>
+              <span style={{ color: 'var(--muted)' }}> — set as </span>
+              <code className="font-mono" style={{ color: 'var(--accent)' }}>RESEND_API_KEY</code>
+              <span style={{ color: 'var(--muted)' }}> in Vercel environment variables. Cannot be stored here.</span>
             </div>
             <button
               type="submit"
               disabled={saving}
-              className="w-full px-4 py-2.5 text-sm font-sans bg-accent/20 hover:bg-accent/30 text-accent border border-accent/30 rounded-md transition-colors disabled:opacity-50"
+              className="w-full px-4 py-2.5 text-sm font-sans tracking-wide transition-all duration-150 disabled:opacity-40"
+              style={{ background: 'var(--accent-dim)', color: 'var(--accent)', border: '1px solid var(--border-accent)' }}
             >
               {saving ? 'Saving…' : 'Save Settings'}
             </button>

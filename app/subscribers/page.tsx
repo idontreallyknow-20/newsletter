@@ -106,31 +106,33 @@ export default function SubscribersPage() {
   const unsub = subscribers.filter(s => s.status === 'unsubscribed').length
 
   return (
-    <div className="p-6 lg:p-10 max-w-5xl">
-      <div className="flex items-start justify-between mb-8 flex-wrap gap-4">
+    <div className="p-8 lg:p-12 max-w-5xl">
+      <div className="flex items-start justify-between mb-10 flex-wrap gap-4 animate-fade-up">
         <div>
-          <h2 className="font-display text-3xl font-bold text-cream mb-1">Subscribers</h2>
-          <p className="text-muted text-sm font-sans">{active} active · {unsub} unsubscribed</p>
+          <p className="font-mono text-[9px] tracking-[0.25em] uppercase mb-3" style={{ color: 'var(--muted)', opacity: 0.5 }}>Manage</p>
+          <h2 className="font-display text-4xl font-bold mb-2" style={{ color: 'var(--cream)' }}>Subscribers</h2>
+          <p className="font-mono text-[10px] tracking-widest" style={{ color: 'var(--muted)' }}>{active} active · {unsub} unsubscribed</p>
         </div>
         <div className="flex gap-2 flex-wrap">
-          <label className={`px-4 py-2 text-sm font-sans text-muted hover:text-cream border border-white/10 rounded-md cursor-pointer transition-colors ${importing ? 'opacity-50 pointer-events-none' : ''}`}>
+          <label className={`px-4 py-2.5 text-xs font-sans tracking-wide transition-colors cursor-pointer ${importing ? 'opacity-40 pointer-events-none' : ''}`} style={{ color: 'var(--muted)', border: '1px solid var(--border)' }}>
             {importing ? 'Importing…' : 'Import CSV'}
             <input type="file" accept=".csv" className="hidden" onChange={handleImport} />
           </label>
-          <button onClick={handleExport} className="px-4 py-2 text-sm font-sans text-muted hover:text-cream border border-white/10 rounded-md transition-colors">
+          <button onClick={handleExport} className="px-4 py-2.5 text-xs font-sans tracking-wide transition-colors" style={{ color: 'var(--muted)', border: '1px solid var(--border)' }}>
             Export CSV
           </button>
         </div>
       </div>
 
       {/* Add form */}
-      <form onSubmit={addSubscriber} className="bg-surface border border-white/10 rounded-lg p-5 mb-6 flex gap-3 flex-wrap">
+      <form onSubmit={addSubscriber} className="flex gap-3 flex-wrap mb-8 pb-8 animate-fade-up delay-1" style={{ borderBottom: '1px solid var(--border)' }}>
         <input
           type="text"
           value={name}
           onChange={e => setName(e.target.value)}
           placeholder="Name (optional)"
-          className="flex-1 min-w-[140px] bg-surface-2 border border-white/10 rounded-md px-3 py-2 text-cream text-sm font-sans placeholder:text-muted focus:outline-none focus:border-accent/40"
+          className="flex-1 min-w-[140px] px-3 py-2.5 text-sm font-sans"
+          style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--cream)', outline: 'none' }}
         />
         <input
           type="email"
@@ -138,49 +140,57 @@ export default function SubscribersPage() {
           onChange={e => setEmail(e.target.value)}
           placeholder="Email address"
           required
-          className="flex-1 min-w-[200px] bg-surface-2 border border-white/10 rounded-md px-3 py-2 text-cream text-sm font-sans placeholder:text-muted focus:outline-none focus:border-accent/40"
+          className="flex-1 min-w-[200px] px-3 py-2.5 text-sm font-sans"
+          style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--cream)', outline: 'none' }}
         />
         <button
           type="submit"
           disabled={adding || !email}
-          className="px-4 py-2 text-sm font-sans bg-accent/20 hover:bg-accent/30 text-accent border border-accent/30 rounded-md transition-colors disabled:opacity-50"
+          className="px-5 py-2.5 text-xs font-sans tracking-wide transition-all duration-150 disabled:opacity-40"
+          style={{ background: 'var(--accent-dim)', color: 'var(--accent)', border: '1px solid var(--border-accent)' }}
         >
-          {adding ? 'Adding…' : '+ Add'}
+          {adding ? 'Adding…' : '+ Add Subscriber'}
         </button>
       </form>
 
       {/* Table */}
       {loading ? (
-        <div className="text-center py-12 text-muted text-sm font-sans">Loading…</div>
+        <div className="py-16 text-center">
+          <p className="font-mono text-[10px] tracking-[0.2em] uppercase animate-pulse" style={{ color: 'var(--muted)', opacity: 0.5 }}>Loading…</p>
+        </div>
       ) : subscribers.length === 0 ? (
-        <div className="bg-surface border border-white/10 rounded-lg p-10 text-center">
-          <p className="text-muted text-sm font-sans">No subscribers yet. Add one above or import a CSV.</p>
+        <div className="py-16 text-center" style={{ border: '1px solid var(--border)' }}>
+          <p className="font-mono text-[10px] tracking-[0.2em] uppercase" style={{ color: 'var(--muted)', opacity: 0.5 }}>No subscribers yet</p>
         </div>
       ) : (
-        <div className="bg-surface border border-white/10 rounded-lg overflow-hidden">
+        <div className="animate-fade-up delay-2" style={{ border: '1px solid var(--border)' }}>
           <table className="w-full text-sm font-sans">
             <thead>
-              <tr className="border-b border-white/10">
-                <th className="text-left px-4 py-3 text-muted font-normal text-xs uppercase tracking-wider">Name</th>
-                <th className="text-left px-4 py-3 text-muted font-normal text-xs uppercase tracking-wider">Email</th>
-                <th className="text-left px-4 py-3 text-muted font-normal text-xs uppercase tracking-wider">Added</th>
-                <th className="text-left px-4 py-3 text-muted font-normal text-xs uppercase tracking-wider">Status</th>
+              <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                <th className="text-left px-4 py-3 font-normal font-mono text-[9px] tracking-[0.2em] uppercase" style={{ color: 'var(--muted)', opacity: 0.6 }}>Name</th>
+                <th className="text-left px-4 py-3 font-normal font-mono text-[9px] tracking-[0.2em] uppercase" style={{ color: 'var(--muted)', opacity: 0.6 }}>Email</th>
+                <th className="text-left px-4 py-3 font-normal font-mono text-[9px] tracking-[0.2em] uppercase hidden sm:table-cell" style={{ color: 'var(--muted)', opacity: 0.6 }}>Added</th>
+                <th className="text-left px-4 py-3 font-normal font-mono text-[9px] tracking-[0.2em] uppercase" style={{ color: 'var(--muted)', opacity: 0.6 }}>Status</th>
                 <th className="px-4 py-3"></th>
               </tr>
             </thead>
             <tbody>
               {subscribers.map((s, i) => (
-                <tr key={s.id} className={i < subscribers.length - 1 ? 'border-b border-white/5' : ''}>
-                  <td className="px-4 py-3 text-cream">{s.name || '—'}</td>
-                  <td className="px-4 py-3 text-muted">{s.email}</td>
-                  <td className="px-4 py-3 text-muted">{new Date(s.createdAt).toLocaleDateString()}</td>
+                <tr key={s.id} className="transition-colors hover:bg-white/[0.02]" style={{ borderBottom: i < subscribers.length - 1 ? '1px solid var(--border)' : 'none' }}>
+                  <td className="px-4 py-3 text-sm" style={{ color: 'var(--cream)' }}>{s.name || <span style={{ color: 'var(--muted)', opacity: 0.4 }}>—</span>}</td>
+                  <td className="px-4 py-3 text-sm font-mono" style={{ color: 'var(--muted)', fontSize: '11px' }}>{s.email}</td>
+                  <td className="px-4 py-3 hidden sm:table-cell font-mono text-[10px]" style={{ color: 'var(--muted)', opacity: 0.6 }}>{new Date(s.createdAt).toLocaleDateString()}</td>
                   <td className="px-4 py-3">
-                    <span className={`px-2 py-0.5 rounded text-xs ${s.status === 'active' ? 'bg-green-900/30 text-green-400 border border-green-800/30' : 'bg-white/5 text-muted border border-white/10'}`}>
+                    <span className="font-mono text-[9px] tracking-widest uppercase px-2 py-1" style={{
+                      color: s.status === 'active' ? '#6ee7b7' : 'var(--muted)',
+                      background: s.status === 'active' ? 'rgba(110,231,183,0.08)' : 'rgba(255,255,255,0.03)',
+                      border: `1px solid ${s.status === 'active' ? 'rgba(110,231,183,0.2)' : 'var(--border)'}`,
+                    }}>
                       {s.status}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <button onClick={() => setDeleteTarget(s)} className="text-muted hover:text-red-400 transition-colors text-xs">
+                    <button onClick={() => setDeleteTarget(s)} className="font-mono text-[9px] tracking-widest uppercase transition-colors" style={{ color: 'var(--muted)', opacity: 0.5 }}>
                       Remove
                     </button>
                   </td>

@@ -16,45 +16,49 @@ export default function HistoryPage() {
   }, [])
 
   return (
-    <div className="p-6 lg:p-10 max-w-5xl">
-      <div className="mb-8">
-        <h2 className="font-display text-3xl font-bold text-cream mb-1">History</h2>
-        <p className="text-muted text-sm font-sans">All sent emails.</p>
+    <div className="p-8 lg:p-12 max-w-5xl">
+      <div className="mb-10 animate-fade-up">
+        <p className="font-mono text-[9px] tracking-[0.25em] uppercase mb-3" style={{ color: 'var(--muted)', opacity: 0.5 }}>Archive</p>
+        <h2 className="font-display text-4xl font-bold" style={{ color: 'var(--cream)' }}>History</h2>
       </div>
 
       {loading ? (
-        <div className="text-center py-12 text-muted text-sm font-sans">Loading…</div>
+        <div className="py-16 text-center">
+          <p className="font-mono text-[10px] tracking-[0.2em] uppercase animate-pulse" style={{ color: 'var(--muted)', opacity: 0.5 }}>Loading…</p>
+        </div>
       ) : emails.length === 0 ? (
-        <div className="bg-surface border border-white/10 rounded-lg p-10 text-center">
-          <p className="text-muted text-sm font-sans">No emails sent yet.</p>
+        <div className="py-16 text-center" style={{ border: '1px solid var(--border)' }}>
+          <p className="font-mono text-[10px] tracking-[0.2em] uppercase" style={{ color: 'var(--muted)', opacity: 0.5 }}>No emails sent yet</p>
         </div>
       ) : (
-        <div className="bg-surface border border-white/10 rounded-lg overflow-hidden">
+        <div className="animate-fade-up delay-1" style={{ border: '1px solid var(--border)' }}>
           <table className="w-full text-sm font-sans">
             <thead>
-              <tr className="border-b border-white/10">
-                <th className="text-left px-4 py-3 text-muted font-normal text-xs uppercase tracking-wider">Subject</th>
-                <th className="text-left px-4 py-3 text-muted font-normal text-xs uppercase tracking-wider">Sent</th>
-                <th className="text-left px-4 py-3 text-muted font-normal text-xs uppercase tracking-wider">Recipients</th>
-                <th className="text-left px-4 py-3 text-muted font-normal text-xs uppercase tracking-wider">Status</th>
+              <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                <th className="text-left px-4 py-3 font-normal font-mono text-[9px] tracking-[0.2em] uppercase" style={{ color: 'var(--muted)', opacity: 0.6 }}>Subject</th>
+                <th className="text-left px-4 py-3 font-normal font-mono text-[9px] tracking-[0.2em] uppercase hidden md:table-cell" style={{ color: 'var(--muted)', opacity: 0.6 }}>Sent</th>
+                <th className="text-left px-4 py-3 font-normal font-mono text-[9px] tracking-[0.2em] uppercase hidden sm:table-cell" style={{ color: 'var(--muted)', opacity: 0.6 }}>Recipients</th>
+                <th className="text-left px-4 py-3 font-normal font-mono text-[9px] tracking-[0.2em] uppercase" style={{ color: 'var(--muted)', opacity: 0.6 }}>Status</th>
                 <th className="px-4 py-3"></th>
               </tr>
             </thead>
             <tbody>
               {emails.map((email, i) => (
-                <tr key={email.id} className={i < emails.length - 1 ? 'border-b border-white/5' : ''}>
-                  <td className="px-4 py-3 text-cream max-w-[240px] truncate">{email.subject}</td>
-                  <td className="px-4 py-3 text-muted">{new Date(email.sentAt).toLocaleString()}</td>
-                  <td className="px-4 py-3 text-muted">{email.recipientCount ?? 0}</td>
+                <tr key={email.id} className="transition-colors hover:bg-white/[0.02]" style={{ borderBottom: i < emails.length - 1 ? '1px solid var(--border)' : 'none' }}>
+                  <td className="px-4 py-3 max-w-[240px] truncate text-sm" style={{ color: 'var(--cream)' }}>{email.subject}</td>
+                  <td className="px-4 py-3 font-mono text-[10px] hidden md:table-cell" style={{ color: 'var(--muted)' }}>{new Date(email.sentAt).toLocaleString()}</td>
+                  <td className="px-4 py-3 font-mono text-[10px] hidden sm:table-cell" style={{ color: 'var(--muted)' }}>{email.recipientCount ?? 0}</td>
                   <td className="px-4 py-3">
-                    <span className={`px-2 py-0.5 rounded text-xs ${
-                      email.status === 'sent' ? 'bg-green-900/30 text-green-400 border border-green-800/30'
-                      : email.status === 'partial' ? 'bg-yellow-900/30 text-yellow-400 border border-yellow-800/30'
-                      : 'bg-red-900/30 text-red-400 border border-red-800/30'
-                    }`}>{email.status}</span>
+                    <span className="font-mono text-[9px] tracking-widest uppercase px-2 py-1" style={{
+                      color: email.status === 'sent' ? '#6ee7b7' : email.status === 'partial' ? '#fcd34d' : '#fca5a5',
+                      background: email.status === 'sent' ? 'rgba(110,231,183,0.08)' : email.status === 'partial' ? 'rgba(252,211,77,0.08)' : 'rgba(252,165,165,0.08)',
+                      border: `1px solid ${email.status === 'sent' ? 'rgba(110,231,183,0.2)' : email.status === 'partial' ? 'rgba(252,211,77,0.2)' : 'rgba(252,165,165,0.2)'}`,
+                    }}>
+                      {email.status}
+                    </span>
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <button onClick={() => setPreview(email)} className="text-muted hover:text-cream text-xs transition-colors">
+                    <button onClick={() => setPreview(email)} className="font-mono text-[9px] tracking-widest uppercase transition-colors" style={{ color: 'var(--muted)', opacity: 0.5 }}>
                       Preview
                     </button>
                   </td>
@@ -68,20 +72,20 @@ export default function HistoryPage() {
       {/* Preview modal */}
       {preview && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/70" onClick={() => setPreview(null)} />
-          <div className="relative bg-surface border border-white/10 rounded-lg w-full max-w-2xl max-h-[80vh] flex flex-col shadow-2xl">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 flex-shrink-0">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setPreview(null)} />
+          <div className="relative w-full max-w-2xl max-h-[80vh] flex flex-col shadow-2xl" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <div className="flex items-center justify-between px-5 py-4 flex-shrink-0" style={{ borderBottom: '1px solid var(--border)' }}>
               <div>
-                <h3 className="font-display text-base font-bold text-cream">{preview.subject}</h3>
-                <p className="text-muted text-xs font-sans mt-0.5">{new Date(preview.sentAt).toLocaleString()} · {preview.recipientCount} recipients</p>
+                <h3 className="font-display text-base font-bold" style={{ color: 'var(--cream)' }}>{preview.subject}</h3>
+                <p className="font-mono text-[10px] tracking-widest mt-1" style={{ color: 'var(--muted)' }}>{new Date(preview.sentAt).toLocaleString()} · {preview.recipientCount} recipients</p>
               </div>
-              <button onClick={() => setPreview(null)} className="text-muted hover:text-cream transition-colors text-lg">✕</button>
+              <button onClick={() => setPreview(null)} className="font-mono text-[10px] tracking-widest uppercase transition-colors" style={{ color: 'var(--muted)' }}>Close</button>
             </div>
             <div className="flex-1 overflow-hidden">
               {preview.bodyHtml ? (
                 <iframe srcDoc={preview.bodyHtml} title="Email preview" className="w-full h-full min-h-[400px]" sandbox="allow-same-origin" />
               ) : (
-                <div className="p-6 text-muted text-sm font-sans">No HTML preview available.</div>
+                <div className="p-6 text-sm font-sans" style={{ color: 'var(--muted)' }}>No HTML preview available.</div>
               )}
             </div>
           </div>

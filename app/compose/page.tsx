@@ -104,30 +104,33 @@ export default function ComposePage() {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="px-6 lg:px-10 py-6 border-b border-white/10 flex items-center justify-between gap-4 flex-wrap">
+      <div className="px-8 lg:px-10 py-5 flex items-center justify-between gap-4 flex-wrap" style={{ borderBottom: '1px solid var(--border)' }}>
         <div>
-          <h2 className="font-display text-2xl font-bold text-cream">Compose</h2>
-          <p className="text-muted text-xs font-sans mt-0.5">Write your email, preview it, send it.</p>
+          <p className="font-mono text-[9px] tracking-[0.25em] uppercase mb-1" style={{ color: 'var(--muted)', opacity: 0.5 }}>New Issue</p>
+          <h2 className="font-display text-2xl font-bold" style={{ color: 'var(--cream)' }}>Compose</h2>
         </div>
         <div className="flex gap-2 flex-wrap">
           <button
             onClick={saveDraft}
             disabled={saving}
-            className="px-4 py-2 text-sm font-sans text-muted hover:text-cream border border-white/10 rounded-md transition-colors disabled:opacity-50"
+            className="px-4 py-2 text-xs font-sans tracking-wide transition-colors disabled:opacity-40"
+            style={{ color: 'var(--muted)', border: '1px solid var(--border)' }}
           >
             {saving ? 'Saving…' : 'Save Draft'}
           </button>
           <button
             onClick={sendTest}
             disabled={testing}
-            className="px-4 py-2 text-sm font-sans text-cream/80 hover:text-cream border border-white/15 rounded-md transition-colors disabled:opacity-50"
+            className="px-4 py-2 text-xs font-sans tracking-wide transition-colors disabled:opacity-40"
+            style={{ color: 'var(--cream)', border: '1px solid var(--border)' }}
           >
             {testing ? 'Sending…' : 'Send Test'}
           </button>
           <button
             onClick={() => setConfirmSend(true)}
             disabled={sending || !subject || !body}
-            className="px-4 py-2 text-sm font-sans bg-accent/20 hover:bg-accent/30 text-accent border border-accent/30 rounded-md transition-colors disabled:opacity-50"
+            className="px-4 py-2 text-xs font-sans tracking-wide transition-all duration-150 disabled:opacity-40"
+            style={{ background: 'var(--accent-dim)', color: 'var(--accent)', border: '1px solid var(--border-accent)' }}
           >
             {sending ? 'Sending…' : 'Send Now'}
           </button>
@@ -137,30 +140,32 @@ export default function ComposePage() {
       {/* Editor + Preview */}
       <div className="flex-1 flex flex-col lg:flex-row gap-0 overflow-hidden">
         {/* Left: editor */}
-        <div className="lg:w-1/2 flex flex-col p-6 lg:p-8 border-r border-white/10 gap-4">
+        <div className="lg:w-1/2 flex flex-col p-6 lg:p-8 gap-4" style={{ borderRight: '1px solid var(--border)' }}>
           <div>
-            <label className="text-muted text-xs font-sans uppercase tracking-widest block mb-1.5">Subject</label>
+            <label className="font-mono text-[9px] tracking-[0.2em] uppercase block mb-2" style={{ color: 'var(--muted)' }}>Subject</label>
             <input
               type="text"
               value={subject}
               onChange={e => setSubject(e.target.value)}
               placeholder="Your email subject line…"
-              className="w-full bg-surface-2 border border-white/10 rounded-md px-4 py-2.5 text-cream text-sm font-sans placeholder:text-muted focus:outline-none focus:border-accent/40 transition-colors"
+              className="w-full px-4 py-2.5 text-sm font-sans"
+              style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--cream)', outline: 'none' }}
             />
           </div>
           <div>
-            <label className="text-muted text-xs font-sans uppercase tracking-widest block mb-1.5">Preview Text</label>
+            <label className="font-mono text-[9px] tracking-[0.2em] uppercase block mb-2" style={{ color: 'var(--muted)' }}>Preview Text</label>
             <input
               type="text"
               value={previewText}
               onChange={e => setPreviewText(e.target.value)}
               placeholder="Short preview shown in inbox…"
-              className="w-full bg-surface-2 border border-white/10 rounded-md px-4 py-2.5 text-cream text-sm font-sans placeholder:text-muted focus:outline-none focus:border-accent/40 transition-colors"
+              className="w-full px-4 py-2.5 text-sm font-sans"
+              style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--cream)', outline: 'none' }}
             />
           </div>
           <div className="flex-1 flex flex-col">
-            <div className="flex items-center justify-between mb-1.5">
-              <label className="text-muted text-xs font-sans uppercase tracking-widest">Body</label>
+            <div className="flex items-center justify-between mb-2">
+              <label className="font-mono text-[9px] tracking-[0.2em] uppercase" style={{ color: 'var(--muted)' }}>Body (Markdown)</label>
               <MarkdownToolbar textareaRef={textareaRef} onChange={setBody} />
             </div>
             <textarea
@@ -168,7 +173,8 @@ export default function ComposePage() {
               value={body}
               onChange={e => setBody(e.target.value)}
               placeholder="Write your newsletter in markdown…&#10;&#10;## AI Updates&#10;&#10;Your AI content here.&#10;&#10;---&#10;&#10;## Economy&#10;&#10;Your economy content here."
-              className="flex-1 min-h-[400px] w-full bg-surface-2 border border-white/10 rounded-md px-4 py-3 text-cream text-sm font-sans placeholder:text-muted focus:outline-none focus:border-accent/40 transition-colors resize-none leading-relaxed"
+              className="flex-1 min-h-[400px] w-full px-4 py-3 text-sm font-sans resize-none leading-relaxed"
+              style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--cream)', outline: 'none' }}
             />
           </div>
         </div>

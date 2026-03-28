@@ -4,77 +4,98 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 
-const navItems = [
-  { href: '/', label: 'Dashboard', icon: '◈' },
-  { href: '/compose', label: 'Compose', icon: '✦' },
-  { href: '/subscribers', label: 'Subscribers', icon: '◉' },
-  { href: '/schedule', label: 'Schedule', icon: '◷' },
-  { href: '/history', label: 'History', icon: '◎' },
-  { href: '/settings', label: 'Settings', icon: '◌' },
+const nav = [
+  { href: '/', label: 'Dashboard', abbr: '01' },
+  { href: '/compose', label: 'Compose', abbr: '02' },
+  { href: '/subscribers', label: 'Subscribers', abbr: '03' },
+  { href: '/schedule', label: 'Schedule', abbr: '04' },
+  { href: '/history', label: 'History', abbr: '05' },
+  { href: '/settings', label: 'Settings', abbr: '06' },
 ]
 
-export default function Sidebar() {
+function NavLinks({ onNav }: { onNav?: () => void }) {
   const pathname = usePathname()
-  const [open, setOpen] = useState(false)
-
-  const nav = (
-    <nav className="flex flex-col h-full">
-      <div className="px-6 py-8 border-b border-white/10">
-        <h1 className="font-display text-xl font-bold text-cream tracking-tight">NewsletterHQ</h1>
-        <p className="text-muted text-xs mt-1 font-sans">by Joseph</p>
-      </div>
-      <ul className="flex-1 px-3 py-6 space-y-1">
-        {navItems.map(item => {
-          const active = pathname === item.href
-          return (
-            <li key={item.href}>
-              <Link
-                href={item.href}
-                onClick={() => setOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-sans transition-all duration-150 ${
-                  active
-                    ? 'bg-accent/10 text-accent border border-accent/20'
-                    : 'text-muted hover:text-cream hover:bg-white/5'
-                }`}
-              >
-                <span className="text-base w-5 text-center">{item.icon}</span>
-                {item.label}
-              </Link>
-            </li>
-          )
-        })}
-      </ul>
-      <div className="px-6 py-4 border-t border-white/10">
-        <p className="text-muted text-xs font-sans">AI & Economy Updates</p>
-      </div>
-    </nav>
+  return (
+    <ul className="space-y-0.5">
+      {nav.map(item => {
+        const active = pathname === item.href
+        return (
+          <li key={item.href}>
+            <Link
+              href={item.href}
+              onClick={onNav}
+              className={`group flex items-center gap-4 px-4 py-2.5 text-sm transition-all duration-150 relative ${
+                active
+                  ? 'text-[#C8A96E]'
+                  : 'text-[#6b6b60] hover:text-[#F0EBE1]'
+              }`}
+            >
+              {active && (
+                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-px h-5 bg-[#C8A96E]" />
+              )}
+              <span className="font-mono text-[10px] tracking-widest opacity-40 w-4">{item.abbr}</span>
+              <span className="font-sans tracking-wide uppercase text-xs letter-spacing-wider">{item.label}</span>
+            </Link>
+          </li>
+        )
+      })}
+    </ul>
   )
+}
+
+export default function Sidebar() {
+  const [open, setOpen] = useState(false)
 
   return (
     <>
-      {/* Desktop sidebar */}
-      <aside className="hidden lg:flex flex-col fixed inset-y-0 left-0 w-60 bg-surface border-r border-white/10 z-40">
-        {nav}
+      {/* Desktop */}
+      <aside className="hidden lg:flex flex-col fixed inset-y-0 left-0 w-56 z-40" style={{ background: 'var(--surface)', borderRight: '1px solid var(--border)' }}>
+        {/* Brand */}
+        <div className="px-6 py-7" style={{ borderBottom: '1px solid var(--border)' }}>
+          <div className="flex items-start gap-2">
+            <div className="w-px h-8 mt-0.5 flex-shrink-0" style={{ background: 'var(--accent)' }} />
+            <div>
+              <p className="font-mono text-[9px] tracking-[0.2em] uppercase mb-1" style={{ color: 'var(--muted)' }}>Daily Briefing</p>
+              <h1 className="font-display text-base font-bold leading-tight" style={{ color: 'var(--cream)' }}>Newsletter<br />HQ</h1>
+            </div>
+          </div>
+        </div>
+
+        {/* Nav */}
+        <nav className="flex-1 py-6">
+          <p className="px-6 mb-3 font-mono text-[9px] tracking-[0.2em] uppercase" style={{ color: 'var(--muted)', opacity: 0.5 }}>Navigation</p>
+          <NavLinks />
+        </nav>
+
+        {/* Footer */}
+        <div className="px-6 py-5" style={{ borderTop: '1px solid var(--border)' }}>
+          <p className="font-mono text-[9px] tracking-widest uppercase" style={{ color: 'var(--muted)', opacity: 0.4 }}>AI & Economy</p>
+          <div className="mt-2 h-px w-8" style={{ background: 'var(--accent)', opacity: 0.4 }} />
+        </div>
       </aside>
 
-      {/* Mobile top bar */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 py-3 bg-surface border-b border-white/10">
-        <h1 className="font-display text-lg font-bold text-cream">NewsletterHQ</h1>
-        <button
-          onClick={() => setOpen(o => !o)}
-          className="text-muted hover:text-cream transition-colors p-1"
-          aria-label="Toggle menu"
-        >
-          {open ? '✕' : '☰'}
+      {/* Mobile bar */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 py-4" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
+        <div className="flex items-center gap-2.5">
+          <div className="w-px h-5" style={{ background: 'var(--accent)' }} />
+          <span className="font-display text-sm font-bold" style={{ color: 'var(--cream)' }}>NewsletterHQ</span>
+        </div>
+        <button onClick={() => setOpen(o => !o)} className="font-mono text-xs tracking-widest uppercase" style={{ color: 'var(--muted)' }}>
+          {open ? 'Close' : 'Menu'}
         </button>
       </div>
 
       {/* Mobile drawer */}
       {open && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
-          <div className="absolute inset-0 bg-black/60" onClick={() => setOpen(false)} />
-          <aside className="relative w-60 bg-surface border-r border-white/10 h-full">
-            {nav}
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setOpen(false)} />
+          <aside className="relative w-56 flex flex-col" style={{ background: 'var(--surface)', borderRight: '1px solid var(--border)' }}>
+            <div className="px-6 py-7" style={{ borderBottom: '1px solid var(--border)' }}>
+              <h1 className="font-display text-lg font-bold" style={{ color: 'var(--cream)' }}>NewsletterHQ</h1>
+            </div>
+            <nav className="flex-1 py-6">
+              <NavLinks onNav={() => setOpen(false)} />
+            </nav>
           </aside>
         </div>
       )}

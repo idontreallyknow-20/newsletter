@@ -1,32 +1,32 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-
 interface StatsCardProps {
   label: string
   value: string | number
   subtitle?: string
-  delay?: number
+  index?: number
 }
 
-export default function StatsCard({ label, value, subtitle, delay = 0 }: StatsCardProps) {
-  const [visible, setVisible] = useState(false)
-
-  useEffect(() => {
-    const t = setTimeout(() => setVisible(true), delay)
-    return () => clearTimeout(t)
-  }, [delay])
-
+export default function StatsCard({ label, value, subtitle, index = 0 }: StatsCardProps) {
   return (
     <div
-      className={`bg-surface border border-white/10 rounded-lg p-6 transition-all duration-500 ${
-        visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
-      }`}
-      style={{ transitionDelay: `${delay}ms` }}
+      className="animate-fade-up relative"
+      style={{ animationDelay: `${index * 60}ms` }}
     >
-      <p className="text-muted text-xs font-sans uppercase tracking-widest mb-3">{label}</p>
-      <p className="font-display text-3xl font-bold text-cream">{value}</p>
-      {subtitle && <p className="text-muted text-xs font-sans mt-2">{subtitle}</p>}
+      <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'var(--border-accent)' }} />
+      <div className="pt-4 pb-5 px-1">
+        <p className="font-mono text-[9px] tracking-[0.2em] uppercase mb-3" style={{ color: 'var(--muted)' }}>
+          {label}
+        </p>
+        <p className="font-display text-4xl font-bold leading-none mb-2" style={{ color: 'var(--cream)' }}>
+          {value}
+        </p>
+        {subtitle && (
+          <p className="font-mono text-[10px] tracking-widest" style={{ color: 'var(--muted)', opacity: 0.6 }}>
+            {subtitle}
+          </p>
+        )}
+      </div>
     </div>
   )
 }
