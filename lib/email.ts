@@ -22,37 +22,35 @@ export function buildEmailHtml(opts: {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${newsletterName}</title>
 </head>
-<body style="margin:0;padding:0;background:#f4f4f0;font-family:Georgia,'Times New Roman',serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f4f4f0;padding:40px 16px;">
+<body style="margin:0;padding:0;background:#f0ebe1;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f0ebe1;padding:40px 16px;">
     <tr>
       <td align="center">
-        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background:#ffffff;border-radius:4px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background:#ffffff;overflow:hidden;">
 
           <!-- Header -->
           <tr>
-            <td style="background:#0A0A0A;padding:32px 40px;">
-              <h1 style="margin:0;color:#F5F0E8;font-family:Georgia,serif;font-size:26px;font-weight:700;letter-spacing:-0.5px;">${newsletterName}</h1>
+            <td style="background:#1a1a1a;padding:28px 40px;">
+              <span style="color:#f5f0e8;font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:700;letter-spacing:-0.3px;">${newsletterName}<span style="color:#c8402a;">.</span></span>
             </td>
           </tr>
 
-          <!-- Divider -->
-          <tr>
-            <td style="height:3px;background:linear-gradient(90deg,#c9a84c,#e8d5a3);"></td>
-          </tr>
+          <!-- Red rule -->
+          <tr><td style="height:3px;background:#c8402a;"></td></tr>
 
           <!-- Body -->
           <tr>
-            <td style="padding:40px;color:#1a1a1a;font-size:16px;line-height:1.75;">
+            <td style="padding:40px;color:#1a1a1a;font-size:16px;line-height:1.8;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
               ${bodyHtml}
             </td>
           </tr>
 
           <!-- Footer -->
           <tr>
-            <td style="padding:24px 40px;background:#f9f9f7;border-top:1px solid #eee;">
-              <p style="margin:0;font-size:12px;color:#999;text-align:center;line-height:1.6;">
-                You're receiving this because you subscribed to <strong>${newsletterName}</strong>.<br>
-                <a href="${unsubscribeUrl}" style="color:#c9a84c;text-decoration:underline;">Unsubscribe</a>
+            <td style="padding:24px 40px;background:#f5f0e8;border-top:1px solid #ddd8d0;">
+              <p style="margin:0;font-size:11px;color:#8a7f75;text-align:center;line-height:1.7;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;letter-spacing:0.03em;">
+                You subscribed to <strong style="color:#1a1a1a;">${newsletterName}</strong> · Economics &amp; AI<br>
+                <a href="${unsubscribeUrl}" style="color:#c8402a;text-decoration:underline;">Unsubscribe</a>
               </p>
             </td>
           </tr>

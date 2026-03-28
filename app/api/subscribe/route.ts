@@ -4,9 +4,6 @@ import { subscribers, settings } from '@/lib/schema'
 import { eq } from 'drizzle-orm'
 import { rateLimit } from '@/lib/rate-limit'
 import { buildEmailHtml, sendToRecipients } from '@/lib/email'
-import { FREQUENCIES } from '@/lib/preferences'
-
-const FREQ_LABEL = Object.fromEntries(FREQUENCIES.map(f => [f.value, f.sub]))
 
 export async function POST(req: Request) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
@@ -44,12 +41,29 @@ export async function POST(req: Request) {
       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
 
       if (fromEmail) {
-        const freqLabel = FREQ_LABEL[freq] ?? freq
+        const prefBase = `${baseUrl}/api/preferences?email=${encodeURIComponent(email)}`
         const bodyHtml = `
-          <p>You're in.</p>
-          <p>Thanks for subscribing to <strong>${newsletterName}</strong>. You'll receive <strong>${freqLabel}</strong> — clear analysis on economics and AI, without the noise.</p>
-          <p>The next issue lands in your inbox soon. In the meantime, <a href="${baseUrl}/#issues" style="color:#c9a84c;">browse past issues</a> on the site.</p>
-          <p>— Joseph</p>
+          <p style="font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:700;color:#1a1a1a;margin:0 0 24px;">Welcome.</p>
+          <p>You're now subscribed to <strong>${newsletterName}</strong> — economics and AI, without the noise. Your first issue will land in your inbox soon.</p>
+          <p>In the meantime, <a href="${baseUrl}/#issues" style="color:#c8402a;">browse the archive</a> on the site.</p>
+          <hr style="border:none;border-top:1px solid #e0dbd3;margin:32px 0;">
+          <p style="font-size:13px;color:#6b6459;margin-bottom:12px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;">Your preferences</p>
+          <p style="font-size:14px;color:#3a3530;margin-bottom:8px;">Currently set to: <strong>Weekly · English</strong></p>
+          <p style="font-size:14px;color:#6b6459;margin-bottom:16px;">Want something different? One click to change:</p>
+          <table cellpadding="0" cellspacing="0" border="0">
+            <tr>
+              <td style="padding-right:8px;">
+                <a href="${prefBase}&freq=daily" style="display:inline-block;padding:8px 16px;background:#f5f0e8;border:1px solid #d6cfc4;color:#1a1a1a;font-size:13px;font-weight:500;text-decoration:none;">Daily digest</a>
+              </td>
+              <td style="padding-right:8px;">
+                <a href="${prefBase}&lang=zh" style="display:inline-block;padding:8px 16px;background:#f5f0e8;border:1px solid #d6cfc4;color:#1a1a1a;font-size:13px;font-weight:500;text-decoration:none;">切换中文</a>
+              </td>
+              <td>
+                <a href="${prefBase}&freq=both" style="display:inline-block;padding:8px 16px;background:#f5f0e8;border:1px solid #d6cfc4;color:#1a1a1a;font-size:13px;font-weight:500;text-decoration:none;">Weekly + Daily</a>
+              </td>
+            </tr>
+          </table>
+          <p style="margin-top:32px;">— Joseph</p>
         `
         const html = buildEmailHtml({ newsletterName, bodyHtml, recipientEmail: email, baseUrl })
         await sendToRecipients({
