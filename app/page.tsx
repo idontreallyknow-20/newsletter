@@ -29,7 +29,7 @@ async function getData() {
 }
 
 export default async function HomePage() {
-  const { subCount, sentCount, dbIssues } = await getData()
+  const { sentCount, dbIssues } = await getData()
 
   return (
     <>
