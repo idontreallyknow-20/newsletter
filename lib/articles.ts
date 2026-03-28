@@ -504,7 +504,7 @@ export const ARTICLES: Article[] = [
         body: "The most rigorous study, a 2022 UK trial coordinated by the 4 Day Week Campaign, involved 61 companies and nearly 3,000 workers over six months. Results showed maintained or improved productivity (self-reported and measured by company revenue data), reduced burnout, lower absenteeism, and better employee retention. 92% of participating companies said they would continue the policy.\n\nThose are genuinely positive results. But selection bias is severe. The companies that volunteered for a four-day week trial are not a random sample of UK businesses. They tend to be knowledge-work companies with flexible output metrics, progressive management cultures, and the financial stability to absorb an experimental period. Generalizing from them to a steel mill or a hospital is not straightforward."
       },
       {
-        heading: 'Where it works and where it doesn't',
+        heading: "Where it works and where it doesn't",
         body: "The evidence is clearest for knowledge work with flexible output metrics: software development, marketing, research, consulting. These roles can often absorb a 20% reduction in hours through efficiency gains, reduced meeting bloat, and elimination of low-value tasks that fill the time available.\n\nThe evidence is murkier for roles with fixed time requirements. A nurse cannot see 20% more patients by working more intensively. A retail worker cannot stock shelves twice as fast. A teacher cannot compress a curriculum. For these roles, a four-day week either means reducing service delivery (which has real costs) or paying five days' wages for four days' work (which is simply a pay raise, and a significant one)."
       },
       {
