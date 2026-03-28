@@ -5,6 +5,7 @@ import { subscribers, sentEmails } from '@/lib/schema'
 import { eq, count, desc, isNotNull } from 'drizzle-orm'
 import HeroTypewriter from '@/components/HeroTypewriter'
 import PublicSubscribeForm from '@/components/PublicSubscribeForm'
+import PublicNav from '@/components/PublicNav'
 import { ARTICLES } from '@/lib/articles'
 
 const TOPICS = [
@@ -38,16 +39,7 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Nav */}
-      <nav className="pub-nav">
-        <a href="/" className="pub-logo">Joseph<span>.</span></a>
-        <ul className="pub-nav-links">
-          <li><a href="#about">About</a></li>
-          <li><a href="#topics">Topics</a></li>
-          <li><a href="#issues">Issues</a></li>
-          <li><a href="#subscribe">Subscribe</a></li>
-        </ul>
-      </nav>
+      <PublicNav />
 
       {/* Hero */}
       <section id="about">
@@ -179,10 +171,10 @@ export default async function HomePage() {
       <footer className="pub-footer">
         <span className="pub-footer-copy">© 2026 Joseph. Made with curiosity.</span>
         <nav className="pub-footer-links">
-          <a href="#">Twitter/X</a>
-          <a href="#">LinkedIn</a>
-          <a href="#">Archive</a>
-          <a href="#">RSS</a>
+          <a href="#issues">Archive</a>
+          <a href="#subscribe">Subscribe</a>
+          <a href="#about">About</a>
+          <a href="/login" style={{ opacity: 0.5 }}>Admin</a>
         </nav>
       </footer>
     </>

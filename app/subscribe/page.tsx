@@ -170,13 +170,17 @@ export default function SubscribePage() {
 
       {/* Footer */}
       <footer className="border-t px-8 py-6 mt-8" style={{ borderColor: 'var(--border)' }}>
-        <div className="max-w-3xl mx-auto flex items-center justify-between">
+        <div className="max-w-3xl mx-auto flex items-center justify-between flex-wrap gap-4">
           <p className="font-mono text-[9px] tracking-[0.2em] uppercase" style={{ color: 'var(--muted)', opacity: 0.4 }}>
             AI & Economy · Daily Briefing
           </p>
-          <p className="font-mono text-[9px] tracking-widest" style={{ color: 'var(--muted)', opacity: 0.3 }}>
-            © 2026
-          </p>
+          <div className="flex items-center gap-5">
+            <a href="/" className="font-mono text-[9px] tracking-widest uppercase" style={{ color: 'var(--muted)', opacity: 0.5, textDecoration: 'none' }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '0.5')}
+            >← Back to site</a>
+            <span className="font-mono text-[9px] tracking-widest" style={{ color: 'var(--muted)', opacity: 0.3 }}>© 2026</span>
+          </div>
         </div>
       </footer>
     </div>
