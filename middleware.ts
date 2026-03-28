@@ -26,15 +26,21 @@ export function middleware(req: NextRequest) {
     return NextResponse.next()
   }
 
+  // Block all access if no password is configured (fail closed)
+  const stored = process.env.DASHBOARD_PASSWORD
+  if (!stored) {
+    return NextResponse.redirect(new URL('/login', req.url))
+  }
+
   // Check session cookie
   const session = req.cookies.get('nhq_session')
-  const stored = process.env.DASHBOARD_PASSWORD ?? ''
   if (session?.value && safeEqual(session.value, stored)) {
     return NextResponse.next()
   }
 
-  // Redirect public visitors to the subscribe page
-  return NextResponse.redirect(new URL('/subscribe', req.url))
+  // Redirect unauthenticated requests to login, preserving destination
+  const from = encodeURIComponent(pathname)
+  return NextResponse.redirect(new URL(`/login?from=${from}`, req.url))
 }
 
 export const config = {

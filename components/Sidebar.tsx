@@ -29,7 +29,7 @@ function NavLinks({ onNav }: { onNav?: () => void }) {
                 color: active ? 'var(--accent)' : 'var(--muted)',
                 background: active ? 'var(--accent-dim)' : 'transparent',
               }}
-              onMouseEnter={e => { if (!active) e.currentTarget.style.color = 'var(--cream)' }}
+              onMouseEnter={e => { if (!active) e.currentTarget.style.color = 'var(--ink)' }}
               onMouseLeave={e => { if (!active) e.currentTarget.style.color = 'var(--muted)' }}
             >
               {active && (
@@ -61,7 +61,7 @@ function LogoutButton() {
       disabled={loading}
       className="w-full flex items-center gap-4 px-4 py-2.5 text-sm transition-all duration-150 disabled:opacity-40"
       style={{ color: 'var(--muted)' }}
-      onMouseEnter={e => (e.currentTarget.style.color = '#fca5a5')}
+      onMouseEnter={e => (e.currentTarget.style.color = 'var(--red)')}
       onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted)')}
     >
       <span className="font-mono text-[10px] tracking-widest opacity-40 w-4 flex-shrink-0">↩</span>
@@ -101,7 +101,7 @@ export default function Sidebar() {
             target="_blank"
             className="flex items-center gap-4 px-4 py-3 text-sm transition-all duration-150"
             style={{ color: 'var(--muted)' }}
-            onMouseEnter={e => (e.currentTarget.style.color = 'var(--cream)')}
+            onMouseEnter={e => (e.currentTarget.style.color = 'var(--ink)')}
             onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted)')}
           >
             <span className="font-mono text-[10px] tracking-widest opacity-40 w-4 flex-shrink-0">↗</span>

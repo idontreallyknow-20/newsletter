@@ -21,25 +21,31 @@ function LoginForm() {
         body: JSON.stringify({ password }),
       })
       if (!res.ok) {
-        setError('Incorrect password')
+        setError('Incorrect password.')
         return
       }
       const from = searchParams.get('from') || '/dashboard'
       router.push(from)
     } catch {
-      setError('Something went wrong')
+      setError('Something went wrong.')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label
-          className="block font-mono text-[9px] tracking-[0.25em] uppercase mb-2"
-          style={{ color: 'var(--muted)' }}
-        >
+    <form onSubmit={handleSubmit}>
+      <div style={{ marginBottom: '20px' }}>
+        <label style={{
+          display: 'block',
+          fontFamily: 'var(--font-dm)',
+          fontSize: '10px',
+          fontWeight: 500,
+          letterSpacing: '0.18em',
+          textTransform: 'uppercase',
+          color: 'var(--tan)',
+          marginBottom: '10px',
+        }}>
           Password
         </label>
         <input
@@ -48,35 +54,55 @@ function LoginForm() {
           onChange={e => setPassword(e.target.value)}
           autoFocus
           required
-          className="w-full px-4 py-3 text-sm font-sans"
           style={{
-            background: 'var(--surface)',
-            border: '1px solid var(--border)',
-            color: 'var(--cream)',
+            width: '100%',
+            padding: '12px 16px',
+            fontFamily: 'var(--font-dm)',
+            fontSize: '15px',
+            background: '#fff',
+            border: '1px solid var(--pub-border)',
+            color: 'var(--ink)',
             outline: 'none',
-            letterSpacing: '0.1em',
+            letterSpacing: '0.08em',
+            transition: 'border-color 0.15s',
           }}
-          onFocus={e => (e.target.style.borderColor = 'var(--border-accent)')}
-          onBlur={e => (e.target.style.borderColor = 'var(--border)')}
+          onFocus={e => (e.target.style.borderColor = 'var(--red)')}
+          onBlur={e => (e.target.style.borderColor = 'var(--pub-border)')}
         />
       </div>
 
       {error && (
-        <p className="font-mono text-[10px] tracking-widest" style={{ color: '#fca5a5' }}>{error}</p>
+        <p style={{
+          fontFamily: 'var(--font-dm)',
+          fontSize: '12px',
+          color: 'var(--red)',
+          marginBottom: '16px',
+          letterSpacing: '0.02em',
+        }}>
+          {error}
+        </p>
       )}
 
       <button
         type="submit"
         disabled={loading || !password}
-        className="w-full py-3 text-sm font-sans tracking-wide transition-all duration-150 disabled:opacity-40"
         style={{
-          background: loading || !password ? 'transparent' : 'var(--accent)',
-          color: loading || !password ? 'var(--muted)' : 'var(--bg)',
-          border: `1px solid ${loading || !password ? 'var(--border)' : 'var(--accent)'}`,
-          fontWeight: 600,
+          width: '100%',
+          padding: '13px',
+          fontFamily: 'var(--font-dm)',
+          fontSize: '12px',
+          fontWeight: 500,
+          letterSpacing: '0.14em',
+          textTransform: 'uppercase',
+          background: loading || !password ? 'transparent' : 'var(--ink)',
+          color: loading || !password ? 'var(--tan)' : '#f5f0e8',
+          border: `1px solid ${loading || !password ? 'var(--pub-border)' : 'var(--ink)'}`,
+          cursor: loading || !password ? 'default' : 'pointer',
+          transition: 'all 0.15s',
+          opacity: loading ? 0.6 : 1,
         }}
       >
-        {loading ? 'Signing in…' : 'Enter'}
+        {loading ? 'Signing in…' : 'Enter dashboard'}
       </button>
     </form>
   )
@@ -84,30 +110,78 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center p-8" style={{ background: 'var(--bg)' }}>
-      <div className="w-full max-w-xs">
+    <div style={{
+      minHeight: '100vh',
+      background: 'var(--pub-cream)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '48px 24px',
+    }}>
+      <div style={{ width: '100%', maxWidth: '360px' }}>
 
         {/* Brand */}
-        <div className="mb-10">
-          <div className="flex items-start gap-2.5 mb-6">
-            <div className="w-px h-8 mt-0.5" style={{ background: 'var(--accent)' }} />
-            <div>
-              <p className="font-mono text-[9px] tracking-[0.2em] uppercase mb-1" style={{ color: 'var(--muted)' }}>
-                Daily Briefing
-              </p>
-              <h1 className="font-display text-2xl font-bold leading-tight" style={{ color: 'var(--cream)' }}>
-                Newsletter<br />HQ
-              </h1>
-            </div>
-          </div>
-          <p className="font-mono text-[10px] tracking-[0.15em]" style={{ color: 'var(--muted)', opacity: 0.5 }}>
-            Dashboard access
+        <div style={{ marginBottom: '48px' }}>
+          <p style={{
+            fontFamily: 'var(--font-dm)',
+            fontSize: '10px',
+            fontWeight: 500,
+            letterSpacing: '0.18em',
+            textTransform: 'uppercase',
+            color: 'var(--red)',
+            marginBottom: '12px',
+          }}>
+            Admin access
           </p>
+          <h1 style={{
+            fontFamily: 'var(--font-playfair), Georgia, serif',
+            fontSize: '36px',
+            fontWeight: 900,
+            color: 'var(--ink)',
+            lineHeight: 1.05,
+            letterSpacing: '-0.02em',
+            marginBottom: '10px',
+          }}>
+            Newsletter<br />Dashboard
+          </h1>
+          <div style={{ width: '32px', height: '2px', background: 'var(--red)' }} />
         </div>
 
-        <Suspense fallback={null}>
-          <LoginForm />
-        </Suspense>
+        {/* Card */}
+        <div style={{
+          background: '#fff',
+          border: '1px solid var(--pub-border)',
+          padding: '32px',
+        }}>
+          <Suspense fallback={null}>
+            <LoginForm />
+          </Suspense>
+        </div>
+
+        {/* Back link */}
+        <p style={{ marginTop: '24px', textAlign: 'center' }}>
+          <a href="/" style={{
+            fontFamily: 'var(--font-dm)',
+            fontSize: '11px',
+            color: 'var(--tan)',
+            textDecoration: 'none',
+            letterSpacing: '0.05em',
+            borderBottom: '1px solid transparent',
+            transition: 'color 0.15s, border-color 0.15s',
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLAnchorElement).style.color = 'var(--ink)'
+            ;(e.currentTarget as HTMLAnchorElement).style.borderBottomColor = 'var(--pub-border)'
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLAnchorElement).style.color = 'var(--tan)'
+            ;(e.currentTarget as HTMLAnchorElement).style.borderBottomColor = 'transparent'
+          }}
+          >
+            ← Back to site
+          </a>
+        </p>
+
       </div>
     </div>
   )

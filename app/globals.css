@@ -44,14 +44,25 @@
   ::-webkit-scrollbar-thumb { background: var(--pub-border-dark); }
 }
 
-/* ─── Dashboard shell ─── */
+/* ─── Dashboard shell — editorial light theme ─── */
 .dashboard-shell {
-  background: var(--bg);
-  color: var(--cream);
+  background: var(--pub-cream);
+  color: var(--ink);
+  /* Remap dark-theme vars to editorial palette so all admin pages inherit */
+  --bg: var(--pub-cream);
+  --surface: #ffffff;
+  --surface-2: var(--pub-cream-2);
+  --border: var(--pub-border);
+  --border-dark: var(--pub-border-dark);
+  --muted: var(--tan);
+  --cream: var(--ink);
+  --accent: var(--red);
+  --accent-dim: rgba(200, 64, 42, 0.07);
+  --border-accent: rgba(200, 64, 42, 0.25);
 }
-.dashboard-shell ::-webkit-scrollbar-track { background: var(--surface); }
-.dashboard-shell ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); }
-.dash-card { background: var(--surface); transition: background 0.15s; }
+.dashboard-shell ::-webkit-scrollbar-track { background: var(--pub-cream-2); }
+.dashboard-shell ::-webkit-scrollbar-thumb { background: var(--pub-border-dark); }
+.dash-card { background: var(--surface); border: 1px solid var(--border); transition: background 0.15s; }
 .dash-card:hover { background: var(--surface-2); }
 .dash-action { background: var(--surface); border: 1px solid var(--border); transition: background 0.15s, border-color 0.15s; }
 .dash-action:hover { background: var(--surface-2); border-color: var(--border-accent); }
