@@ -6,7 +6,7 @@ import { shouldSendNow } from '@/lib/schedule'
 import { buildEmailHtml, sendToRecipients } from '@/lib/email'
 import { markdownToHtml } from '@/lib/markdown'
 
-export async function POST(req: Request) {
+export async function GET(req: Request) {
   // Verify cron secret to prevent unauthorized triggers
   const authHeader = req.headers.get('authorization')
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
