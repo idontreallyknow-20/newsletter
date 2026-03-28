@@ -61,7 +61,7 @@ export default async function IssuePage({ params }: { params: { slug: string } }
         <PublicNav />
 
         {/* Article */}
-        <article style={{ maxWidth: '720px', margin: '0 auto', padding: '120px 48px 96px' }}>
+        <article style={{ maxWidth: '720px', margin: '0 auto', padding: '120px 48px 32px' }}>
 
           {/* Meta */}
           <div style={{ marginBottom: '40px' }}>
@@ -142,7 +142,7 @@ export default async function IssuePage({ params }: { params: { slug: string } }
           <hr style={{ border: 'none', borderTop: '1px solid var(--border)', margin: '40px 0' }} />
 
           {/* Prev / Next */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', marginBottom: '64px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', marginBottom: '24px' }}>
             {prev ? (
               <a href={`/issues/${prev.slug}`} style={{
                 fontFamily: 'var(--font-dm)', fontSize: '13px', color: 'var(--tan)',

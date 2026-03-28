@@ -116,7 +116,7 @@
   transition: color 0.15s; padding-bottom: 2px;
   border-bottom: 1px solid transparent;
 }
-.pub-nav-links a:hover { color: var(--red); border-bottom-color: var(--red); }
+.pub-nav-links a:hover { color: var(--ink); border-bottom-color: var(--ink); }
 
 /* Mobile nav toggle */
 .pub-nav-toggle {
@@ -194,7 +194,8 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
   background: var(--pub-cream); border: 1px solid var(--pub-border); padding: 32px 28px;
   transition: box-shadow 0.18s, border-color 0.18s, transform 0.18s; cursor: default;
 }
-.pub-topic:hover { box-shadow: 5px 5px 0 var(--ink); border-color: var(--ink); transform: translate(-2px, -2px); }
+.pub-topic { cursor: pointer; }
+.pub-topic:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.09); border-color: rgba(0,0,0,0.15); transform: translateY(-2px); }
 .pub-topic-icon-wrap {
   width: 52px; height: 52px; margin-bottom: 22px;
   display: flex; align-items: center; justify-content: center;
@@ -204,7 +205,7 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
   transition: border-color 0.18s, color 0.18s, background 0.18s;
 }
 .pub-topic:hover .pub-topic-icon-wrap {
-  border-color: var(--ink); color: var(--ink); background: rgba(26,26,26,0.06);
+  border-color: rgba(200,64,42,0.3); color: var(--red); background: rgba(200,64,42,0.05);
 }
 .pub-topic-title {
   font-family: var(--font-playfair), Georgia, serif;
@@ -213,7 +214,7 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
 .pub-topic-desc { font-size: 14px; font-weight: 300; color: var(--tan); line-height: 1.7; }
 
 /* ─── Issues / Article cards ─── */
-.pub-issues { padding: 96px 0; background: var(--pub-cream); }
+.pub-issues { padding: 96px 0 48px; background: var(--pub-cream); }
 .pub-issues-head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 32px; }
 
 .pub-article-list { display: flex; flex-direction: column; gap: 2px; }
@@ -259,9 +260,8 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
 .pub-article-read {
   font-family: var(--font-dm), sans-serif;
   font-size: 12px; font-weight: 500; letter-spacing: 0.05em;
-  color: var(--red); opacity: 0; transition: opacity 0.18s;
+  color: var(--red); opacity: 1;
 }
-.pub-article-card:hover .pub-article-read { opacity: 1; }
 
 /* Mobile: stack vertically */
 @media (max-width: 600px) {
