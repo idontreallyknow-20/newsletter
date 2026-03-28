@@ -3,45 +3,10 @@ import { db } from '@/lib/db'
 import { subscribers, settings } from '@/lib/schema'
 import { eq } from 'drizzle-orm'
 import { rateLimit } from '@/lib/rate-limit'
-import { sendToRecipients } from '@/lib/email'
+import { buildEmailHtml, sendToRecipients } from '@/lib/email'
+import { FREQUENCIES } from '@/lib/preferences'
 
-const FREQ_LABEL: Record<string, string> = {
-  weekly: 'Weekly deep-dive',
-  daily: 'Daily updates',
-  both: 'Weekly + daily',
-}
-
-function buildWelcomeHtml(newsletterName: string, freq: string, baseUrl: string, recipientEmail: string) {
-  const unsubscribeUrl = `${baseUrl}/api/unsubscribe?email=${encodeURIComponent(recipientEmail)}`
-  const freqLabel = FREQ_LABEL[freq] ?? freq
-  return `<!DOCTYPE html>
-<html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#f4f4f0;font-family:Georgia,'Times New Roman',serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f0;padding:40px 16px;">
-    <tr><td align="center">
-      <table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#fff;border-radius:4px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
-        <tr><td style="background:#0A0A0A;padding:32px 40px;">
-          <h1 style="margin:0;color:#F5F0E8;font-family:Georgia,serif;font-size:26px;font-weight:700;">${newsletterName}</h1>
-        </td></tr>
-        <tr><td style="height:3px;background:linear-gradient(90deg,#c9a84c,#e8d5a3);"></td></tr>
-        <tr><td style="padding:40px;color:#1a1a1a;font-size:16px;line-height:1.75;">
-          <p style="margin:0 0 16px;">You're in.</p>
-          <p style="margin:0 0 16px;">Thanks for subscribing to <strong>${newsletterName}</strong>. You'll receive <strong>${freqLabel}</strong> — clear, well-researched analysis on economics and AI, without the noise.</p>
-          <p style="margin:0 0 16px;">The next issue lands in your inbox soon. In the meantime, you can browse past issues on the site.</p>
-          <p style="margin:0;">— Joseph</p>
-        </td></tr>
-        <tr><td style="padding:24px 40px;background:#f9f9f7;border-top:1px solid #eee;">
-          <p style="margin:0;font-size:12px;color:#999;text-align:center;line-height:1.6;">
-            You subscribed to <strong>${newsletterName}</strong>.<br>
-            <a href="${unsubscribeUrl}" style="color:#c9a84c;">Unsubscribe</a>
-          </p>
-        </td></tr>
-      </table>
-    </td></tr>
-  </table>
-</body></html>`
-}
+const FREQ_LABEL = Object.fromEntries(FREQUENCIES.map(f => [f.value, f.sub]))
 
 export async function POST(req: Request) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
@@ -79,7 +44,14 @@ export async function POST(req: Request) {
       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
 
       if (fromEmail) {
-        const html = buildWelcomeHtml(newsletterName, freq, baseUrl, email)
+        const freqLabel = FREQ_LABEL[freq] ?? freq
+        const bodyHtml = `
+          <p>You're in.</p>
+          <p>Thanks for subscribing to <strong>${newsletterName}</strong>. You'll receive <strong>${freqLabel}</strong> — clear analysis on economics and AI, without the noise.</p>
+          <p>The next issue lands in your inbox soon. In the meantime, <a href="${baseUrl}/#issues" style="color:#c9a84c;">browse past issues</a> on the site.</p>
+          <p>— Joseph</p>
+        `
+        const html = buildEmailHtml({ newsletterName, bodyHtml, recipientEmail: email, baseUrl })
         await sendToRecipients({
           to: [email],
           subject: `Welcome to ${newsletterName}`,

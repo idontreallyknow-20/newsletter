@@ -8,6 +8,7 @@ import PublicSubscribeForm from '@/components/PublicSubscribeForm'
 import PublicNav from '@/components/PublicNav'
 import { ARTICLES } from '@/lib/articles'
 import { IconMarkets, IconAI, IconGlobe, IconWork, IconAnalysis, IconDigest } from '@/components/TopicIcons'
+import { ARTICLE_ILLUSTRATIONS } from '@/components/ArticleIllustrations'
 
 const TOPICS = [
   { icon: <IconMarkets />, title: 'Macro & Markets', desc: 'Interest rates, inflation, central bank policy, and what it all means for your wallet and the broader economy.' },
@@ -130,23 +131,42 @@ export default async function HomePage() {
               <a href="#subscribe" className="pub-issues-link">Subscribe for more →</a>
             </div>
 
-            <div>
+            <div className="pub-article-list">
               {dbIssues.length > 0
-                ? dbIssues.map((issue, i) => (
-                    <a key={issue.id} href={`/issues/${issue.slug}`} className="pub-issue-row" style={{ textDecoration: 'none' }}>
-                      <span className="pub-issue-num">#{String(dbIssues.length - i).padStart(3, '0')}</span>
-                      <span className="pub-issue-title">{issue.subject}</span>
-                      <span className="pub-issue-date">{new Date(issue.sentAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                    </a>
-                  ))
-                : ARTICLES.map(article => (
-                    <a key={article.slug} href={`/issues/${article.slug}`} className="pub-issue-row" style={{ textDecoration: 'none' }}>
-                      <span className="pub-issue-num">{article.num}</span>
-                      <span className="pub-issue-title">{article.title}</span>
-                      <span className="pub-issue-tag">{article.tag}</span>
-                      <span className="pub-issue-date">{article.date.replace('March', 'Mar').replace('February', 'Feb')}</span>
-                    </a>
-                  ))
+                ? dbIssues.map((issue, i) => {
+                    const illus = issue.slug ? ARTICLE_ILLUSTRATIONS[issue.slug] : undefined
+                    return (
+                      <a key={issue.id} href={`/issues/${issue.slug}`} className="pub-article-card" style={{ textDecoration: 'none' }}>
+                        <div className="pub-article-img">
+                          {illus ? illus.svg : <span className="pub-article-img-num">#{String(dbIssues.length - i).padStart(3, '0')}</span>}
+                        </div>
+                        <div className="pub-article-body">
+                          <span className="pub-issue-date">{new Date(issue.sentAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                          <div className="pub-article-title">{issue.subject}</div>
+                          <span className="pub-article-read">Read issue →</span>
+                        </div>
+                      </a>
+                    )
+                  })
+                : ARTICLES.map(article => {
+                    const illus = ARTICLE_ILLUSTRATIONS[article.slug]
+                    return (
+                      <a key={article.slug} href={`/issues/${article.slug}`} className="pub-article-card" style={{ textDecoration: 'none' }}>
+                        <div className="pub-article-img">
+                          {illus ? illus.svg : <span className="pub-article-img-num">{article.num}</span>}
+                        </div>
+                        <div className="pub-article-body">
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px', flexWrap: 'wrap' }}>
+                            <span className="pub-issue-tag">{article.tag}</span>
+                            <span className="pub-issue-date" style={{ width: 'auto', textAlign: 'left' }}>{article.date.replace('March', 'Mar').replace('February', 'Feb')} · {article.readTime}</span>
+                          </div>
+                          <div className="pub-article-title">{article.title}</div>
+                          <p className="pub-article-intro">{article.intro.slice(0, 140)}…</p>
+                          <span className="pub-article-read">Read issue →</span>
+                        </div>
+                      </a>
+                    )
+                  })
               }
             </div>
           </div>
