@@ -321,13 +321,18 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
 }
 .pub-share-btn {
   font-family: var(--font-dm), sans-serif;
-  font-size: 13px; font-weight: 500; color: var(--tan);
-  background: none; border: none; cursor: pointer;
-  text-decoration: none; padding: 0;
-  padding-bottom: 1px; border-bottom: 1px solid transparent;
-  transition: color 0.15s, border-color 0.15s;
+  font-size: 12px; font-weight: 500; color: var(--tan);
+  background: none; border: 1px solid var(--pub-border);
+  cursor: pointer; text-decoration: none;
+  padding: 6px 14px; border-radius: 100px;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  display: inline-flex; align-items: center; gap: 5px;
 }
-.pub-share-btn:hover { color: var(--ink); border-bottom-color: var(--ink); }
+.pub-share-btn:hover {
+  color: var(--ink);
+  border-color: var(--pub-border-dark);
+  background: var(--pub-cream-2);
+}
 
 /* ─── Filter empty state ─── */
 .pub-empty-state {
