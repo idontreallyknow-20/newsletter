@@ -57,3 +57,25 @@ export async function sendBatch(opts: {
 
   return results
 }
+
+// Sync a subscriber to Resend Audiences so they appear in the Resend dashboard.
+// Requires RESEND_AUDIENCE_ID env var. Fails silently so it never blocks subscription.
+export async function syncToResendAudience(opts: {
+  email: string
+  firstName?: string
+  unsubscribed?: boolean
+}) {
+  const audienceId = process.env.RESEND_AUDIENCE_ID
+  if (!audienceId) return
+
+  try {
+    await getResend().contacts.create({
+      audienceId,
+      email: opts.email,
+      firstName: opts.firstName,
+      unsubscribed: opts.unsubscribed ?? false,
+    })
+  } catch (err) {
+    console.error('[resend-audience] sync failed:', err instanceof Error ? err.message : err)
+  }
+}

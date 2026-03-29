@@ -4,7 +4,7 @@ import { subscribers, settings } from '@/lib/schema'
 import { eq } from 'drizzle-orm'
 import { rateLimit } from '@/lib/rate-limit'
 import { isValidEmail } from '@/lib/validate-email'
-import { buildEmailHtml, sendToRecipients } from '@/lib/email'
+import { buildEmailHtml, sendToRecipients, syncToResendAudience } from '@/lib/email'
 import { signEmailToken } from '@/lib/token'
 
 export async function POST(req: Request) {
@@ -26,12 +26,14 @@ export async function POST(req: Request) {
     if (existing.length > 0) {
       if (existing[0].status === 'unsubscribed') {
         await db.update(subscribers).set({ status: 'active', language: lang, frequency: freq }).where(eq(subscribers.email, email))
+        await syncToResendAudience({ email, firstName: name, unsubscribed: false })
         return NextResponse.json({ success: true, resubscribed: true })
       }
       return NextResponse.json({ error: 'Already subscribed' }, { status: 409 })
     }
 
     await db.insert(subscribers).values({ name, email, status: 'active', language: lang, frequency: freq })
+    await syncToResendAudience({ email, firstName: name, unsubscribed: false })
 
     // Send welcome email (best-effort — don't fail the subscription if it errors)
     try {
