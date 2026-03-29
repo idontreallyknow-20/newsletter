@@ -80,8 +80,8 @@ export default async function IssuePage({ params }: { params: { slug: string } }
               <span style={{
                 fontFamily: 'var(--font-dm)', fontSize: '11px', fontWeight: 500,
                 letterSpacing: '0.12em', textTransform: 'uppercase',
-                color: 'var(--red)', background: 'rgba(200,64,42,0.07)',
-                border: '1px solid rgba(200,64,42,0.2)', padding: '3px 10px',
+                color: '#c0392b', background: 'transparent',
+                border: '1px solid #c0392b', borderRadius: '999px', padding: '4px 10px',
               }}>{article.tag}</span>
               <span style={{ fontFamily: 'var(--font-dm)', fontSize: '12px', color: 'var(--tan)' }}>
                 {article.num} · {article.date} · {article.readTime}
