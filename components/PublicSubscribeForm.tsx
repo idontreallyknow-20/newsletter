@@ -5,6 +5,7 @@ import { isValidEmail } from '@/lib/validate-email'
 
 export default function PublicSubscribeForm() {
   const [email, setEmail] = useState('')
+  const [honeypot, setHoneypot] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
   const [errMsg, setErrMsg] = useState('')
   const [inputError, setInputError] = useState(false)
@@ -24,7 +25,7 @@ export default function PublicSubscribeForm() {
       const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, language: 'en', frequency: 'weekly' }),
+        body: JSON.stringify({ email, language: 'en', frequency: 'weekly', website: honeypot }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -42,22 +43,46 @@ export default function PublicSubscribeForm() {
   if (status === 'done') {
     return (
       <div style={{ textAlign: 'center' }}>
-        <p style={{ color: '#4ade80', fontSize: '16px', fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '8px' }}>
-          <span>✓</span>
+        <p style={{ color: '#4ade80', fontSize: '16px', fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '12px' }}>
+          <span aria-hidden="true">✓</span>
           <span>You&apos;re in! Check your inbox.</span>
         </p>
+        <a
+          href="/#issues"
+          style={{ color: '#a09890', fontSize: '14px', textDecoration: 'underline', textUnderlineOffset: '3px' }}
+        >
+          Browse the archive while you wait →
+        </a>
       </div>
     )
   }
 
   return (
     <div style={{ maxWidth: '480px', margin: '0 auto' }}>
-      <form onSubmit={handleSubmit} style={{ display: 'flex' }}>
+      {/* Honeypot — visually hidden, catches bots that fill all fields */}
+      <input
+        type="text"
+        name="website"
+        value={honeypot}
+        onChange={e => setHoneypot(e.target.value)}
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, width: 0 }}
+      />
+      <form onSubmit={handleSubmit} style={{ display: 'flex' }} noValidate>
+        <label htmlFor="public-email" style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px', overflow: 'hidden' }}>
+          Email address
+        </label>
         <input
+          id="public-email"
           type="email"
           value={email}
           onChange={e => { setEmail(e.target.value); if (inputError) { setInputError(false); setErrMsg(''); setStatus('idle') } }}
           placeholder="your@email.com"
+          autoComplete="email"
+          aria-describedby={inputError ? 'public-email-error' : undefined}
+          aria-invalid={inputError ? 'true' : undefined}
           style={{
             flex: 1,
             padding: '14px 18px',
@@ -75,6 +100,7 @@ export default function PublicSubscribeForm() {
         <button
           type="submit"
           disabled={status === 'loading'}
+          aria-label={status === 'loading' ? 'Subscribing, please wait' : 'Subscribe to newsletter'}
           style={{
             padding: '14px 24px',
             background: 'var(--red)',
@@ -94,7 +120,13 @@ export default function PublicSubscribeForm() {
       </form>
 
       {status === 'error' && (
-        <p style={{ color: '#fca5a5', fontSize: '13px', textAlign: 'center', marginTop: '10px' }}>{errMsg}</p>
+        <p
+          id="public-email-error"
+          role="alert"
+          style={{ color: '#fca5a5', fontSize: '13px', textAlign: 'center', marginTop: '10px' }}
+        >
+          {errMsg}
+        </p>
       )}
     </div>
   )

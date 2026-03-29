@@ -17,7 +17,7 @@ const dmSans = DM_Sans({
   weight: ['300', '400', '500'],
 })
 
-const BASE_URL = 'https://newsletter-joseph.vercel.app'
+const BASE_URL = 'https://dailybriefhq.com'
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),

@@ -183,9 +183,10 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
   background: #fff; border: 1px solid rgba(26,26,26,0.2);
   border-right: none; border-radius: 4px 0 0 4px;
   font-family: var(--font-dm), sans-serif; font-size: 14px; color: var(--ink);
-  outline: none; transition: border-color 0.15s;
+  outline: 2px solid transparent; outline-offset: 0; transition: border-color 0.15s;
   min-width: 0;
 }
+.hero-subscribe-input:focus-visible { outline-color: var(--red); }
 .hero-subscribe-input::placeholder { color: rgba(26,26,26,0.35); }
 .hero-subscribe-btn {
   padding: 12px 22px; background: #c0392b; color: #fff;
@@ -208,7 +209,7 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
   font-size: clamp(26px, 3.5vw, 42px); font-weight: 700;
   line-height: 1.15; letter-spacing: -0.015em; color: var(--ink); margin-bottom: 24px;
 }
-.pub-copy { font-size: 16px; font-weight: 300; color: var(--tan); line-height: 1.8; margin-bottom: 16px; }
+.pub-copy { font-size: 16px; font-weight: 400; color: var(--tan); line-height: 1.8; margin-bottom: 16px; }
 .pub-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
 .pub-stat {
   background: var(--pub-cream-2); border: 1px solid var(--pub-border);
@@ -376,7 +377,7 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
 .pub-issue-row:hover { padding-left: 16px; }
 .pub-issue-row:hover .pub-issue-title { color: var(--red); }
 .pub-issue-num {
-  font-size: 12px; color: var(--tan); opacity: 0.6; flex-shrink: 0;
+  font-size: 12px; color: #8c8278; flex-shrink: 0;
   width: 36px; font-variant-numeric: tabular-nums; font-family: var(--font-dm), sans-serif;
 }
 .pub-issue-title {
@@ -401,7 +402,7 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
   padding: 4px 10px; border-radius: 999px; white-space: nowrap;
 }
 .pub-issue-date {
-  flex-shrink: 0; font-size: 12px; color: var(--tan); opacity: 0.6;
+  flex-shrink: 0; font-size: 12px; color: #8c8278;
   white-space: nowrap; width: 90px; text-align: right;
   font-family: var(--font-dm), sans-serif;
 }
@@ -415,7 +416,7 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
   color: var(--pub-cream); letter-spacing: -0.025em; line-height: 1.05; margin-bottom: 18px;
 }
 .pub-sub-body { font-size: 17px; font-weight: 300; color: #a09890; line-height: 1.75; margin-bottom: 44px; }
-.pub-sub-fine { font-size: 12px; color: rgba(255, 255, 255, 0.2); margin-top: 14px; letter-spacing: 0.02em; }
+.pub-sub-fine { font-size: 12px; color: rgba(255, 255, 255, 0.5); margin-top: 14px; letter-spacing: 0.02em; }
 
 /* ─── Footer ─── */
 .pub-footer {
@@ -491,6 +492,26 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
   .hero-subscribe-input { border-right: 1px solid rgba(26,26,26,0.2); border-bottom: none; border-radius: 4px 4px 0 0; }
   .hero-subscribe-btn { border-radius: 0 0 4px 4px; text-align: center; }
   .pub-footer { padding: 28px 20px; }
+}
+
+@media (max-width: 480px) {
+  .pub-stats { grid-template-columns: 1fr; }
+}
+
+/* ─── Focus-visible outlines (keyboard navigation) ─── */
+.pub-nav-links a:focus-visible,
+.pub-logo:focus-visible,
+.pub-btn-primary:focus-visible,
+.pub-btn-ghost:focus-visible,
+.pub-share-btn:focus-visible,
+.pub-issues-link:focus-visible,
+.hero-subscribe-btn:focus-visible,
+.pub-nav-toggle:focus-visible,
+.show-more-btn:focus-visible,
+.pub-footer-links a:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 
 @layer utilities {

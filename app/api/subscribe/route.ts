@@ -14,7 +14,9 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { name, email, language, frequency } = await req.json()
+    const { name, email, language, frequency, website } = await req.json()
+    // Honeypot: bots fill hidden fields, real users never see them
+    if (website) return NextResponse.json({ success: true })
     if (!email || !isValidEmail(email)) return NextResponse.json({ error: 'Valid email is required' }, { status: 400 })
 
     const lang = language === 'zh' ? 'zh' : 'en'
