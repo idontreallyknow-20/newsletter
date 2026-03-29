@@ -141,7 +141,7 @@
 hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; }
 
 /* ─── Hero ─── */
-.pub-hero { padding: 140px 48px 108px; max-width: 1100px; margin: 0 auto; }
+.pub-hero { padding: 140px 48px 48px; max-width: 1100px; margin: 0 auto; }
 .pub-eyebrow {
   display: inline-flex; align-items: center; gap: 10px;
   font-size: 11px; font-weight: 500; letter-spacing: 0.2em;
@@ -169,7 +169,7 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
   border: 1.5px solid rgba(26, 26, 26, 0.35); cursor: pointer; text-decoration: none;
   transition: background 0.18s, color 0.18s, border-color 0.18s, transform 0.12s;
 }
-.pub-btn-ghost:hover { background: rgba(26,26,26,0.05); border-color: var(--ink); transform: translateY(-1px); }
+.pub-btn-ghost:hover { background: rgba(26,26,26,0.06); border-color: var(--ink); transform: translateY(-1px); }
 .pub-btn-ghost:active { transform: translateY(0); }
 
 /* ─── About ─── */
@@ -188,9 +188,9 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
 .pub-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
 .pub-stat {
   background: var(--pub-cream-2); border: 1px solid var(--pub-border);
-  padding: 28px 22px; transition: box-shadow 0.15s, transform 0.15s;
+  padding: 28px 22px; transition: background 0.15s;
 }
-.pub-stat:hover { box-shadow: 3px 3px 0 var(--ink); transform: translate(-1px, -1px); }
+.pub-stat:hover { background: #e8e3d9; }
 .pub-stat-n {
   font-family: var(--font-playfair), Georgia, serif;
   font-size: 36px; font-weight: 700; color: var(--ink); line-height: 1; margin-bottom: 8px;
@@ -359,10 +359,21 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
   font-family: var(--font-playfair), Georgia, serif;
   font-size: 17px; font-weight: 700; color: var(--ink); flex: 1; line-height: 1.3; transition: color 0.2s;
 }
+.show-more-btn {
+  font-family: var(--font-dm), sans-serif;
+  font-size: 14px; font-weight: 500; color: var(--ink);
+  background: transparent; cursor: pointer; text-decoration: none;
+  padding: 10px 28px; border-radius: 4px;
+  border: 1px solid rgba(26, 26, 26, 0.35);
+  transition: background 0.15s, border-color 0.15s;
+}
+.show-more-btn:hover { background: rgba(26,26,26,0.05); border-color: var(--ink); }
+
 .pub-issue-tag {
-  flex-shrink: 0; font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--red); background: rgba(200, 64, 42, 0.07); border: 1px solid rgba(200, 64, 42, 0.2);
-  padding: 3px 8px; white-space: nowrap;
+  flex-shrink: 0; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; font-variant: small-caps;
+  color: #c0392b; background: transparent; border: 1px solid #c0392b;
+  padding: 4px 10px; border-radius: 999px; white-space: nowrap;
 }
 .pub-issue-date {
   flex-shrink: 0; font-size: 12px; color: var(--tan); opacity: 0.6;
@@ -442,7 +453,7 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
   .pub-nav { padding: 0 20px; }
   .pub-nav-links { display: none; }
   .pub-nav-toggle { display: block; }
-  .pub-hero { padding: 100px 20px 72px; }
+  .pub-hero { padding: 100px 20px 48px; }
   .pub-wrap { padding: 0 20px; }
   .pub-about { padding: 64px 0; }
   .pub-about-grid { grid-template-columns: 1fr; gap: 48px; }
