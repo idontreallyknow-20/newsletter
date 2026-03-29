@@ -45,7 +45,7 @@ export default async function HomePage() {
           <div className="pub-eyebrow fade-up d0">Newsletter · Economics &amp; AI</div>
           <HeroTypewriter />
           <p className="pub-sub fade-up d2">
-            A weekly newsletter for curious minds — breaking down the economic forces and AI breakthroughs shaping our world, without the jargon.
+            A weekly newsletter for curious minds. Breaking down the economic forces and AI breakthroughs shaping our world, without the jargon.
           </p>
           <div className="fade-up d3">
             <HeroSubscribeForm />
@@ -64,10 +64,10 @@ export default async function HomePage() {
                 <p className="pub-label">About</p>
                 <h2 className="pub-heading">Written for people who want to understand what&apos;s actually happening.</h2>
                 <p className="pub-copy">
-                  Most financial and tech news is written for insiders. Joseph writes for everyone else — people with real jobs who still want a clear-eyed view of how AI and the global economy are changing the ground beneath their feet.
+                  Most financial and tech news is written for insiders. Joseph writes for everyone else: people with real jobs who want a clear view of how AI and the global economy are changing things.
                 </p>
                 <p className="pub-copy">
-                  Each issue takes one big topic, cuts through the noise, and tells you what it means. No buzzwords, no breathless predictions — just honest, well-researched analysis you can read in five minutes.
+                  Each issue takes one big topic and tells you what it actually means. No buzzwords, no breathless predictions. Just honest analysis you can read in five minutes.
                 </p>
               </div>
               <div className="pub-stats">
@@ -145,7 +145,7 @@ export default async function HomePage() {
           <div className="pub-sub-inner">
             <h2 className="pub-sub-heading">Stay one step ahead.</h2>
             <p className="pub-sub-body">
-              Join readers who get the clearest take on economics and AI — delivered to your inbox every week.
+              Join readers who get a clear take on economics and AI, delivered to their inbox every week.
             </p>
             <PublicSubscribeForm />
             <p className="pub-sub-fine">No spam. No tracking. Unsubscribe anytime.</p>

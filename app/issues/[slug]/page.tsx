@@ -20,7 +20,7 @@ function toIsoDate(dateStr: string): string {
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const article = getArticle(params.slug)
   if (article) {
-    const title = `${article.title} — Joseph`
+    const title = `${article.title} | Joseph`
     const images = [{ url: '/opengraph-image', width: 1200, height: 630, alt: title }]
     return {
       title,
@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   // Fall back to DB
   const [email] = await db.select().from(sentEmails).where(eq(sentEmails.slug, params.slug)).limit(1)
   if (!email) return {}
-  const title = `${email.subject} — Joseph`
+  const title = `${email.subject} | Joseph`
   const description = email.previewText ?? undefined
   const images = [{ url: '/opengraph-image', width: 1200, height: 630 }]
   return {

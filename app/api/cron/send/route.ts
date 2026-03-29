@@ -4,6 +4,7 @@ import { settings, subscribers, sentEmails, drafts } from '@/lib/schema'
 import { eq, desc } from 'drizzle-orm'
 import { shouldSendNow } from '@/lib/schedule'
 import { buildEmailHtml, sendBatch } from '@/lib/email'
+import { signEmailToken } from '@/lib/token'
 import { markdownToHtml } from '@/lib/markdown'
 import { slugify } from '@/lib/slug'
 import { subscriberFrequenciesFor, scheduleToSendType } from '@/lib/preferences'
@@ -49,10 +50,12 @@ export async function GET(req: Request) {
     const subject = latestDraft.subject || newsletterName
     const bodyHtml = markdownToHtml(latestDraft.bodyMarkdown)
 
-    const recipients = targets.map(sub => ({
-      email: sub.email,
-      html: buildEmailHtml({ newsletterName, bodyHtml, recipientEmail: sub.email, baseUrl }),
-    }))
+    const emailSecret = process.env.DASHBOARD_PASSWORD || ''
+    const recipients = targets.map(sub => {
+      const token = signEmailToken(sub.email, emailSecret)
+      const unsubscribeUrl = `${baseUrl}/api/unsubscribe?email=${encodeURIComponent(sub.email)}&token=${token}`
+      return { email: sub.email, html: buildEmailHtml({ newsletterName, bodyHtml, unsubscribeUrl }) }
+    })
     const batchResults = await sendBatch({ recipients, subject, fromName, fromEmail })
     const errorCount = batchResults.reduce((n, r) => n + (r.error ? 1 : 0), 0)
 

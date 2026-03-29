@@ -5,8 +5,7 @@ describe('buildEmailHtml', () => {
   const base = {
     newsletterName: 'Test Letter',
     bodyHtml: '<p>Hello world</p>',
-    recipientEmail: 'reader@example.com',
-    baseUrl: 'https://example.com',
+    unsubscribeUrl: 'https://example.com/api/unsubscribe?email=reader%40example.com&token=abc123',
   }
 
   it('includes the newsletter name', () => {
@@ -17,10 +16,9 @@ describe('buildEmailHtml', () => {
     expect(buildEmailHtml(base)).toContain('<p>Hello world</p>')
   })
 
-  it('includes a working unsubscribe link with encoded email', () => {
+  it('includes the unsubscribe link', () => {
     const html = buildEmailHtml(base)
     expect(html).toContain('https://example.com/api/unsubscribe')
-    expect(html).toContain(encodeURIComponent('reader@example.com'))
   })
 
   it('is valid enough HTML (has doctype and body)', () => {

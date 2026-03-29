@@ -3,11 +3,9 @@
 export function buildEmailHtml(opts: {
   newsletterName: string
   bodyHtml: string
-  recipientEmail: string
-  baseUrl: string
+  unsubscribeUrl: string
 }): string {
-  const { newsletterName, bodyHtml, recipientEmail, baseUrl } = opts
-  const unsubscribeUrl = `${baseUrl}/api/unsubscribe?email=${encodeURIComponent(recipientEmail)}`
+  const { newsletterName, bodyHtml, unsubscribeUrl } = opts
 
   return `<!DOCTYPE html>
 <html lang="en">

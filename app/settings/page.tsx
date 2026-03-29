@@ -75,7 +75,7 @@ export default function SettingsPage() {
           <div className="pt-2 space-y-4">
             <div className="px-4 py-3 text-xs font-sans leading-relaxed" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
               <span style={{ color: 'var(--cream)', fontWeight: 500 }}>Resend API Key</span>
-              <span style={{ color: 'var(--muted)' }}> — set as </span>
+              <span style={{ color: 'var(--muted)' }}>, set as </span>
               <code className="font-mono" style={{ color: 'var(--accent)' }}>RESEND_API_KEY</code>
               <span style={{ color: 'var(--muted)' }}> in Vercel environment variables. Cannot be stored here.</span>
             </div>

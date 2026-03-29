@@ -230,7 +230,7 @@ export default function SubscribePage() {
               border: '1px solid var(--accent)',
             }}
           >
-            {status === 'loading' ? 'Joining…' : `Subscribe — ${freqLabel} · ${language === 'zh' ? '中文' : 'English'}`}
+            {status === 'loading' ? 'Joining…' : `Subscribe: ${freqLabel} · ${language === 'zh' ? '中文' : 'English'}`}
           </button>
 
           {status === 'error' && (

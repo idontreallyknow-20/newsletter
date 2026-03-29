@@ -16,10 +16,10 @@ const TOPICS = [
 
 const TOPIC_DESCS: Record<string, string> = {
   'Macro & Markets':  'Interest rates, inflation, central bank policy, and what it all means for your wallet and the broader economy.',
-  'AI & Technology':  'Model releases, capability jumps, and the business of artificial intelligence — stripped of the hype.',
+  'AI & Technology':  'Model releases, capability jumps, and the business of artificial intelligence. No hype.',
   'Global Economy':   'Trade flows, geopolitical shifts, and the economic forces reshaping how nations compete and collaborate.',
   'Future of Work':   'How automation, remote culture, and AI are rewriting the rules of employment and productivity.',
-  'Ideas & Analysis': 'Original takes on big questions — why economic predictions fail, what history tells us, and what to watch next.',
+  'Ideas & Analysis': 'Original takes on big questions: why economic predictions fail, what history tells us, and what to watch next.',
   'Weekly Digest':    'Five links worth your time, one chart that matters, and one thing everyone got wrong this week.',
 }
 

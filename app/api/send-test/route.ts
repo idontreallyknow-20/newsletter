@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { settings } from '@/lib/schema'
 import { buildEmailHtml, sendToRecipients } from '@/lib/email'
+import { signEmailToken } from '@/lib/token'
 import { markdownToHtml } from '@/lib/markdown'
 
 export async function POST(req: Request) {
@@ -26,7 +27,10 @@ export async function POST(req: Request) {
     }
 
     const bodyHtml = markdownToHtml(bodyMarkdown)
-    const html = buildEmailHtml({ newsletterName, bodyHtml, recipientEmail: ownerEmail, baseUrl })
+    const emailSecret = process.env.DASHBOARD_PASSWORD || ''
+    const token = signEmailToken(ownerEmail, emailSecret)
+    const unsubscribeUrl = `${baseUrl}/api/unsubscribe?email=${encodeURIComponent(ownerEmail)}&token=${token}`
+    const html = buildEmailHtml({ newsletterName, bodyHtml, unsubscribeUrl })
 
     await sendToRecipients({ to: [ownerEmail], subject: `[TEST] ${subject}`, html, fromName, fromEmail })
 

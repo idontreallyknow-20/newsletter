@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { subscribers, sentEmails, settings } from '@/lib/schema'
 import { eq } from 'drizzle-orm'
 import { buildEmailHtml, sendBatch } from '@/lib/email'
+import { signEmailToken } from '@/lib/token'
 import { markdownToHtml } from '@/lib/markdown'
 import { slugify } from '@/lib/slug'
 import { subscriberFrequenciesFor } from '@/lib/preferences'
@@ -37,11 +38,13 @@ export async function POST(req: Request) {
     }
 
     const bodyHtml = markdownToHtml(bodyMarkdown)
+    const emailSecret = process.env.DASHBOARD_PASSWORD || ''
 
-    const recipients = targets.map(sub => ({
-      email: sub.email,
-      html: buildEmailHtml({ newsletterName, bodyHtml, recipientEmail: sub.email, baseUrl }),
-    }))
+    const recipients = targets.map(sub => {
+      const token = signEmailToken(sub.email, emailSecret)
+      const unsubscribeUrl = `${baseUrl}/api/unsubscribe?email=${encodeURIComponent(sub.email)}&token=${token}`
+      return { email: sub.email, html: buildEmailHtml({ newsletterName, bodyHtml, unsubscribeUrl }) }
+    })
 
     const batchResults = await sendBatch({ recipients, subject, fromName, fromEmail })
     const errorCount = batchResults.reduce((n, r) => n + (r.error ? 1 : 0), 0)

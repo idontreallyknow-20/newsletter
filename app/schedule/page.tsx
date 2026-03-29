@@ -60,7 +60,7 @@ export default function SchedulePage() {
       </div>
 
       <div className="px-5 py-4 mb-8 text-xs font-sans animate-fade-up delay-1" style={{ background: 'rgba(200,169,110,0.06)', border: '1px solid rgba(200,169,110,0.2)', color: 'rgba(200,169,110,0.8)' }}>
-        The cron job fires daily at 8:00 UTC (Hobby plan). Changing frequency/hour here updates what the cron handler checks — no redeploy needed.
+        The cron job fires daily at 8:00 UTC (Hobby plan). Changing frequency/hour here updates what the cron handler checks, no redeploy needed.
       </div>
 
       {loading ? (

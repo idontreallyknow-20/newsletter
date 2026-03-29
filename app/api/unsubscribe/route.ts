@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { subscribers } from '@/lib/schema'
 import { eq } from 'drizzle-orm'
 import { rateLimit } from '@/lib/rate-limit'
+import { verifyEmailToken } from '@/lib/token'
 
 export async function GET(req: Request) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
@@ -13,7 +14,13 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url)
     const email = searchParams.get('email')
+    const token = searchParams.get('token') ?? ''
     if (!email) return NextResponse.json({ error: 'Email required' }, { status: 400 })
+
+    const secret = process.env.DASHBOARD_PASSWORD ?? ''
+    if (!token || !verifyEmailToken(email, token, secret)) {
+      return NextResponse.json({ error: 'Invalid token' }, { status: 403 })
+    }
 
     await db
       .update(subscribers)

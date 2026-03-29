@@ -4,17 +4,29 @@ import type { NextRequest } from 'next/server'
 // Paths that start with these prefixes are public (no auth needed)
 const PUBLIC_PREFIXES = ['/login', '/subscribe', '/issues', '/api/login', '/api/subscribe', '/api/unsubscribe', '/api/logout', '/api/setup', '/_next', '/favicon.ico']
 
-// Constant-time string comparison for Edge runtime (no Node crypto available)
-function safeEqual(a: string, b: string): boolean {
+// Derive a session token from the admin password using Web Crypto (Edge-compatible).
+// The cookie stores this derived token — never the raw password.
+async function deriveSessionToken(password: string): Promise<string> {
+  const key = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(password),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  )
+  const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode('nhq_session_v1'))
+  return Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, '0')).join('')
+}
+
+// Constant-time hex string comparison
+function hexEqual(a: string, b: string): boolean {
   if (a.length !== b.length) return false
   let result = 0
-  for (let i = 0; i < a.length; i++) {
-    result |= a.charCodeAt(i) ^ b.charCodeAt(i)
-  }
+  for (let i = 0; i < a.length; i++) result |= a.charCodeAt(i) ^ b.charCodeAt(i)
   return result === 0
 }
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
 
   // Allow homepage exactly
@@ -36,10 +48,11 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL('/login', req.url))
   }
 
-  // Check session cookie
+  // Check session cookie against derived token (not the raw password)
   const session = req.cookies.get('nhq_session')
-  if (session?.value && safeEqual(session.value, stored)) {
-    return NextResponse.next()
+  if (session?.value) {
+    const expected = await deriveSessionToken(stored)
+    if (hexEqual(session.value, expected)) return NextResponse.next()
   }
 
   // Redirect unauthenticated requests to login, preserving destination

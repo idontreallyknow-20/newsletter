@@ -14,8 +14,7 @@ function buildPreviewHtml(bodyMarkdown: string): string {
   return buildEmailHtml({
     newsletterName: 'Joseph',
     bodyHtml,
-    recipientEmail: 'preview@example.com',
-    baseUrl: '',
+    unsubscribeUrl: '#',
   })
 }
 

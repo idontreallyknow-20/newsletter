@@ -21,21 +21,21 @@ const BASE_URL = 'https://newsletter-joseph.vercel.app'
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
-  title: 'Joseph — Economics & AI Newsletter',
-  description: 'A weekly newsletter for curious minds — breaking down the economic forces and AI breakthroughs shaping our world, without the jargon.',
+  title: 'Joseph: Economics & AI Newsletter',
+  description: 'A weekly newsletter breaking down the economic forces and AI breakthroughs shaping our world, without the jargon.',
   alternates: { canonical: '/' },
   openGraph: {
     siteName: 'Joseph Newsletter',
-    title: 'Joseph — Economics & AI Newsletter',
-    description: 'A weekly newsletter for curious minds — breaking down the economic forces and AI breakthroughs shaping our world, without the jargon.',
+    title: 'Joseph: Economics & AI Newsletter',
+    description: 'A weekly newsletter breaking down the economic forces and AI breakthroughs shaping our world, without the jargon.',
     type: 'website',
     url: '/',
-    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Joseph — Economics & AI Newsletter' }],
+    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Joseph: Economics & AI Newsletter' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Joseph — Economics & AI Newsletter',
-    description: 'A weekly newsletter for curious minds — breaking down the economic forces and AI breakthroughs shaping our world, without the jargon.',
+    title: 'Joseph: Economics & AI Newsletter',
+    description: 'A weekly newsletter breaking down the economic forces and AI breakthroughs shaping our world, without the jargon.',
     images: ['/opengraph-image'],
   },
 }

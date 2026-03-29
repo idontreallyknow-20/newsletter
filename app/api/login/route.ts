@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { timingSafeEqual } from 'crypto'
+import { deriveSessionToken } from '@/lib/token'
 
 function safeCompare(a: string, b: string): boolean {
   if (a.length !== b.length) return false
@@ -53,8 +54,9 @@ export async function POST(req: Request) {
 
   clearAttempts(ip)
 
+  const sessionToken = deriveSessionToken(stored)
   const res = NextResponse.json({ success: true })
-  res.cookies.set('nhq_session', stored, {
+  res.cookies.set('nhq_session', sessionToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
