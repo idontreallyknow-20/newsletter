@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { drafts } from '@/lib/schema'
+import { eq } from 'drizzle-orm'
 
 export async function GET() {
   try {
@@ -17,7 +18,6 @@ export async function POST(req: Request) {
     const { id, subject, previewText, bodyMarkdown } = body
 
     if (id) {
-      const { eq } = await import('drizzle-orm')
       const [row] = await db
         .update(drafts)
         .set({ subject, previewText, bodyMarkdown, updatedAt: new Date() })

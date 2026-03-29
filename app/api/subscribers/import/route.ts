@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { subscribers } from '@/lib/schema'
-import { eq } from 'drizzle-orm'
 
 export async function POST(req: Request) {
   try {
@@ -10,18 +9,19 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'No rows provided' }, { status: 400 })
     }
 
-    let inserted = 0
-    let skipped = 0
-
-    for (const row of rows) {
-      if (!row.email) { skipped++; continue }
-      const existing = await db.select().from(subscribers).where(eq(subscribers.email, row.email))
-      if (existing.length > 0) { skipped++; continue }
-      await db.insert(subscribers).values({ name: row.name || '', email: row.email, status: 'active' })
-      inserted++
+    const valid = rows.filter(r => r.email?.trim())
+    if (valid.length === 0) {
+      return NextResponse.json({ inserted: 0, skipped: rows.length })
     }
 
-    return NextResponse.json({ inserted, skipped })
+    // Batch upsert — ON CONFLICT DO NOTHING skips existing emails
+    const result = await db
+      .insert(subscribers)
+      .values(valid.map(r => ({ name: r.name ?? '', email: r.email.trim(), status: 'active' as const })))
+      .onConflictDoNothing()
+      .returning({ id: subscribers.id })
+
+    return NextResponse.json({ inserted: result.length, skipped: rows.length - result.length })
   } catch {
     return NextResponse.json({ error: 'Import failed' }, { status: 500 })
   }

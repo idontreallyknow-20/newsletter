@@ -3,17 +3,37 @@
 import { useEffect, useState } from 'react'
 import type { SentEmail } from '@/lib/schema'
 
+const PAGE_SIZE = 50
+
 export default function HistoryPage() {
   const [emails, setEmails] = useState<SentEmail[]>([])
+  const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
   const [preview, setPreview] = useState<SentEmail | null>(null)
 
   useEffect(() => {
-    fetch('/api/history').then(r => r.json()).then(data => {
-      setEmails(data)
-      setLoading(false)
-    })
+    fetch(`/api/history?limit=${PAGE_SIZE}&offset=0`)
+      .then(r => r.json())
+      .then(data => {
+        setEmails(data.emails)
+        setTotal(data.total)
+        setLoading(false)
+      })
   }, [])
+
+  function loadMore() {
+    setLoadingMore(true)
+    fetch(`/api/history?limit=${PAGE_SIZE}&offset=${emails.length}`)
+      .then(r => r.json())
+      .then(data => {
+        setEmails(prev => [...prev, ...data.emails])
+        setTotal(data.total)
+        setLoadingMore(false)
+      })
+  }
+
+  const hasMore = emails.length < total
 
   return (
     <div className="p-8 lg:p-12 max-w-5xl">
@@ -66,6 +86,19 @@ export default function HistoryPage() {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {hasMore && (
+        <div className="mt-4 text-center">
+          <button
+            onClick={loadMore}
+            disabled={loadingMore}
+            className="font-mono text-[10px] tracking-[0.2em] uppercase px-5 py-2 transition-colors"
+            style={{ color: 'var(--muted)', border: '1px solid var(--border)', opacity: loadingMore ? 0.4 : 0.7 }}
+          >
+            {loadingMore ? 'Loading…' : `Load more (${total - emails.length} remaining)`}
+          </button>
         </div>
       )}
 
