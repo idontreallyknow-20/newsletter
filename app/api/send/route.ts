@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { subscribers, sentEmails, settings } from '@/lib/schema'
 import { eq } from 'drizzle-orm'
-import { buildEmailHtml, sendToRecipients } from '@/lib/email'
+import { buildEmailHtml, sendBatch } from '@/lib/email'
 import { markdownToHtml } from '@/lib/markdown'
 import { slugify } from '@/lib/slug'
 import { subscriberFrequenciesFor } from '@/lib/preferences'
@@ -38,15 +38,13 @@ export async function POST(req: Request) {
 
     const bodyHtml = markdownToHtml(bodyMarkdown)
 
-    let errorCount = 0
-    for (const sub of targets) {
-      const html = buildEmailHtml({ newsletterName, bodyHtml, recipientEmail: sub.email, baseUrl })
-      try {
-        await sendToRecipients({ to: [sub.email], subject, html, fromName, fromEmail })
-      } catch {
-        errorCount++
-      }
-    }
+    const recipients = targets.map(sub => ({
+      email: sub.email,
+      html: buildEmailHtml({ newsletterName, bodyHtml, recipientEmail: sub.email, baseUrl }),
+    }))
+
+    const batchResults = await sendBatch({ recipients, subject, fromName, fromEmail })
+    const errorCount = batchResults.reduce((n, r) => n + (r.error ? 1 : 0), 0)
 
     await db.insert(sentEmails).values({
       subject,

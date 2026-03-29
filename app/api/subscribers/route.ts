@@ -2,11 +2,20 @@ import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { subscribers } from '@/lib/schema'
 import { eq } from 'drizzle-orm'
+import { count } from 'drizzle-orm'
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const rows = await db.select().from(subscribers).orderBy(subscribers.createdAt)
-    return NextResponse.json(rows)
+    const { searchParams } = new URL(req.url)
+    const limit = Math.min(parseInt(searchParams.get('limit') ?? '100', 10), 500)
+    const offset = parseInt(searchParams.get('offset') ?? '0', 10)
+
+    const [rows, [{ total }]] = await Promise.all([
+      db.select().from(subscribers).orderBy(subscribers.createdAt).limit(limit).offset(offset),
+      db.select({ total: count() }).from(subscribers),
+    ])
+
+    return NextResponse.json({ subscribers: rows, total, limit, offset })
   } catch {
     return NextResponse.json({ error: 'Failed to fetch subscribers' }, { status: 500 })
   }

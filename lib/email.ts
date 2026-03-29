@@ -89,3 +89,27 @@ export async function sendToRecipients(opts: {
 
   return results
 }
+
+// Send personalized emails (different HTML per recipient) using Resend's batch API.
+// One HTTP request per 100 recipients instead of one per subscriber.
+export async function sendBatch(opts: {
+  recipients: Array<{ email: string; html: string }>
+  subject: string
+  fromName: string
+  fromEmail: string
+}) {
+  const { recipients, subject, fromName, fromEmail } = opts
+  const from = `${fromName} <${fromEmail}>`
+  const batchSize = 100
+  const results = []
+
+  for (let i = 0; i < recipients.length; i += batchSize) {
+    const chunk = recipients.slice(i, i + batchSize)
+    const result = await getResend().batch.send(
+      chunk.map(r => ({ from, to: [r.email], subject, html: r.html }))
+    )
+    results.push(result)
+  }
+
+  return results
+}

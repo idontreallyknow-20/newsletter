@@ -1,6 +1,16 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { sql } from 'drizzle-orm'
+import { cookies } from 'next/headers'
+import { timingSafeEqual } from 'crypto'
+
+function safeEqual(a: string, b: string) {
+  try {
+    const ab = Buffer.from(a), bb = Buffer.from(b)
+    if (ab.length !== bb.length) return false
+    return timingSafeEqual(ab, bb)
+  } catch { return false }
+}
 
 const statements = [
   sql`CREATE TABLE IF NOT EXISTS subscribers (
@@ -41,10 +51,17 @@ const statements = [
   sql`INSERT INTO settings (key, value) VALUES ('newsletter_name', 'AI & Economy') ON CONFLICT (key) DO NOTHING`,
   sql`INSERT INTO settings (key, value) VALUES ('from_name', 'Joseph') ON CONFLICT (key) DO NOTHING`,
   sql`INSERT INTO settings (key, value) VALUES ('from_email', 'onboarding@resend.dev') ON CONFLICT (key) DO NOTHING`,
-  sql`INSERT INTO settings (key, value) VALUES ('owner_email', 'josephislockedin@gmail.com') ON CONFLICT (key) DO NOTHING`,
+  sql`INSERT INTO settings (key, value) VALUES ('owner_email', ${process.env.OWNER_EMAIL ?? ''}) ON CONFLICT (key) DO NOTHING`,
 ]
 
 export async function GET() {
+  const stored = process.env.DASHBOARD_PASSWORD
+  if (!stored) return NextResponse.json({ error: 'Server not configured' }, { status: 500 })
+  const session = cookies().get('nhq_session')
+  if (!session?.value || !safeEqual(session.value, stored)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   const results: string[] = []
   for (const statement of statements) {
     try {

@@ -18,7 +18,7 @@ export default function SubscribersPage() {
     setLoading(true)
     const res = await fetch('/api/subscribers')
     const data = await res.json()
-    setSubscribers(data)
+    setSubscribers(data.subscribers ?? data)
     setLoading(false)
   }
 
