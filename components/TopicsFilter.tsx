@@ -24,96 +24,113 @@ const TOPIC_DESCS: Record<string, string> = {
 }
 
 export default function TopicsFilter() {
-  const [activeTag, setActiveTag] = useState<string | null>(null)
+  const [activeTags, setActiveTags] = useState<string[]>([])
   const filteredRef = useRef<HTMLDivElement>(null)
+  const topicsRef = useRef<HTMLDivElement>(null)
+  const isFiltering = activeTags.length > 0
 
   useEffect(() => {
-    // Hide/show the main unfiltered archive section
     const archiveEl = document.querySelector<HTMLElement>('.pub-issues')
-    if (archiveEl) archiveEl.style.display = activeTag ? 'none' : ''
-    // Scroll to filtered results after they render
-    if (activeTag && filteredRef.current) {
-      filteredRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
-  }, [activeTag])
+    if (archiveEl) archiveEl.style.display = isFiltering ? 'none' : ''
+  }, [isFiltering])
 
   function handleTopicClick(tags: string[]) {
     const key = tags[0]
-    setActiveTag(prev => prev === key ? null : key)
+    setActiveTags(prev => {
+      const next = prev.includes(key) ? prev.filter(t => t !== key) : [...prev, key]
+      // Scroll to results only when activating the first filter
+      if (next.length === 1 && prev.length === 0) {
+        setTimeout(() => filteredRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50)
+      }
+      return next
+    })
   }
 
-  const filtered = activeTag
-    ? ARTICLES.filter(a => {
-        const topic = TOPICS.find(t => t.tags[0] === activeTag)
-        return topic ? topic.tags.includes(a.tag) : true
-      })
+  function clearAll() {
+    setActiveTags([])
+  }
+
+  function scrollToTopics() {
+    topicsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  const filtered = isFiltering
+    ? ARTICLES.filter(a =>
+        activeTags.some(key => {
+          const topic = TOPICS.find(t => t.tags[0] === key)
+          return topic?.tags.includes(a.tag) ?? false
+        })
+      )
     : ARTICLES
+
+  const activeTopicNames = activeTags.map(key => TOPICS.find(t => t.tags[0] === key)?.title ?? key)
 
   return (
     <>
       {/* Topics grid */}
-      <p className="pub-filter-hint">Filter by topic ↓</p>
-      <div className="pub-topics-grid">
-        {TOPICS.map(t => {
-          const isActive = activeTag === t.tags[0]
-          const hasArticles = ARTICLES.some(a => t.tags.includes(a.tag))
-          return (
-            <button
-              key={t.title}
-              onClick={() => handleTopicClick(t.tags)}
-              className="pub-topic"
-              style={{
-                textAlign: 'left',
-                background: isActive ? '#2c1810' : undefined,
-                borderColor: isActive ? '#2c1810' : undefined,
-                cursor: hasArticles ? 'pointer' : 'default',
-                transform: isActive ? 'translate(-2px, -2px)' : undefined,
-                boxShadow: isActive ? '5px 5px 0 var(--red)' : undefined,
-              }}
-            >
-              <div className="pub-topic-icon-wrap" style={isActive ? { borderColor: 'var(--red)', color: '#f5f0e8', background: 'rgba(200,64,42,0.15)' } : {}}>
-                {t.icon}
-              </div>
-              <div className="pub-topic-title" style={isActive ? { color: '#f5f0e8' } : {}}>{t.title}</div>
-              <p className="pub-topic-desc" style={isActive ? { color: 'rgba(245,240,232,0.6)' } : {}}>{TOPIC_DESCS[t.title]}</p>
-              {isActive && (
-                <p style={{ marginTop: '12px', fontSize: '11px', fontWeight: 500, color: 'var(--red)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-                  Filtering ↓
-                </p>
-              )}
-            </button>
-          )
-        })}
+      <div ref={topicsRef} style={{ scrollMarginTop: '80px' }}>
+        <p className="pub-filter-hint">Select one or more topics to filter ↓</p>
+        <div className="pub-topics-grid">
+          {TOPICS.map(t => {
+            const isActive = activeTags.includes(t.tags[0])
+            const hasArticles = ARTICLES.some(a => t.tags.includes(a.tag))
+            return (
+              <button
+                key={t.title}
+                onClick={() => handleTopicClick(t.tags)}
+                className="pub-topic"
+                style={{
+                  textAlign: 'left',
+                  background: isActive ? '#2c1810' : undefined,
+                  borderColor: isActive ? '#2c1810' : undefined,
+                  cursor: hasArticles ? 'pointer' : 'default',
+                  transform: isActive ? 'translate(-2px, -2px)' : undefined,
+                  boxShadow: isActive ? '5px 5px 0 var(--red)' : undefined,
+                }}
+              >
+                <div className="pub-topic-icon-wrap" style={isActive ? { borderColor: 'var(--red)', color: '#f5f0e8', background: 'rgba(200,64,42,0.15)' } : {}}>
+                  {t.icon}
+                </div>
+                <div className="pub-topic-title" style={isActive ? { color: '#f5f0e8' } : {}}>{t.title}</div>
+                <p className="pub-topic-desc" style={isActive ? { color: 'rgba(245,240,232,0.6)' } : {}}>{TOPIC_DESCS[t.title]}</p>
+                {isActive && (
+                  <p style={{ marginTop: '12px', fontSize: '11px', fontWeight: 500, color: 'var(--red)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                    ✓ Selected
+                  </p>
+                )}
+              </button>
+            )
+          })}
+        </div>
       </div>
 
-      {/* Filtered issues list */}
-      {activeTag && (
+      {/* Filtered results */}
+      {isFiltering && (
         <div ref={filteredRef} style={{ marginTop: '64px', scrollMarginTop: '80px' }}>
           <div className="pub-wrap" style={{ paddingTop: 0 }}>
             <div className="pub-issues-head" style={{ marginBottom: '24px' }}>
               <div>
-                <p className="pub-label">Filtered</p>
+                <p className="pub-label">Filtered · {activeTopicNames.join(', ')}</p>
                 <h2 className="pub-heading" style={{ marginBottom: 0 }}>
-                  {filtered.length > 0 ? `${filtered.length} issue${filtered.length !== 1 ? 's' : ''} found` : 'No issues yet'}
+                  {filtered.length > 0
+                    ? `${filtered.length} issue${filtered.length !== 1 ? 's' : ''} found`
+                    : 'No issues yet'}
                 </h2>
               </div>
-              <button onClick={() => setActiveTag(null)} style={{
+              <button onClick={clearAll} style={{
                 fontFamily: 'var(--font-dm)', fontSize: '13px', fontWeight: 500,
                 color: 'var(--red)', background: 'none', border: 'none', cursor: 'pointer',
                 borderBottom: '1px solid transparent',
               }}>
-                Clear filter ×
+                Clear all ×
               </button>
             </div>
             {filtered.length === 0 && (
               <div className="pub-empty-state">
                 <p style={{ fontFamily: 'var(--font-dm)', fontSize: '16px', color: 'var(--tan)', marginBottom: '16px' }}>
-                  No issues yet in this category.
+                  No issues yet in {activeTags.length === 1 ? 'this category' : 'these categories'}.
                 </p>
-                <button
-                  onClick={() => setActiveTag(null)}
-                  style={{ fontFamily: 'var(--font-dm)', fontSize: '13px', fontWeight: 500, color: 'var(--red)', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px' }}
-                >
+                <button onClick={clearAll} style={{ fontFamily: 'var(--font-dm)', fontSize: '13px', fontWeight: 500, color: 'var(--red)', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px' }}>
                   Browse all issues →
                 </button>
               </div>
@@ -142,6 +159,37 @@ export default function TopicsFilter() {
               })}
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Floating filter pill — visible when any filter is active */}
+      {isFiltering && (
+        <div style={{
+          position: 'fixed', bottom: '24px', left: '50%', transform: 'translateX(-50%)',
+          zIndex: 50, display: 'flex', alignItems: 'center', gap: '8px',
+          background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)',
+          borderRadius: '100px', padding: '10px 16px',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
+          fontFamily: 'var(--font-dm)', fontSize: '13px', fontWeight: 500,
+          whiteSpace: 'nowrap',
+        }}>
+          <span style={{ color: 'rgba(245,240,232,0.5)', fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            {activeTags.length} topic{activeTags.length !== 1 ? 's' : ''}
+          </span>
+          <span style={{ color: 'rgba(255,255,255,0.15)', userSelect: 'none' }}>·</span>
+          <button onClick={scrollToTopics} style={{
+            background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+            color: '#f5f0e8', fontSize: '13px', fontWeight: 500, fontFamily: 'inherit',
+          }}>
+            ↑ Change topics
+          </button>
+          <span style={{ color: 'rgba(255,255,255,0.15)', userSelect: 'none' }}>·</span>
+          <button onClick={clearAll} style={{
+            background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+            color: 'var(--red)', fontSize: '13px', fontWeight: 500, fontFamily: 'inherit',
+          }}>
+            Clear ×
+          </button>
         </div>
       )}
     </>
