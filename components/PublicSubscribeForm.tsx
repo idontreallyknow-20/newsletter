@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { isValidEmail } from '@/lib/validate-email'
 
 export default function PublicSubscribeForm() {
   const [email, setEmail] = useState('')
@@ -10,7 +11,7 @@ export default function PublicSubscribeForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!isValidEmail(email)) {
       setInputError(true)
       setErrMsg('Please enter a valid email address.')
       setStatus('error')

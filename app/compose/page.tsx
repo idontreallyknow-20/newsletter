@@ -6,29 +6,17 @@ import MarkdownToolbar from '@/components/MarkdownToolbar'
 import EmailPreview from '@/components/EmailPreview'
 import ConfirmModal from '@/components/ConfirmModal'
 import { markdownToHtml } from '@/lib/markdown'
+import { buildEmailHtml } from '@/lib/email-template'
 
-function buildPreviewHtml(subject: string, bodyMarkdown: string): string {
+function buildPreviewHtml(bodyMarkdown: string): string {
   if (!bodyMarkdown) return ''
   const bodyHtml = markdownToHtml(bodyMarkdown)
-  return `<!DOCTYPE html>
-<html><head><meta charset="utf-8"><style>
-  body{margin:0;padding:0;background:#f4f4f0;font-family:Georgia,serif;}
-  .wrap{max-width:600px;margin:24px auto;background:#fff;border-radius:4px;overflow:hidden;}
-  .header{background:#0A0A0A;padding:28px 36px;}
-  .header h1{margin:0;color:#F5F0E8;font-size:22px;font-family:Georgia,serif;}
-  .divider{height:3px;background:linear-gradient(90deg,#c9a84c,#e8d5a3);}
-  .body{padding:36px;color:#1a1a1a;font-size:16px;line-height:1.75;}
-  .footer{padding:20px 36px;background:#f9f9f7;border-top:1px solid #eee;text-align:center;font-size:12px;color:#999;}
-  h2{font-size:20px;margin-top:1.5em;}
-  hr{border:none;border-top:1px solid #ddd;margin:2em 0;}
-  a{color:#c9a84c;}
-</style></head>
-<body><div class="wrap">
-  <div class="header"><h1>Newsletter Preview</h1></div>
-  <div class="divider"></div>
-  <div class="body">${bodyHtml}</div>
-  <div class="footer">This is a preview — unsubscribe link will appear in real sends.</div>
-</div></body></html>`
+  return buildEmailHtml({
+    newsletterName: 'Joseph',
+    bodyHtml,
+    recipientEmail: 'preview@example.com',
+    baseUrl: '',
+  })
 }
 
 type SendAudience = 'all' | 'weekly' | 'daily'
@@ -45,7 +33,7 @@ export default function ComposePage() {
   const [audience, setAudience] = useState<SendAudience>('all')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  const previewHtml = buildPreviewHtml(subject, body)
+  const previewHtml = buildPreviewHtml(body)
 
   async function saveDraft() {
     setSaving(true)

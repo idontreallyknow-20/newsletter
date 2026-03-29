@@ -3,10 +3,10 @@ import { db } from '@/lib/db'
 import { settings, subscribers, sentEmails, drafts } from '@/lib/schema'
 import { eq, desc } from 'drizzle-orm'
 import { shouldSendNow } from '@/lib/schedule'
-import { buildEmailHtml, sendToRecipients } from '@/lib/email'
+import { buildEmailHtml, sendBatch } from '@/lib/email'
 import { markdownToHtml } from '@/lib/markdown'
 import { slugify } from '@/lib/slug'
-import { subscriberFrequenciesFor } from '@/lib/preferences'
+import { subscriberFrequenciesFor, scheduleToSendType } from '@/lib/preferences'
 
 export async function GET(req: Request) {
   // Verify cron secret to prevent unauthorized triggers
@@ -33,13 +33,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ skipped: true, reason: 'No draft available to send' })
     }
 
-    // Map cron schedule type → subscriber frequency filter
-    const scheduleFreq = s.schedule_frequency
-    const sendType: 'weekly' | 'daily' | null =
-      scheduleFreq === 'weekly' ? 'weekly' :
-      (scheduleFreq === 'daily' || scheduleFreq === 'weekdays') ? 'daily' :
-      null
-
+    const sendType = scheduleToSendType((s.schedule_frequency || 'manual') as import('@/lib/preferences').ScheduleFrequency)
     const targets = sendType
       ? allActive.filter(sub => subscriberFrequenciesFor(sendType).includes(sub.frequency as 'weekly' | 'daily' | 'both'))
       : allActive
@@ -55,15 +49,12 @@ export async function GET(req: Request) {
     const subject = latestDraft.subject || newsletterName
     const bodyHtml = markdownToHtml(latestDraft.bodyMarkdown)
 
-    let errorCount = 0
-    for (const sub of targets) {
-      const html = buildEmailHtml({ newsletterName, bodyHtml, recipientEmail: sub.email, baseUrl })
-      try {
-        await sendToRecipients({ to: [sub.email], subject, html, fromName, fromEmail })
-      } catch {
-        errorCount++
-      }
-    }
+    const recipients = targets.map(sub => ({
+      email: sub.email,
+      html: buildEmailHtml({ newsletterName, bodyHtml, recipientEmail: sub.email, baseUrl }),
+    }))
+    const batchResults = await sendBatch({ recipients, subject, fromName, fromEmail })
+    const errorCount = batchResults.reduce((n, r) => n + (r.error ? 1 : 0), 0)
 
     await db.insert(sentEmails).values({
       subject,

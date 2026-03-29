@@ -16,3 +16,12 @@ export const FREQUENCIES: { value: SubscriberFrequency; label: string; sub: stri
 export function subscriberFrequenciesFor(sendType: 'weekly' | 'daily'): SubscriberFrequency[] {
   return [sendType, 'both']
 }
+
+// Map a schedule_frequency value (from settings/cron) to a subscriber send type.
+// Keeps the two type systems in sync in one place.
+export type ScheduleFrequency = 'daily' | 'weekdays' | 'weekly' | 'manual'
+export function scheduleToSendType(freq: ScheduleFrequency): 'weekly' | 'daily' | null {
+  if (freq === 'weekly') return 'weekly'
+  if (freq === 'daily' || freq === 'weekdays') return 'daily'
+  return null  // 'manual' — send to all active subscribers
+}

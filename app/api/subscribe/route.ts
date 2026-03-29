@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { subscribers, settings } from '@/lib/schema'
 import { eq } from 'drizzle-orm'
 import { rateLimit } from '@/lib/rate-limit'
+import { isValidEmail } from '@/lib/validate-email'
 import { buildEmailHtml, sendToRecipients } from '@/lib/email'
 
 export async function POST(req: Request) {
@@ -13,7 +14,7 @@ export async function POST(req: Request) {
 
   try {
     const { name, email, language, frequency } = await req.json()
-    if (!email) return NextResponse.json({ error: 'Email is required' }, { status: 400 })
+    if (!email || !isValidEmail(email)) return NextResponse.json({ error: 'Valid email is required' }, { status: 400 })
 
     const lang = language === 'zh' ? 'zh' : 'en'
     const freq = frequency === 'daily' ? 'daily' : frequency === 'both' ? 'both' : 'weekly'
