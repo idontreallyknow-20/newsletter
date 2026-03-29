@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 import { subscribers, sentEmails } from '@/lib/schema'
 import { eq, count, desc, isNotNull } from 'drizzle-orm'
 import HeroTypewriter from '@/components/HeroTypewriter'
+import HeroSubscribeForm from '@/components/HeroSubscribeForm'
 import PublicSubscribeForm from '@/components/PublicSubscribeForm'
 import PublicNav from '@/components/PublicNav'
 import { ARTICLES } from '@/lib/articles'
@@ -46,9 +47,8 @@ export default async function HomePage() {
           <p className="pub-sub fade-up d2">
             A weekly newsletter for curious minds — breaking down the economic forces and AI breakthroughs shaping our world, without the jargon.
           </p>
-          <div className="pub-buttons fade-up d3">
-            <a href="#subscribe" className="pub-btn-primary">Subscribe free →</a>
-            <a href="#issues" className="pub-btn-ghost">Browse issues</a>
+          <div className="fade-up d3">
+            <HeroSubscribeForm />
           </div>
         </div>
       </section>

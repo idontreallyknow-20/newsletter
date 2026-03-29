@@ -172,6 +172,30 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
 .pub-btn-ghost:hover { background: rgba(26,26,26,0.06); border-color: var(--ink); transform: translateY(-1px); }
 .pub-btn-ghost:active { transform: translateY(0); }
 
+/* ─── Hero inline subscribe form ─── */
+.hero-subscribe-wrap { display: flex; flex-direction: column; align-items: flex-start; }
+.hero-subscribe-form {
+  display: flex; align-items: stretch;
+  width: 420px; max-width: 100%;
+}
+.hero-subscribe-input {
+  flex: 1; padding: 12px 16px;
+  background: #fff; border: 1px solid rgba(26,26,26,0.2);
+  border-right: none; border-radius: 4px 0 0 4px;
+  font-family: var(--font-dm), sans-serif; font-size: 14px; color: var(--ink);
+  outline: none; transition: border-color 0.15s;
+  min-width: 0;
+}
+.hero-subscribe-input::placeholder { color: rgba(26,26,26,0.35); }
+.hero-subscribe-btn {
+  padding: 12px 22px; background: #c0392b; color: #fff;
+  font-family: var(--font-dm), sans-serif; font-size: 14px; font-weight: 500;
+  border: 1px solid #c0392b; border-radius: 0 4px 4px 0;
+  cursor: pointer; white-space: nowrap; letter-spacing: 0.02em;
+  transition: background 0.15s, border-color 0.15s;
+}
+.hero-subscribe-btn:hover:not(:disabled) { background: #a8341f; border-color: #a8341f; }
+
 /* ─── About ─── */
 .pub-about { padding: 96px 0; background: var(--pub-cream); }
 .pub-about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
@@ -463,6 +487,9 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
   .pub-issues-head { flex-direction: column; align-items: flex-start; gap: 12px; }
   .pub-issue-date { display: none; }
   .pub-sub-section { padding: 72px 20px; }
+  .hero-subscribe-form { width: 100%; flex-direction: column; }
+  .hero-subscribe-input { border-right: 1px solid rgba(26,26,26,0.2); border-bottom: none; border-radius: 4px 4px 0 0; }
+  .hero-subscribe-btn { border-radius: 0 0 4px 4px; text-align: center; }
   .pub-footer { padding: 28px 20px; }
 }
 
