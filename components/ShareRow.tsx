@@ -32,8 +32,12 @@ export default function ShareRow({ title }: { title: string }) {
       >
         LinkedIn
       </a>
-      <button onClick={copyLink} className="pub-share-btn">
-        {copied ? 'Copied!' : 'Copy link'}
+      <button
+        onClick={copyLink}
+        className="pub-share-btn"
+        style={copied ? { color: '#2d7a3a', borderColor: '#a3d4a8', background: '#f0faf1' } : {}}
+      >
+        {copied ? '✓ Copied!' : 'Copy link'}
       </button>
     </div>
   )
