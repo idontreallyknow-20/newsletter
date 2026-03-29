@@ -1,8 +1,8 @@
 {
   "crons": [
     {
-      "path": "/api/cron/send",
-      "schedule": "0 8 * * *"
+      "path": "/api/cron/generate-and-send",
+      "schedule": "0 7 * * *"
     }
   ],
   "git": {
