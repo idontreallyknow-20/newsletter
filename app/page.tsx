@@ -64,10 +64,10 @@ export default async function HomePage() {
                 <p className="pub-label">About</p>
                 <h2 className="pub-heading">Written for people who want to understand what&apos;s actually happening.</h2>
                 <p className="pub-copy">
-                  Most financial and tech news is written for insiders. Joseph writes for everyone else: people with real jobs who want a clear view of how AI and the global economy are changing things.
+                  Most financial and tech news is written for insiders. I write for everyone else: people with real jobs who want a clear view of how AI and the global economy are changing things.
                 </p>
                 <p className="pub-copy">
-                  Each issue takes one big topic and tells you what it actually means. No buzzwords, no breathless predictions. Just honest analysis you can read in five minutes.
+                  Each issue takes one big topic and tells you what it actually means. No buzzwords, no breathless predictions. Just my honest take, written so you can read it in five minutes.
                 </p>
               </div>
               <div className="pub-stats">
