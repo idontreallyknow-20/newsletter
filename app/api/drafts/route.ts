@@ -15,17 +15,17 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json()
-    const { id, subject, previewText, bodyMarkdown } = body
+    const { id, subject, previewText, bodyMarkdown, language } = body
 
     if (id) {
       const [row] = await db
         .update(drafts)
-        .set({ subject, previewText, bodyMarkdown, updatedAt: new Date() })
+        .set({ subject, previewText, bodyMarkdown, language: language || 'en', updatedAt: new Date() })
         .where(eq(drafts.id, id))
         .returning()
       return NextResponse.json(row)
     } else {
-      const [row] = await db.insert(drafts).values({ subject, previewText, bodyMarkdown }).returning()
+      const [row] = await db.insert(drafts).values({ subject, previewText, bodyMarkdown, language: language || 'en' }).returning()
       return NextResponse.json(row, { status: 201 })
     }
   } catch {

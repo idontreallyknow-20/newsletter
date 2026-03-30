@@ -6,9 +6,9 @@ import { useState } from 'react'
 
 const nav = [
   { href: '/dashboard', label: 'Dashboard', abbr: '01' },
-  { href: '/compose', label: 'Compose', abbr: '02' },
-  { href: '/subscribers', label: 'Subscribers', abbr: '03' },
-  { href: '/schedule', label: 'Schedule', abbr: '04' },
+  { href: '/compose/en', label: 'Compose EN', abbr: '02' },
+  { href: '/compose/zh', label: 'Compose 中文', abbr: '03' },
+  { href: '/subscribers', label: 'Subscribers', abbr: '04' },
   { href: '/history', label: 'History', abbr: '05' },
   { href: '/settings', label: 'Settings', abbr: '06' },
 ]
@@ -18,7 +18,7 @@ function NavLinks({ onNav }: { onNav?: () => void }) {
   return (
     <ul className="space-y-0.5">
       {nav.map(item => {
-        const active = pathname === item.href
+        const active = pathname === item.href || pathname.startsWith(item.href + '/')
         return (
           <li key={item.href}>
             <Link

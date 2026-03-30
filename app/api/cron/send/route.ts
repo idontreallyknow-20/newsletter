@@ -48,9 +48,8 @@ export async function GET(req: Request) {
   }
 
   try {
-    const [settingRows, [latestDraft], allActive] = await Promise.all([
+    const [settingRows, allActive] = await Promise.all([
       db.select().from(settings),
-      db.select().from(drafts).orderBy(desc(drafts.updatedAt)).limit(1),
       db.select().from(subscribers).where(eq(subscribers.status, 'active')),
     ])
 
@@ -61,18 +60,27 @@ export async function GET(req: Request) {
       return NextResponse.json({ skipped: true, reason: 'Not scheduled for this time' })
     }
 
-    if (!latestDraft || !latestDraft.bodyMarkdown) {
-      return NextResponse.json({ skipped: true, reason: 'No draft available to send' })
+    // Fetch latest EN and ZH drafts separately
+    const [[enDraft], [zhDraft]] = await Promise.all([
+      db.select().from(drafts).where(eq(drafts.language, 'en')).orderBy(desc(drafts.updatedAt)).limit(1),
+      db.select().from(drafts).where(eq(drafts.language, 'zh')).orderBy(desc(drafts.updatedAt)).limit(1),
+    ])
+
+    if (!enDraft?.bodyMarkdown) {
+      return NextResponse.json({ skipped: true, reason: 'No English draft available' })
     }
 
     const sendType = scheduleToSendType((s.schedule_frequency || 'manual') as import('@/lib/preferences').ScheduleFrequency)
-    const targets = sendType
-      ? allActive.filter(sub => subscriberFrequenciesFor(sendType).includes(sub.frequency as 'weekly' | 'daily' | 'both'))
-      : allActive
-
-    if (targets.length === 0) {
-      return NextResponse.json({ skipped: true, reason: 'No matching subscribers' })
-    }
+    const enTargets = allActive.filter(sub => {
+      const langMatch = (sub.language || 'en') === 'en'
+      const freqMatch = sendType ? subscriberFrequenciesFor(sendType).includes(sub.frequency as 'weekly' | 'daily' | 'both') : true
+      return langMatch && freqMatch
+    })
+    const zhTargets = allActive.filter(sub => {
+      const langMatch = sub.language === 'zh'
+      const freqMatch = sendType ? subscriberFrequenciesFor(sendType).includes(sub.frequency as 'weekly' | 'daily' | 'both') : true
+      return langMatch && freqMatch
+    })
 
     const fromName = s.from_name || 'Newsletter'
     const fromEmail = s.from_email || process.env.FROM_EMAIL || ''
@@ -80,34 +88,34 @@ export async function GET(req: Request) {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
     const emailSecret = process.env.DASHBOARD_PASSWORD || ''
 
-    const enSubject = latestDraft.subject || newsletterName
-    const enBodyHtml = markdownToHtml(latestDraft.bodyMarkdown)
+    const enSubject = enDraft.subject || newsletterName
+    const enBodyHtml = markdownToHtml(enDraft.bodyMarkdown)
 
-    // Split subscribers by language preference
-    const enTargets = targets.filter(sub => (sub.language || 'en') !== 'zh')
-    const zhTargets = targets.filter(sub => sub.language === 'zh')
-
-    // Translate to Chinese if needed
+    // Use dedicated ZH draft if available, otherwise translate EN
     let zhSubject = enSubject
     let zhBodyHtml = enBodyHtml
-    if (zhTargets.length > 0 && process.env.ANTHROPIC_API_KEY) {
-      try {
-        const translation = await translateToZh(enSubject, latestDraft.bodyMarkdown)
-        zhSubject = translation.subject
-        zhBodyHtml = markdownToHtml(translation.markdown)
-      } catch (err) {
-        console.error('[send] zh translation failed, falling back to English:', err instanceof Error ? err.message : err)
+    if (zhTargets.length > 0) {
+      if (zhDraft?.bodyMarkdown) {
+        zhSubject = zhDraft.subject || enSubject
+        zhBodyHtml = markdownToHtml(zhDraft.bodyMarkdown)
+      } else if (process.env.ANTHROPIC_API_KEY) {
+        try {
+          const translation = await translateToZh(enSubject, enDraft.bodyMarkdown)
+          zhSubject = translation.subject
+          zhBodyHtml = markdownToHtml(translation.markdown)
+        } catch (err) {
+          console.error('[send] zh translation failed, falling back to English:', err instanceof Error ? err.message : err)
+        }
       }
     }
 
-    const buildRecipients = (subs: typeof targets, bodyHtml: string) =>
+    const buildRecipients = (subs: typeof allActive, bodyHtml: string) =>
       subs.map(sub => {
         const token = signEmailToken(sub.email, emailSecret)
         const unsubscribeUrl = `${baseUrl}/api/unsubscribe?email=${encodeURIComponent(sub.email)}&token=${token}`
         return { email: sub.email, html: buildEmailHtml({ newsletterName, bodyHtml, unsubscribeUrl }) }
       })
 
-    // Send both batches (parallel)
     const [enResults, zhResults] = await Promise.all([
       enTargets.length > 0
         ? sendBatch({ recipients: buildRecipients(enTargets, enBodyHtml), subject: enSubject, fromName, fromEmail })
@@ -122,17 +130,17 @@ export async function GET(req: Request) {
 
     await db.insert(sentEmails).values({
       subject: enSubject,
-      previewText: latestDraft.previewText,
+      previewText: enDraft.previewText,
       bodyHtml: enBodyHtml,
-      bodyMarkdown: latestDraft.bodyMarkdown,
+      bodyMarkdown: enDraft.bodyMarkdown,
       slug: slugify(enSubject),
-      recipientCount: targets.length,
+      recipientCount: enTargets.length + zhTargets.length,
       status: errorCount === 0 ? 'sent' : 'partial',
     })
 
     return NextResponse.json({
       success: true,
-      sent: targets.length - errorCount,
+      sent: (enTargets.length + zhTargets.length) - errorCount,
       breakdown: { en: enTargets.length, zh: zhTargets.length },
     })
   } catch {

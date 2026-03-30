@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
+import { deriveSessionToken } from '@/lib/token'
 import { timingSafeEqual } from 'crypto'
 
 function safeEqual(a: string, b: string) {
@@ -47,6 +48,7 @@ const statements = [
   sql`ALTER TABLE subscribers ADD COLUMN IF NOT EXISTS language text NOT NULL DEFAULT 'en'`,
   sql`ALTER TABLE subscribers ADD COLUMN IF NOT EXISTS frequency text NOT NULL DEFAULT 'weekly'`,
   sql`ALTER TABLE sent_emails ADD COLUMN IF NOT EXISTS slug text`,
+  sql`ALTER TABLE drafts ADD COLUMN IF NOT EXISTS language text NOT NULL DEFAULT 'en'`,
   // Pre-load default settings (won't overwrite values you've already set)
   sql`INSERT INTO settings (key, value) VALUES ('newsletter_name', 'AI & Economy') ON CONFLICT (key) DO NOTHING`,
   sql`INSERT INTO settings (key, value) VALUES ('from_name', 'Joseph') ON CONFLICT (key) DO NOTHING`,
@@ -57,8 +59,10 @@ const statements = [
 export async function GET() {
   const stored = process.env.DASHBOARD_PASSWORD
   if (!stored) return NextResponse.json({ error: 'Server not configured' }, { status: 500 })
-  const session = cookies().get('nhq_session')
-  if (!session?.value || !safeEqual(session.value, stored)) {
+  const cookieStore = await cookies()
+  const session = cookieStore.get('nhq_session')
+  const expected = deriveSessionToken(stored)
+  if (!session?.value || !safeEqual(session.value, expected)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

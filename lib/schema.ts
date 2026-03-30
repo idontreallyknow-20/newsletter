@@ -27,6 +27,7 @@ export const drafts = pgTable('drafts', {
   subject: text('subject'),
   previewText: text('preview_text'),
   bodyMarkdown: text('body_markdown'),
+  language: text('language').notNull().default('en'),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })
 

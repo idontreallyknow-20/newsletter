@@ -1,0 +1,275 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1774831599651,
+  "projectRoot": "C:\\Users\\Jojo\\newsletter",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      },
+      {
+        "name": "TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "tsconfig.json"
+        ]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "next",
+        "version": "14.2.35",
+        "category": "fullstack"
+      },
+      {
+        "name": "react",
+        "version": "18",
+        "category": "frontend"
+      },
+      {
+        "name": "react-dom",
+        "version": "18",
+        "category": "frontend"
+      },
+      {
+        "name": "vitest",
+        "version": "4.1.2",
+        "category": "testing"
+      }
+    ],
+    "packageManager": "npm",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": "npm run build",
+    "testCommand": "npm test",
+    "lintCommand": "npm run lint",
+    "devCommand": "npm run dev",
+    "scripts": {
+      "dev": "next dev",
+      "build": "next build",
+      "start": "next start",
+      "lint": "next lint",
+      "db:push": "drizzle-kit push",
+      "test": "vitest run",
+      "test:watch": "vitest"
+    }
+  },
+  "conventions": {
+    "namingStyle": "camelCase",
+    "importStyle": "ES modules",
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "app",
+      "components",
+      "docs",
+      "lib"
+    ],
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "app": {
+      "path": "app",
+      "purpose": "Application code",
+      "fileCount": 8,
+      "lastAccessed": 1774831599592,
+      "keyFiles": [
+        "favicon.ico",
+        "globals.css",
+        "layout.tsx",
+        "not-found.tsx",
+        "opengraph-image.tsx"
+      ]
+    },
+    "components": {
+      "path": "components",
+      "purpose": "UI components",
+      "fileCount": 16,
+      "lastAccessed": 1774831599594,
+      "keyFiles": [
+        "ArticleIllustrations.tsx",
+        "ArticleListClient.tsx",
+        "ConfirmModal.tsx",
+        "DashboardShell.tsx",
+        "EmailPreview.tsx"
+      ]
+    },
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 0,
+      "lastAccessed": 1774831599601,
+      "keyFiles": []
+    },
+    "lib": {
+      "path": "lib",
+      "purpose": "Library code",
+      "fileCount": 13,
+      "lastAccessed": 1774831599603,
+      "keyFiles": [
+        "articles.ts",
+        "db.ts",
+        "email-template.ts",
+        "email.ts",
+        "markdown.ts"
+      ]
+    },
+    "app\\api": {
+      "path": "app\\api",
+      "purpose": "API routes",
+      "fileCount": 0,
+      "lastAccessed": 1774831599604,
+      "keyFiles": []
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "app\\compose\\page.tsx",
+      "accessCount": 10,
+      "lastAccessed": 1774837617876,
+      "type": "file"
+    },
+    {
+      "path": "app\\api\\subscribe\\route.ts",
+      "accessCount": 8,
+      "lastAccessed": 1774837073804,
+      "type": "file"
+    },
+    {
+      "path": "app\\page.tsx",
+      "accessCount": 5,
+      "lastAccessed": 1774837656194,
+      "type": "directory"
+    },
+    {
+      "path": "components\\Sidebar.tsx",
+      "accessCount": 4,
+      "lastAccessed": 1774837609953,
+      "type": "file"
+    },
+    {
+      "path": "app\\login\\page.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1774836465727,
+      "type": "file"
+    },
+    {
+      "path": "app\\api\\login\\route.ts",
+      "accessCount": 3,
+      "lastAccessed": 1774836479723,
+      "type": "file"
+    },
+    {
+      "path": "middleware.ts",
+      "accessCount": 3,
+      "lastAccessed": 1774836555646,
+      "type": "file"
+    },
+    {
+      "path": "app\\api\\setup\\route.ts",
+      "accessCount": 3,
+      "lastAccessed": 1774837558522,
+      "type": "file"
+    },
+    {
+      "path": "app\\api\\drafts\\route.ts",
+      "accessCount": 3,
+      "lastAccessed": 1774837562118,
+      "type": "file"
+    },
+    {
+      "path": "components\\DashboardShell.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1774837604399,
+      "type": "file"
+    },
+    {
+      "path": "lib\\email.ts",
+      "accessCount": 2,
+      "lastAccessed": 1774834204251,
+      "type": "file"
+    },
+    {
+      "path": "app\\api\\send\\route.ts",
+      "accessCount": 2,
+      "lastAccessed": 1774834728146,
+      "type": "file"
+    },
+    {
+      "path": "lib\\email-template.ts",
+      "accessCount": 2,
+      "lastAccessed": 1774836157065,
+      "type": "file"
+    },
+    {
+      "path": "lib\\schema.ts",
+      "accessCount": 2,
+      "lastAccessed": 1774837557168,
+      "type": "file"
+    },
+    {
+      "path": "app\\api\\cron\\send\\route.ts",
+      "accessCount": 2,
+      "lastAccessed": 1774837643354,
+      "type": "file"
+    },
+    {
+      "path": "app\\globals.css",
+      "accessCount": 1,
+      "lastAccessed": 1774834933707,
+      "type": "file"
+    },
+    {
+      "path": "app\\layout.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1774834933883,
+      "type": "file"
+    },
+    {
+      "path": "app\\api\\preferences\\route.ts",
+      "accessCount": 1,
+      "lastAccessed": 1774836544847,
+      "type": "file"
+    },
+    {
+      "path": "app",
+      "accessCount": 1,
+      "lastAccessed": 1774837144589,
+      "type": "directory"
+    },
+    {
+      "path": "components\\ComposeEditor.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1774837600787,
+      "type": "file"
+    },
+    {
+      "path": "app\\compose\\en\\page.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1774837610964,
+      "type": "file"
+    },
+    {
+      "path": "app\\compose\\zh\\page.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1774837611985,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}
