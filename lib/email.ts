@@ -64,8 +64,11 @@ export async function syncToResendAudience(opts: {
   email: string
   firstName?: string
   unsubscribed?: boolean
+  language?: string
 }) {
-  const audienceId = process.env.RESEND_AUDIENCE_ID
+  const audienceId = opts.language === 'zh'
+    ? (process.env.RESEND_AUDIENCE_ID_ZH || process.env.RESEND_AUDIENCE_ID)
+    : (process.env.RESEND_AUDIENCE_ID_EN || process.env.RESEND_AUDIENCE_ID)
   if (!audienceId) return
 
   try {
