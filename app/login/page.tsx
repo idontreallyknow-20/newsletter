@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 
 function LoginForm() {
   const [password, setPassword] = useState('')
+  const [remember, setRemember] = useState(true)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -18,7 +19,7 @@ function LoginForm() {
       const res = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ password, remember }),
       })
       if (!res.ok) {
         setError('Incorrect password.')
@@ -82,6 +83,18 @@ function LoginForm() {
           {error}
         </p>
       )}
+
+      <label style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', cursor: 'pointer' }}>
+        <input
+          type="checkbox"
+          checked={remember}
+          onChange={e => setRemember(e.target.checked)}
+          style={{ accentColor: 'var(--red)', width: '14px', height: '14px', cursor: 'pointer' }}
+        />
+        <span style={{ fontFamily: 'var(--font-dm)', fontSize: '12px', color: 'var(--tan)', letterSpacing: '0.03em' }}>
+          Remember me for 30 days
+        </span>
+      </label>
 
       <button
         type="submit"

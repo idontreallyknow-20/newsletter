@@ -45,7 +45,7 @@ export async function POST(req: Request) {
     )
   }
 
-  const { password } = await req.json()
+  const { password, remember } = await req.json()
   const stored = process.env.DASHBOARD_PASSWORD ?? ''
 
   if (!password || !stored || !safeCompare(password, stored)) {
@@ -60,7 +60,7 @@ export async function POST(req: Request) {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
-    maxAge: 60 * 60 * 24 * 7, // 7 days
+    ...(remember ? { maxAge: 60 * 60 * 24 * 30 } : {}), // 30 days if remember, else session cookie
     path: '/',
   })
   return res

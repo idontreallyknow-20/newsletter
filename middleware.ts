@@ -37,8 +37,13 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next()
   }
 
-  // Allow cron (secured by CRON_SECRET header, not cookie)
-  if (pathname === '/api/cron/send') {
+  // Allow cron routes (secured by CRON_SECRET header, not cookie)
+  if (pathname.startsWith('/api/cron/')) {
+    return NextResponse.next()
+  }
+
+  // Allow preferences (used in email links)
+  if (pathname.startsWith('/api/preferences')) {
     return NextResponse.next()
   }
 
