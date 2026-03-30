@@ -158,6 +158,10 @@ export default function PublicSubscribeForm() {
           {errMsg}
         </p>
       )}
+
+      <p style={{ fontFamily: 'var(--font-dm)', fontSize: '12px', color: 'rgba(255,255,255,0.35)', textAlign: 'center', marginTop: '12px', letterSpacing: '0.01em' }}>
+        No spam. Unsubscribe anytime.
+      </p>
     </div>
   )
 }

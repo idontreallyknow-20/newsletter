@@ -8,6 +8,9 @@ export async function POST(req: Request) {
     if (!Array.isArray(rows) || rows.length === 0) {
       return NextResponse.json({ error: 'No rows provided' }, { status: 400 })
     }
+    if (rows.length > 10_000) {
+      return NextResponse.json({ error: 'Maximum 10,000 rows per import' }, { status: 400 })
+    }
 
     const valid = rows.filter(r => r.email?.trim())
     if (valid.length === 0) {

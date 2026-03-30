@@ -69,7 +69,7 @@ export default function TopicsFilter() {
     <>
       {/* Topics grid */}
       <div ref={topicsRef} style={{ scrollMarginTop: '80px' }}>
-        <p className="pub-filter-hint">Select one or more topics to filter ↓</p>
+        <p className="pub-filter-hint">Filter by topic.</p>
         <div className="pub-topics-grid">
           {TOPICS.map(t => {
             const isActive = activeTags.includes(t.tags[0])
@@ -79,6 +79,8 @@ export default function TopicsFilter() {
                 key={t.title}
                 onClick={() => handleTopicClick(t.tags)}
                 className="pub-topic"
+                aria-pressed={isActive}
+                aria-label={`Filter by ${t.title}`}
                 style={{
                   textAlign: 'left',
                   background: isActive ? '#2c1810' : undefined,
@@ -88,7 +90,7 @@ export default function TopicsFilter() {
                   boxShadow: isActive ? '5px 5px 0 var(--red)' : undefined,
                 }}
               >
-                <div className="pub-topic-icon-wrap" style={isActive ? { borderColor: 'var(--red)', color: '#f5f0e8', background: 'rgba(200,64,42,0.15)' } : {}}>
+                <div className="pub-topic-icon-wrap" role="img" aria-label={`${t.title} icon`} style={isActive ? { borderColor: 'var(--red)', color: '#f5f0e8', background: 'rgba(200,64,42,0.15)' } : {}}>
                   {t.icon}
                 </div>
                 <div className="pub-topic-title" style={isActive ? { color: '#f5f0e8' } : {}}>{t.title}</div>

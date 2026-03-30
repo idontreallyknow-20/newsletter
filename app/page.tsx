@@ -44,7 +44,7 @@ export default async function HomePage() {
           <div className="pub-eyebrow fade-up d0">Newsletter · Economics &amp; AI</div>
           <HeroTypewriter />
           <p className="pub-sub fade-up d2">
-            A weekly newsletter for curious minds. Breaking down the economic forces and AI breakthroughs shaping our world, without the jargon.
+            We decode economic forces and AI breakthroughs shaping your world &mdash; minus the jargon. Choose daily or weekly delivery.
           </p>
           <div className="fade-up d3">
             <HeroSubscribeForm />
@@ -140,12 +140,12 @@ export default async function HomePage() {
       <section id="subscribe">
         <div className="pub-sub-section">
           <div className="pub-sub-inner">
-            <h2 className="pub-sub-heading">Stay one step ahead.</h2>
+            <h2 className="pub-sub-heading">Join readers who get a clear take on economics and AI.</h2>
             <p className="pub-sub-body">
-              Join readers who get a clear take on economics and AI, delivered to their inbox every week.
+              Delivered to your inbox. Choose daily or weekly &mdash; unsubscribe anytime.
             </p>
             <PublicSubscribeForm />
-            <p className="pub-sub-fine">No spam. No tracking. Unsubscribe anytime.</p>
+            <p className="pub-sub-fine">No spam. Unsubscribe anytime.</p>
           </div>
         </div>
       </section>

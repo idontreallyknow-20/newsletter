@@ -17,7 +17,7 @@ export async function GET(req: Request) {
     const token = searchParams.get('token') ?? ''
     if (!email) return NextResponse.json({ error: 'Email required' }, { status: 400 })
 
-    const secret = process.env.DASHBOARD_PASSWORD ?? ''
+    const secret = process.env.EMAIL_TOKEN_SECRET || process.env.DASHBOARD_PASSWORD || ''
     if (!token || !verifyEmailToken(email, token, secret)) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 403 })
     }

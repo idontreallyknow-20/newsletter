@@ -245,7 +245,7 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
   font-family: var(--font-playfair), Georgia, serif;
   font-size: 36px; font-weight: 700; color: var(--ink); line-height: 1; margin-bottom: 8px;
 }
-.pub-stat-l { font-size: 11px; font-weight: 500; color: var(--tan); letter-spacing: 0.08em; text-transform: uppercase; }
+.pub-stat-l { font-size: 11px; font-weight: 600; color: #4a4340; letter-spacing: 0.08em; text-transform: uppercase; }
 
 /* ─── Topics ─── */
 .pub-topics { padding: 96px 0; background: var(--pub-cream-2); }
