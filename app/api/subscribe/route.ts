@@ -62,19 +62,9 @@ export async function POST(req: Request) {
           <p style="font-size:13px;color:#6b6459;margin-bottom:12px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;">您的偏好设置</p>
           <p style="font-size:14px;color:#3a3530;margin-bottom:8px;">当前设置：<strong>${freqLabel} · ${langLabel}</strong></p>
           <p style="font-size:14px;color:#6b6459;margin-bottom:16px;">想要更改？一键切换：</p>
-          <table cellpadding="0" cellspacing="0" border="0">
-            <tr>
-              <td style="padding-right:8px;">
-                <a href="${prefBase}&freq=daily" style="display:inline-block;padding:8px 16px;background:#f5f0e8;border:1px solid #d6cfc4;color:#1a1a1a;font-size:13px;font-weight:500;text-decoration:none;">每日推送</a>
-              </td>
-              <td style="padding-right:8px;">
-                <a href="${prefBase}&lang=en" style="display:inline-block;padding:8px 16px;background:#f5f0e8;border:1px solid #d6cfc4;color:#1a1a1a;font-size:13px;font-weight:500;text-decoration:none;">Switch to English</a>
-              </td>
-              <td>
-                <a href="${prefBase}&freq=weekly" style="display:inline-block;padding:8px 16px;background:#f5f0e8;border:1px solid #d6cfc4;color:#1a1a1a;font-size:13px;font-weight:500;text-decoration:none;">每周推送</a>
-              </td>
-            </tr>
-          </table>
+          <a href="${prefBase}&freq=daily" style="display:block;margin-bottom:8px;padding:10px 16px;background:#f5f0e8;border:1px solid #d6cfc4;color:#1a1a1a;font-size:13px;font-weight:500;text-decoration:none;">每日推送</a>
+          <a href="${prefBase}&freq=weekly" style="display:block;margin-bottom:8px;padding:10px 16px;background:#f5f0e8;border:1px solid #d6cfc4;color:#1a1a1a;font-size:13px;font-weight:500;text-decoration:none;">每周推送</a>
+          <a href="${prefBase}&lang=en" style="display:block;padding:10px 16px;background:#f5f0e8;border:1px solid #d6cfc4;color:#1a1a1a;font-size:13px;font-weight:500;text-decoration:none;">Switch to English</a>
           <p style="margin-top:32px;">Joseph</p>
         ` : `
           <p style="font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:700;color:#1a1a1a;margin:0 0 24px;">Welcome.</p>
@@ -84,19 +74,10 @@ export async function POST(req: Request) {
           <p style="font-size:13px;color:#6b6459;margin-bottom:12px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;">Your preferences</p>
           <p style="font-size:14px;color:#3a3530;margin-bottom:8px;">Currently set to: <strong>${freqLabel} · ${langLabel}</strong></p>
           <p style="font-size:14px;color:#6b6459;margin-bottom:16px;">Want something different? One click to change:</p>
-          <table cellpadding="0" cellspacing="0" border="0">
-            <tr>
-              <td style="padding-right:8px;">
-                <a href="${prefBase}&freq=daily" style="display:inline-block;padding:8px 16px;background:#f5f0e8;border:1px solid #d6cfc4;color:#1a1a1a;font-size:13px;font-weight:500;text-decoration:none;">Daily digest</a>
-              </td>
-              <td style="padding-right:8px;">
-                <a href="${prefBase}&lang=zh" style="display:inline-block;padding:8px 16px;background:#f5f0e8;border:1px solid #d6cfc4;color:#1a1a1a;font-size:13px;font-weight:500;text-decoration:none;">切换中文</a>
-              </td>
-              <td>
-                <a href="${prefBase}&freq=both" style="display:inline-block;padding:8px 16px;background:#f5f0e8;border:1px solid #d6cfc4;color:#1a1a1a;font-size:13px;font-weight:500;text-decoration:none;">Weekly + Daily</a>
-              </td>
-            </tr>
-          </table>
+          <a href="${prefBase}&freq=daily" style="display:block;margin-bottom:8px;padding:10px 16px;background:#f5f0e8;border:1px solid #d6cfc4;color:#1a1a1a;font-size:13px;font-weight:500;text-decoration:none;">Daily digest</a>
+          <a href="${prefBase}&freq=weekly" style="display:block;margin-bottom:8px;padding:10px 16px;background:#f5f0e8;border:1px solid #d6cfc4;color:#1a1a1a;font-size:13px;font-weight:500;text-decoration:none;">Weekly digest</a>
+          <a href="${prefBase}&freq=both" style="display:block;margin-bottom:8px;padding:10px 16px;background:#f5f0e8;border:1px solid #d6cfc4;color:#1a1a1a;font-size:13px;font-weight:500;text-decoration:none;">Daily + Weekly</a>
+          <a href="${prefBase}&lang=zh" style="display:block;padding:10px 16px;background:#f5f0e8;border:1px solid #d6cfc4;color:#1a1a1a;font-size:13px;font-weight:500;text-decoration:none;">切换中文</a>
           <p style="margin-top:32px;">Joseph</p>
         `
         const welcomeSubject = lang === 'zh' ? `欢迎订阅 ${newsletterName}` : `Welcome to ${newsletterName}`
