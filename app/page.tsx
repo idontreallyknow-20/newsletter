@@ -61,18 +61,18 @@ export default async function HomePage() {
             <div className="pub-about-grid">
               <div>
                 <p className="pub-label">About</p>
-                <h2 className="pub-heading">Written for people who want to understand what&apos;s actually happening.</h2>
+                <h2 className="pub-heading">I&apos;m 16, and I think the way we talk about AI is broken.</h2>
                 <p className="pub-copy">
-                  Most financial and tech news is written for insiders. I write for everyone else: people with real jobs who want a clear view of how AI and the global economy are changing things.
+                  Most coverage is either breathless hype or doom. Neither helps anyone understand what&apos;s actually happening, or what it means for their job, their savings, or the economy around them.
                 </p>
                 <p className="pub-copy">
-                  Each issue takes one big topic and tells you what it actually means. No buzzwords, no breathless predictions. Just my honest take, written so you can read it in five minutes.
+                  I started this newsletter because I wanted to read something that treated people as smart adults — explaining the real economics behind the headlines without assuming you already work in tech or finance. My goal is simple: make AI and economic analysis accessible to everyone, not just insiders.
                 </p>
               </div>
               <div className="pub-stats">
                 {[
                   { n: '40+', l: 'Issues Published' },
-                  { n: 'Weekly', l: 'Delivery Cadence' },
+                  { n: 'Daily', l: 'Delivery Cadence' },
                   { n: '5 min', l: 'Avg. Read' },
                   { n: 'Free', l: 'Always' },
                 ].map(s => (
@@ -132,29 +132,6 @@ export default async function HomePage() {
                     intro: a.intro,
                   } satisfies ArticleItem))
             } />
-          </div>
-        </div>
-      </section>
-
-      <hr className="pub-rule" />
-
-      {/* About / Personal section */}
-      <section style={{ background: 'var(--pub-cream-2)', borderTop: '1px solid var(--pub-border)', padding: '80px 0' }}>
-        <div style={{ maxWidth: '640px', margin: '0 auto', padding: '0 32px' }}>
-          <p className="pub-eyebrow" style={{ marginBottom: '20px' }}>About</p>
-          <h2 style={{ fontFamily: 'var(--font-playfair)', fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 700, color: 'var(--ink)', lineHeight: 1.2, letterSpacing: '-0.02em', marginBottom: '32px' }}>
-            I&apos;m 16, and I think the way we talk about AI is broken.
-          </h2>
-          <div style={{ fontFamily: 'var(--font-dm)', fontSize: '16px', lineHeight: 1.8, color: 'var(--tan)' }}>
-            <p style={{ marginBottom: '20px' }}>
-              Most coverage of AI is either breathless hype or doom. Neither helps anyone understand what&apos;s actually happening, or what it means for their job, their savings, or the economy around them.
-            </p>
-            <p style={{ marginBottom: '20px' }}>
-              I started this newsletter because I wanted to read something that treated people as smart adults — that explained the real economics behind the headlines without assuming you already work in tech or finance.
-            </p>
-            <p>
-              My goal is simple: make AI and economic analysis accessible to everyone, not just insiders. One clear, honest issue at a time.
-            </p>
           </div>
         </div>
       </section>

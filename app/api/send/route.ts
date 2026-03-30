@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     const fromName = s.from_name || 'Newsletter'
     const fromEmail = s.from_email || process.env.FROM_EMAIL || ''
     const newsletterName = s.newsletter_name || 'Newsletter'
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://dailybriefhq.com'
 
     // Filter by frequency and language if specified
     const freqList: string[] = Array.isArray(frequencies) && frequencies.length > 0 ? frequencies : ['daily', 'weekly']
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
     }
 
     const bodyHtml = markdownToHtml(bodyMarkdown)
-    const emailSecret = process.env.DASHBOARD_PASSWORD || ''
+    const emailSecret = process.env.EMAIL_TOKEN_SECRET || process.env.DASHBOARD_PASSWORD || ''
 
     const recipients = targets.map(sub => {
       const token = signEmailToken(sub.email, emailSecret)

@@ -21,7 +21,7 @@ export async function GET(req: Request) {
     return NextResponse.redirect(new URL('/preferences?error=1', req.url))
   }
 
-  const secret = process.env.DASHBOARD_PASSWORD ?? ''
+  const secret = process.env.EMAIL_TOKEN_SECRET || process.env.DASHBOARD_PASSWORD ?? ''
   if (!token || !verifyEmailToken(email, token, secret)) {
     return NextResponse.redirect(new URL('/preferences?error=1', req.url))
   }

@@ -44,10 +44,10 @@ export async function POST(req: Request) {
       const fromName = s.from_name || 'Joseph'
       const fromEmail = s.from_email || process.env.FROM_EMAIL || ''
       const newsletterName = s.newsletter_name || 'AI & Economy'
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://dailybriefhq.com'
 
       if (fromEmail) {
-        const emailSecret = process.env.DASHBOARD_PASSWORD || ''
+        const emailSecret = process.env.EMAIL_TOKEN_SECRET || process.env.DASHBOARD_PASSWORD || ''
         const emailToken = signEmailToken(email, emailSecret)
         const unsubscribeUrl = `${baseUrl}/api/unsubscribe?email=${encodeURIComponent(email)}&token=${emailToken}`
         const prefBase = `${baseUrl}/api/preferences?email=${encodeURIComponent(email)}&token=${emailToken}`

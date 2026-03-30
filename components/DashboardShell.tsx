@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation'
 import Sidebar from './Sidebar'
 
-const ADMIN_PATHS = ['/dashboard', '/compose', '/subscribers', '/history', '/settings']
+const ADMIN_PATHS = ['/dashboard', '/compose', '/subscribers', '/schedule', '/history', '/settings']
 
 function isAdminPath(pathname: string): boolean {
   return ADMIN_PATHS.some(p => pathname === p || pathname.startsWith(p + '/'))

@@ -9,8 +9,9 @@ const nav = [
   { href: '/compose/en', label: 'Compose EN', abbr: '02' },
   { href: '/compose/zh', label: 'Compose 中文', abbr: '03' },
   { href: '/subscribers', label: 'Subscribers', abbr: '04' },
-  { href: '/history', label: 'History', abbr: '05' },
-  { href: '/settings', label: 'Settings', abbr: '06' },
+  { href: '/schedule', label: 'Schedule', abbr: '05' },
+  { href: '/history', label: 'History', abbr: '06' },
+  { href: '/settings', label: 'Settings', abbr: '07' },
 ]
 
 function NavLinks({ onNav }: { onNav?: () => void }) {
