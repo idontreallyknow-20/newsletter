@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 // Paths that start with these prefixes are public (no auth needed)
-const PUBLIC_PREFIXES = ['/login', '/subscribe', '/issues', '/api/login', '/api/subscribe', '/api/unsubscribe', '/api/logout', '/api/setup', '/_next', '/favicon.ico']
+const PUBLIC_PREFIXES = ['/login', '/subscribe', '/preferences', '/issues', '/api/login', '/api/subscribe', '/api/unsubscribe', '/api/logout', '/api/setup', '/api/preferences', '/_next', '/favicon.ico']
 
 // Derive a session token from the admin password using Web Crypto (Edge-compatible).
 // The cookie stores this derived token — never the raw password.
