@@ -18,8 +18,6 @@ function buildPreviewHtml(bodyMarkdown: string): string {
   })
 }
 
-type SendAudience = 'all' | 'weekly' | 'daily'
-
 export default function ComposePage() {
   const [subject, setSubject] = useState('')
   const [previewText, setPreviewText] = useState('')
@@ -29,7 +27,10 @@ export default function ComposePage() {
   const [testing, setTesting] = useState(false)
   const [saving, setSaving] = useState(false)
   const [confirmSend, setConfirmSend] = useState(false)
-  const [audience, setAudience] = useState<SendAudience>('all')
+  const [freqDaily, setFreqDaily] = useState(true)
+  const [freqWeekly, setFreqWeekly] = useState(true)
+  const [langEn, setLangEn] = useState(true)
+  const [langZh, setLangZh] = useState(true)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const previewHtml = buildPreviewHtml(body)
@@ -72,6 +73,9 @@ export default function ComposePage() {
     }
   }
 
+  const frequencies = [...(freqDaily ? ['daily'] : []), ...(freqWeekly ? ['weekly'] : [])]
+  const languages = [...(langEn ? ['en'] : []), ...(langZh ? ['zh'] : [])]
+
   async function sendAll() {
     setSending(true)
     setConfirmSend(false)
@@ -79,7 +83,7 @@ export default function ComposePage() {
       const res = await fetch('/api/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subject, previewText, bodyMarkdown: body, frequency: audience === 'all' ? undefined : audience }),
+        body: JSON.stringify({ subject, previewText, bodyMarkdown: body, frequencies, languages }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
@@ -100,16 +104,15 @@ export default function ComposePage() {
           <h2 className="font-display text-2xl font-bold" style={{ color: 'var(--cream)' }}>Compose</h2>
         </div>
         <div className="flex gap-2 flex-wrap items-center">
-          <select
-            value={audience}
-            onChange={e => setAudience(e.target.value as SendAudience)}
-            className="px-3 py-2 text-xs font-mono tracking-wide"
-            style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--muted)', outline: 'none' }}
-          >
-            <option value="all">All subscribers</option>
-            <option value="weekly">Weekly subscribers</option>
-            <option value="daily">Daily subscribers</option>
-          </select>
+          <div className="flex items-center gap-3 px-3 py-2 text-xs font-mono tracking-wide" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--muted)' }}>
+            <span style={{ opacity: 0.5 }}>Send to:</span>
+            {([['daily', 'Daily', freqDaily, setFreqDaily], ['weekly', 'Weekly', freqWeekly, setFreqWeekly], ['en', 'EN', langEn, setLangEn], ['zh', '中文', langZh, setLangZh]] as [string, string, boolean, (v: boolean) => void][]).map(([key, label, checked, setter]) => (
+              <label key={key} className="flex items-center gap-1 cursor-pointer select-none">
+                <input type="checkbox" checked={checked} onChange={e => setter(e.target.checked)} className="cursor-pointer" style={{ accentColor: 'var(--accent)' }} />
+                <span>{label}</span>
+              </label>
+            ))}
+          </div>
           <button
             onClick={saveDraft}
             disabled={saving}
@@ -188,7 +191,7 @@ export default function ComposePage() {
       <ConfirmModal
         isOpen={confirmSend}
         title="Send to subscribers?"
-        message={`This will immediately send to ${audience === 'all' ? 'all active' : `${audience} (+ both)`} subscribers. You cannot undo this.`}
+        message={`This will immediately send to ${frequencies.length === 2 && languages.length === 2 ? 'all active' : [frequencies.join('+'), languages.join('+')].filter(Boolean).join(', ')} subscribers. You cannot undo this.`}
         confirmLabel="Yes, Send Now"
         onConfirm={sendAll}
         onCancel={() => setConfirmSend(false)}

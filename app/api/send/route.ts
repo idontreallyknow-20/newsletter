@@ -10,7 +10,7 @@ import { subscriberFrequenciesFor } from '@/lib/preferences'
 
 export async function POST(req: Request) {
   try {
-    const { subject, previewText, bodyMarkdown, frequency } = await req.json()
+    const { subject, previewText, bodyMarkdown, frequencies, languages } = await req.json()
     if (!subject || !bodyMarkdown) {
       return NextResponse.json({ error: 'Subject and body are required' }, { status: 400 })
     }
@@ -28,10 +28,17 @@ export async function POST(req: Request) {
     const newsletterName = s.newsletter_name || 'Newsletter'
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
 
-    // Filter by frequency preference if specified
-    const targets = (frequency === 'weekly' || frequency === 'daily')
-      ? allActive.filter(sub => subscriberFrequenciesFor(frequency).includes(sub.frequency as 'weekly' | 'daily' | 'both'))
-      : allActive
+    // Filter by frequency and language if specified
+    const freqList: string[] = Array.isArray(frequencies) && frequencies.length > 0 ? frequencies : ['daily', 'weekly']
+    const langList: string[] = Array.isArray(languages) && languages.length > 0 ? languages : ['en', 'zh']
+
+    const targets = allActive.filter(sub => {
+      const subFreq = sub.frequency || 'weekly'
+      const subLang = sub.language || 'en'
+      const freqMatch = freqList.some(f => subscriberFrequenciesFor(f as 'daily' | 'weekly').includes(subFreq as 'weekly' | 'daily' | 'both'))
+      const langMatch = langList.includes(subLang)
+      return freqMatch && langMatch
+    })
 
     if (targets.length === 0) {
       return NextResponse.json({ error: 'No matching subscribers' }, { status: 400 })
