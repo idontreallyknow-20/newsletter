@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { useTheme } from './ThemeContext'
 
 const nav = [
   { href: '/dashboard', label: 'Dashboard', abbr: '01' },
@@ -43,6 +44,31 @@ function NavLinks({ onNav }: { onNav?: () => void }) {
         )
       })}
     </ul>
+  )
+}
+
+function ThemeToggle() {
+  const { theme, setTheme } = useTheme()
+  return (
+    <div className="flex items-center gap-2 px-4 py-2.5" style={{ borderBottom: '1px solid var(--border)' }}>
+      <span className="font-mono text-[9px] tracking-[0.2em] uppercase flex-shrink-0" style={{ color: 'var(--muted)', opacity: 0.4 }}>Theme</span>
+      <div className="flex gap-1 ml-auto">
+        {(['light', 'dark'] as const).map(t => (
+          <button
+            key={t}
+            onClick={() => setTheme(t)}
+            className="px-2 py-0.5 font-mono text-[9px] tracking-widest uppercase transition-all"
+            style={{
+              color: theme === t ? 'var(--accent)' : 'var(--muted)',
+              background: theme === t ? 'var(--accent-dim)' : 'transparent',
+              border: `1px solid ${theme === t ? 'var(--border-accent)' : 'transparent'}`,
+            }}
+          >
+            {t === 'light' ? '☀ Light' : '◐ Dark'}
+          </button>
+        ))}
+      </div>
+    </div>
   )
 }
 
@@ -95,8 +121,9 @@ export default function Sidebar() {
           <NavLinks />
         </nav>
 
-        {/* View public site */}
+        {/* Footer */}
         <div style={{ borderTop: '1px solid var(--border)' }}>
+          <ThemeToggle />
           <Link
             href="/"
             target="_blank"

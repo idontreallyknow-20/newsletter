@@ -25,10 +25,23 @@ export default function ComposeEditor({ language }: { language: 'en' | 'zh' }) {
   const [confirmSend, setConfirmSend] = useState(false)
   const [freqDaily, setFreqDaily] = useState(true)
   const [freqWeekly, setFreqWeekly] = useState(false)
+  const [fontSize, setFontSize] = useState<'sm' | 'md' | 'lg'>('md')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const previewHtml = buildPreviewHtml(body)
   const langLabel = language === 'zh' ? '中文' : 'English'
+
+  const wordCount = body.trim() ? body.trim().split(/\s+/).length : 0
+  const charCount = body.length
+  const readTime = wordCount > 0 ? Math.max(1, Math.ceil(wordCount / 200)) : 0
+
+  const fontSizeMap = { sm: '15px', md: '17px', lg: '20px' }
+
+  async function copyMarkdown() {
+    if (!body) { toast.error('Nothing to copy'); return }
+    await navigator.clipboard.writeText(body)
+    toast.success('Markdown copied')
+  }
 
   async function saveDraft() {
     setSaving(true)
@@ -111,6 +124,36 @@ export default function ComposeEditor({ language }: { language: 'en' | 'zh' }) {
         </div>
 
         <div className="flex gap-2 flex-wrap items-center">
+          {/* Font size */}
+          <div className="flex items-center gap-0 font-mono text-[10px]" style={{ border: '1px solid var(--border)' }}>
+            {(['sm', 'md', 'lg'] as const).map(s => (
+              <button
+                key={s}
+                onClick={() => setFontSize(s)}
+                className="px-2 py-1.5 tracking-widest uppercase transition-all"
+                style={{
+                  color: fontSize === s ? 'var(--accent)' : 'var(--muted)',
+                  background: fontSize === s ? 'var(--accent-dim)' : 'transparent',
+                  borderRight: s !== 'lg' ? '1px solid var(--border)' : 'none',
+                }}
+                title={`Font size: ${s}`}
+              >
+                {s === 'sm' ? 'A' : s === 'md' ? 'A' : 'A'}
+                <span className="ml-0.5 opacity-50 text-[8px]">{s}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Copy markdown */}
+          <button
+            onClick={copyMarkdown}
+            className="px-3 py-1.5 text-[11px] font-mono tracking-wide transition-colors"
+            style={{ color: 'var(--muted)', border: '1px solid var(--border)' }}
+            title="Copy raw markdown"
+          >
+            Copy MD
+          </button>
+
           {/* Frequency checkboxes */}
           <div
             className="flex items-center gap-3 px-3 py-1.5 text-[11px] font-mono tracking-wide"
@@ -158,28 +201,28 @@ export default function ComposeEditor({ language }: { language: 'en' | 'zh' }) {
       {/* Editor + Preview */}
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
         {/* Left: editor */}
-        <div className="lg:w-1/2 flex flex-col overflow-y-auto" style={{ borderRight: '1px solid var(--border)', background: '#fff' }}>
+        <div className="lg:w-1/2 flex flex-col overflow-y-auto" style={{ borderRight: '1px solid var(--border)', background: 'var(--surface)' }}>
           <div className="px-10 pt-10 pb-6" style={{ borderBottom: '1px solid var(--border)' }}>
             <input
               type="text"
               value={subject}
               onChange={e => setSubject(e.target.value)}
               placeholder={language === 'zh' ? '邮件主题…' : 'Subject line…'}
-              className="w-full bg-transparent outline-none"
-              style={{ fontFamily: 'var(--font-playfair)', fontSize: '26px', fontWeight: 700, color: '#1a1a1a', lineHeight: 1.3, letterSpacing: '-0.01em', marginBottom: '10px' }}
+              className="compose-subject w-full bg-transparent outline-none"
+              style={{ fontFamily: 'var(--font-playfair)', fontSize: '26px', fontWeight: 700, color: 'var(--cream)', lineHeight: 1.3, letterSpacing: '-0.01em', marginBottom: '10px' }}
             />
             <input
               type="text"
               value={previewText}
               onChange={e => setPreviewText(e.target.value)}
               placeholder={language === 'zh' ? '收件箱预览文字…' : 'Preview text (shown in inbox)…'}
-              className="w-full bg-transparent outline-none"
-              style={{ fontFamily: 'var(--font-dm)', fontSize: '13px', color: '#9a9488', letterSpacing: '0.01em' }}
+              className="compose-preview w-full bg-transparent outline-none"
+              style={{ fontFamily: 'var(--font-dm)', fontSize: '13px', color: 'var(--muted)', letterSpacing: '0.01em' }}
             />
           </div>
           <div className="flex-1 flex flex-col px-10 py-6">
             <div className="flex items-center justify-between mb-4">
-              <span className="font-mono text-[9px] tracking-[0.2em] uppercase" style={{ color: '#b8b0a6' }}>Markdown</span>
+              <span className="font-mono text-[9px] tracking-[0.2em] uppercase" style={{ color: 'var(--muted)', opacity: 0.6 }}>Markdown</span>
               <MarkdownToolbar textareaRef={textareaRef} onChange={setBody} />
             </div>
             <textarea
@@ -187,9 +230,27 @@ export default function ComposeEditor({ language }: { language: 'en' | 'zh' }) {
               value={body}
               onChange={e => setBody(e.target.value)}
               placeholder={language === 'zh' ? '在此用 Markdown 写中文稿…\n\n## 章节标题\n\n正文内容。' : 'Write your newsletter here…\n\n## Section heading\n\nYour analysis goes here.'}
-              className="flex-1 w-full bg-transparent outline-none resize-none"
-              style={{ fontFamily: 'var(--font-playfair)', fontSize: '17px', lineHeight: 1.85, color: '#1a1a1a', minHeight: '480px', caretColor: '#c8402a' }}
+              className="compose-body flex-1 w-full bg-transparent outline-none resize-none"
+              style={{ fontFamily: 'var(--font-playfair)', fontSize: fontSizeMap[fontSize], lineHeight: 1.85, color: 'var(--cream)', minHeight: '480px', caretColor: 'var(--accent)' }}
             />
+          </div>
+          {/* Stats bar */}
+          <div className="flex items-center gap-5 px-10 py-2.5 flex-wrap" style={{ borderTop: '1px solid var(--border)', background: 'var(--surface-2)' }}>
+            <span className="font-mono text-[10px] tracking-wide" style={{ color: 'var(--muted)' }}>
+              {wordCount.toLocaleString()} <span style={{ opacity: 0.5 }}>words</span>
+            </span>
+            <span className="font-mono text-[10px] tracking-wide" style={{ color: 'var(--muted)' }}>
+              {charCount.toLocaleString()} <span style={{ opacity: 0.5 }}>chars</span>
+            </span>
+            {readTime > 0 ? (
+              <span className="font-mono text-[10px] tracking-wide" style={{ color: 'var(--accent)' }}>
+                ~{readTime} min read
+              </span>
+            ) : (
+              <span className="font-mono text-[10px] tracking-wide" style={{ color: 'var(--muted)', opacity: 0.35 }}>
+                start writing…
+              </span>
+            )}
           </div>
         </div>
 
@@ -205,8 +266,32 @@ export default function ComposeEditor({ language }: { language: 'en' | 'zh' }) {
       <ConfirmModal
         isOpen={confirmSend}
         title={`Send ${langLabel} issue?`}
-        message={`This will immediately send to ${langLabel} ${frequencies.join('+')} subscribers. You cannot undo this.`}
-        confirmLabel="Yes, Send Now"
+        message={
+          <div className="space-y-4">
+            {subject && (
+              <div className="px-3 py-2.5" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <p className="font-mono text-[9px] tracking-[0.2em] uppercase mb-1" style={{ color: 'var(--muted)', opacity: 0.6 }}>Subject</p>
+                <p className="font-sans text-sm font-medium" style={{ color: 'var(--cream)' }}>{subject}</p>
+              </div>
+            )}
+            <div className="flex gap-4 flex-wrap">
+              {[
+                { label: 'Words', value: wordCount.toLocaleString() },
+                { label: 'Read time', value: readTime > 0 ? `~${readTime} min` : '—' },
+                { label: 'Audience', value: `${langLabel} · ${frequencies.join('+')}` },
+              ].map(({ label, value }) => (
+                <div key={label}>
+                  <p className="font-mono text-[9px] tracking-[0.15em] uppercase mb-0.5" style={{ color: 'var(--muted)', opacity: 0.5 }}>{label}</p>
+                  <p className="font-mono text-xs" style={{ color: 'var(--cream)' }}>{value}</p>
+                </div>
+              ))}
+            </div>
+            <p className="font-sans text-xs leading-relaxed" style={{ color: 'var(--muted)' }}>
+              This will immediately send to all matching subscribers. You cannot undo this.
+            </p>
+          </div>
+        }
+        confirmLabel="Yes, Send Now →"
         onConfirm={sendAll}
         onCancel={() => setConfirmSend(false)}
         dangerous

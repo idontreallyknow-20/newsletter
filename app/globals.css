@@ -44,6 +44,31 @@
   ::-webkit-scrollbar-thumb { background: var(--pub-border-dark); }
 }
 
+/* ─── Dashboard dark theme ─── */
+.dashboard-shell.theme-dark {
+  background: #0A0A0A;
+  color: #f0ebe1;
+  --bg: #0A0A0A;
+  --surface: #111111;
+  --surface-2: #181818;
+  --border: rgba(255, 255, 255, 0.07);
+  --border-dark: rgba(255, 255, 255, 0.13);
+  --muted: #7a7a6e;
+  --cream: #f0ebe1;
+  --ink: #f0ebe1;
+  --accent: #C8A96E;
+  --accent-dim: rgba(200, 169, 110, 0.1);
+  --border-accent: rgba(200, 169, 110, 0.25);
+  --red: #e05a3a;
+}
+.dashboard-shell.theme-dark ::-webkit-scrollbar-track { background: #181818; }
+.dashboard-shell.theme-dark ::-webkit-scrollbar-thumb { background: #333; }
+
+/* Compose editor dark mode placeholder text */
+.dashboard-shell.theme-dark .compose-subject::placeholder { color: rgba(240,235,225,0.18) !important; }
+.dashboard-shell.theme-dark .compose-preview::placeholder  { color: rgba(122,122,110,0.45) !important; }
+.dashboard-shell.theme-dark .compose-body::placeholder     { color: rgba(240,235,225,0.12) !important; }
+
 /* ─── Dashboard shell — editorial light theme ─── */
 .dashboard-shell {
   background: var(--pub-cream);

@@ -66,7 +66,7 @@ export default async function HomePage() {
                   Most coverage is either breathless hype or doom. Neither helps anyone understand what&apos;s actually happening, or what it means for their job, their savings, or the economy around them.
                 </p>
                 <p className="pub-copy">
-                  I started this newsletter because I wanted to read something that treated people as smart adults — explaining the real economics behind the headlines without assuming you already work in tech or finance. My goal is simple: make AI and economic analysis accessible to everyone, not just insiders.
+                  I started this newsletter because I wanted to read something that treated people as smart adults, explaining the real economics behind the headlines without assuming you already work in tech or finance. My goal is simple: make AI and economic analysis accessible to everyone, not just insiders.
                 </p>
               </div>
               <div className="pub-stats">

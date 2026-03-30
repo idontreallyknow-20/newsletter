@@ -1,9 +1,11 @@
 'use client'
 
+import { ReactNode } from 'react'
+
 interface ConfirmModalProps {
   isOpen: boolean
   title: string
-  message: string
+  message: ReactNode
   confirmLabel?: string
   onConfirm: () => void
   onCancel: () => void
@@ -26,7 +28,7 @@ export default function ConfirmModal({
       <div className="absolute inset-0 bg-black/70" onClick={onCancel} />
       <div className="relative bg-surface border border-white/10 rounded-lg p-6 w-full max-w-md shadow-2xl">
         <h3 className="font-display text-lg font-bold text-cream mb-2">{title}</h3>
-        <p className="text-muted text-sm font-sans mb-6 leading-relaxed">{message}</p>
+        <div className="text-muted text-sm font-sans mb-6 leading-relaxed">{message}</div>
         <div className="flex gap-3 justify-end">
           <button
             onClick={onCancel}
