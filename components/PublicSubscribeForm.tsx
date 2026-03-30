@@ -69,6 +69,9 @@ export default function PublicSubscribeForm() {
           <span aria-hidden="true">✓</span>
           <span>You&apos;re in! Check your inbox.</span>
         </p>
+        <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginBottom: '10px' }}>
+          Don&apos;t see it? Check your spam or promotions folder.
+        </p>
         <a href="/#issues" style={{ color: '#a09890', fontSize: '14px', textDecoration: 'underline', textUnderlineOffset: '3px' }}>
           Browse the archive while you wait →
         </a>

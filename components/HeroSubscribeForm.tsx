@@ -75,6 +75,9 @@ export default function HeroSubscribeForm() {
             <span aria-hidden="true">✓</span>
             <span>You&apos;re in! Check your inbox.</span>
           </p>
+          <p style={{ fontFamily: 'var(--font-dm)', fontSize: '12px', color: 'rgba(26,26,26,0.45)', marginBottom: '10px' }}>
+            Don&apos;t see it? Check your spam or promotions folder.
+          </p>
           <a href="/#issues" style={{
             fontFamily: 'var(--font-dm)', fontSize: '13px',
             color: 'rgba(26,26,26,0.6)', textDecoration: 'underline', textUnderlineOffset: '3px',
