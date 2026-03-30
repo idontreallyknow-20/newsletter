@@ -14,23 +14,22 @@ import ArticleListClient, { type ArticleItem } from '@/components/ArticleListCli
 
 async function getData() {
   try {
-    const [[subRow], [sentRow], dbIssues] = await Promise.all([
+    const [[subRow], dbIssues] = await Promise.all([
       db.select({ count: count() }).from(subscribers).where(eq(subscribers.status, 'active')),
-      db.select({ count: count() }).from(sentEmails),
       db.select({ id: sentEmails.id, subject: sentEmails.subject, slug: sentEmails.slug, sentAt: sentEmails.sentAt })
         .from(sentEmails)
         .where(isNotNull(sentEmails.slug))
         .orderBy(desc(sentEmails.sentAt))
         .limit(10),
     ])
-    return { subCount: subRow.count, sentCount: sentRow.count, dbIssues }
+    return { subCount: subRow.count, dbIssues }
   } catch {
-    return { subCount: 0, sentCount: 0, dbIssues: [] }
+    return { subCount: 0, dbIssues: [] }
   }
 }
 
 export default async function HomePage() {
-  const { sentCount, dbIssues } = await getData()
+  const { dbIssues } = await getData()
 
   return (
     <>
