@@ -8,9 +8,40 @@ import { signEmailToken } from '@/lib/token'
 import { markdownToHtml } from '@/lib/markdown'
 import { slugify } from '@/lib/slug'
 import { subscriberFrequenciesFor, scheduleToSendType } from '@/lib/preferences'
+import Anthropic from '@anthropic-ai/sdk'
+
+async function translateToZh(subject: string, markdown: string): Promise<{ subject: string; markdown: string }> {
+  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+  const result = await client.messages.create({
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 2000,
+    messages: [{
+      role: 'user',
+      content: `Translate the following newsletter from English to Simplified Chinese (简体中文).
+
+Rules:
+- Keep the first-person voice and analytical tone
+- Keep proper nouns and widely-used terms in English where natural in Chinese media (AI, GDP, Fed, IMF, etc.)
+- Preserve all markdown formatting (##, **bold**, bullet points, etc.)
+- Sound natural to a native Chinese reader, not word-for-word
+- First line must be: SUBJECT: [translated subject]
+- Then a blank line, then the translated body
+
+Subject to translate: ${subject}
+
+Body to translate:
+${markdown}`,
+    }],
+  })
+
+  const raw = (result.content[0] as { type: 'text'; text: string }).text.trim()
+  const subjectMatch = raw.match(/^SUBJECT:\s*(.+)/m)
+  const zhSubject = subjectMatch ? subjectMatch[1].trim() : subject
+  const zhMarkdown = raw.replace(/^SUBJECT:[^\n]+\n+/, '').trim()
+  return { subject: zhSubject, markdown: zhMarkdown }
+}
 
 export async function GET(req: Request) {
-  // Verify cron secret to prevent unauthorized triggers
   const authHeader = req.headers.get('authorization')
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -47,29 +78,63 @@ export async function GET(req: Request) {
     const fromEmail = s.from_email || process.env.FROM_EMAIL || ''
     const newsletterName = s.newsletter_name || 'Newsletter'
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-    const subject = latestDraft.subject || newsletterName
-    const bodyHtml = markdownToHtml(latestDraft.bodyMarkdown)
-
     const emailSecret = process.env.DASHBOARD_PASSWORD || ''
-    const recipients = targets.map(sub => {
-      const token = signEmailToken(sub.email, emailSecret)
-      const unsubscribeUrl = `${baseUrl}/api/unsubscribe?email=${encodeURIComponent(sub.email)}&token=${token}`
-      return { email: sub.email, html: buildEmailHtml({ newsletterName, bodyHtml, unsubscribeUrl }) }
-    })
-    const batchResults = await sendBatch({ recipients, subject, fromName, fromEmail })
-    const errorCount = batchResults.reduce((n, r) => n + (r.error ? 1 : 0), 0)
+
+    const enSubject = latestDraft.subject || newsletterName
+    const enBodyHtml = markdownToHtml(latestDraft.bodyMarkdown)
+
+    // Split subscribers by language preference
+    const enTargets = targets.filter(sub => (sub.language || 'en') !== 'zh')
+    const zhTargets = targets.filter(sub => sub.language === 'zh')
+
+    // Translate to Chinese if needed
+    let zhSubject = enSubject
+    let zhBodyHtml = enBodyHtml
+    if (zhTargets.length > 0 && process.env.ANTHROPIC_API_KEY) {
+      try {
+        const translation = await translateToZh(enSubject, latestDraft.bodyMarkdown)
+        zhSubject = translation.subject
+        zhBodyHtml = markdownToHtml(translation.markdown)
+      } catch (err) {
+        console.error('[send] zh translation failed, falling back to English:', err instanceof Error ? err.message : err)
+      }
+    }
+
+    const buildRecipients = (subs: typeof targets, bodyHtml: string) =>
+      subs.map(sub => {
+        const token = signEmailToken(sub.email, emailSecret)
+        const unsubscribeUrl = `${baseUrl}/api/unsubscribe?email=${encodeURIComponent(sub.email)}&token=${token}`
+        return { email: sub.email, html: buildEmailHtml({ newsletterName, bodyHtml, unsubscribeUrl }) }
+      })
+
+    // Send both batches (parallel)
+    const [enResults, zhResults] = await Promise.all([
+      enTargets.length > 0
+        ? sendBatch({ recipients: buildRecipients(enTargets, enBodyHtml), subject: enSubject, fromName, fromEmail })
+        : Promise.resolve([]),
+      zhTargets.length > 0
+        ? sendBatch({ recipients: buildRecipients(zhTargets, zhBodyHtml), subject: zhSubject, fromName, fromEmail })
+        : Promise.resolve([]),
+    ])
+
+    const allResults = [...enResults, ...zhResults]
+    const errorCount = allResults.reduce((n, r) => n + (r.error ? 1 : 0), 0)
 
     await db.insert(sentEmails).values({
-      subject,
+      subject: enSubject,
       previewText: latestDraft.previewText,
-      bodyHtml,
+      bodyHtml: enBodyHtml,
       bodyMarkdown: latestDraft.bodyMarkdown,
-      slug: slugify(subject),
+      slug: slugify(enSubject),
       recipientCount: targets.length,
       status: errorCount === 0 ? 'sent' : 'partial',
     })
 
-    return NextResponse.json({ success: true, sent: targets.length - errorCount })
+    return NextResponse.json({
+      success: true,
+      sent: targets.length - errorCount,
+      breakdown: { en: enTargets.length, zh: zhTargets.length },
+    })
   } catch {
     return NextResponse.json({ error: 'Cron send failed' }, { status: 500 })
   }
