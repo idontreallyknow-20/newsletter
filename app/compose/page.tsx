@@ -28,7 +28,7 @@ export default function ComposePage() {
   const [saving, setSaving] = useState(false)
   const [confirmSend, setConfirmSend] = useState(false)
   const [freqDaily, setFreqDaily] = useState(true)
-  const [freqWeekly, setFreqWeekly] = useState(true)
+  const [freqWeekly, setFreqWeekly] = useState(false)
   const [langEn, setLangEn] = useState(true)
   const [langZh, setLangZh] = useState(true)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
