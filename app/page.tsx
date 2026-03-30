@@ -72,7 +72,7 @@ export default async function HomePage() {
               </div>
               <div className="pub-stats">
                 {[
-                  { n: sentCount > 0 ? `${sentCount}+` : '41+', l: 'Issues Published' },
+                  { n: '40+', l: 'Issues Published' },
                   { n: 'Weekly', l: 'Delivery Cadence' },
                   { n: '5 min', l: 'Avg. Read' },
                   { n: 'Free', l: 'Always' },
