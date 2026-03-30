@@ -98,25 +98,51 @@ export default function ComposePage() {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="px-8 lg:px-10 py-5 flex items-center justify-between gap-4 flex-wrap" style={{ borderBottom: '1px solid var(--border)' }}>
-        <div>
-          <p className="font-mono text-[9px] tracking-[0.25em] uppercase mb-1" style={{ color: 'var(--muted)', opacity: 0.5 }}>New Issue</p>
-          <h2 className="font-display text-2xl font-bold" style={{ color: 'var(--cream)' }}>Compose</h2>
+      <div
+        className="px-8 lg:px-10 py-4 flex items-center justify-between gap-4 flex-wrap"
+        style={{ borderBottom: '1px solid var(--border)', background: 'var(--surface)' }}
+      >
+        <div className="flex items-center gap-3">
+          <span className="font-mono text-[9px] tracking-[0.25em] uppercase" style={{ color: 'var(--muted)' }}>
+            New Issue
+          </span>
+          {draftId && (
+            <span className="font-mono text-[9px] tracking-[0.15em] uppercase px-2 py-0.5" style={{ background: 'var(--accent-dim)', color: 'var(--accent)', border: '1px solid var(--border-accent)' }}>
+              Draft #{draftId}
+            </span>
+          )}
         </div>
+
         <div className="flex gap-2 flex-wrap items-center">
-          <div className="flex items-center gap-3 px-3 py-2 text-xs font-mono tracking-wide" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--muted)' }}>
-            <span style={{ opacity: 0.5 }}>Send to:</span>
-            {([['daily', 'Daily', freqDaily, setFreqDaily], ['weekly', 'Weekly', freqWeekly, setFreqWeekly], ['en', 'EN', langEn, setLangEn], ['zh', '中文', langZh, setLangZh]] as [string, string, boolean, (v: boolean) => void][]).map(([key, label, checked, setter]) => (
+          {/* Audience checkboxes */}
+          <div
+            className="flex items-center gap-3 px-3 py-1.5 text-[11px] font-mono tracking-wide"
+            style={{ border: '1px solid var(--border)', color: 'var(--muted)' }}
+          >
+            <span style={{ opacity: 0.5 }}>To:</span>
+            {([
+              ['daily', 'Daily', freqDaily, setFreqDaily],
+              ['weekly', 'Weekly', freqWeekly, setFreqWeekly],
+              ['en', 'EN', langEn, setLangEn],
+              ['zh', '中文', langZh, setLangZh],
+            ] as [string, string, boolean, (v: boolean) => void][]).map(([key, label, checked, setter]) => (
               <label key={key} className="flex items-center gap-1 cursor-pointer select-none">
-                <input type="checkbox" checked={checked} onChange={e => setter(e.target.checked)} className="cursor-pointer" style={{ accentColor: 'var(--accent)' }} />
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={e => setter(e.target.checked)}
+                  className="cursor-pointer"
+                  style={{ accentColor: 'var(--accent)' }}
+                />
                 <span>{label}</span>
               </label>
             ))}
           </div>
+
           <button
             onClick={saveDraft}
             disabled={saving}
-            className="px-4 py-2 text-xs font-sans tracking-wide transition-colors disabled:opacity-40"
+            className="px-4 py-1.5 text-[11px] font-mono tracking-wide transition-colors disabled:opacity-40"
             style={{ color: 'var(--muted)', border: '1px solid var(--border)' }}
           >
             {saving ? 'Saving…' : 'Save Draft'}
@@ -124,7 +150,7 @@ export default function ComposePage() {
           <button
             onClick={sendTest}
             disabled={testing}
-            className="px-4 py-2 text-xs font-sans tracking-wide transition-colors disabled:opacity-40"
+            className="px-4 py-1.5 text-[11px] font-mono tracking-wide transition-colors disabled:opacity-40"
             style={{ color: 'var(--cream)', border: '1px solid var(--border)' }}
           >
             {testing ? 'Sending…' : 'Send Test'}
@@ -132,58 +158,94 @@ export default function ComposePage() {
           <button
             onClick={() => setConfirmSend(true)}
             disabled={sending || !subject || !body}
-            className="px-4 py-2 text-xs font-sans tracking-wide transition-all duration-150 disabled:opacity-40"
+            className="px-4 py-1.5 text-[11px] font-mono tracking-wide transition-all duration-150 disabled:opacity-40"
             style={{ background: 'var(--accent-dim)', color: 'var(--accent)', border: '1px solid var(--border-accent)' }}
           >
-            {sending ? 'Sending…' : 'Send Now'}
+            {sending ? 'Sending…' : 'Send Now →'}
           </button>
         </div>
       </div>
 
       {/* Editor + Preview */}
-      <div className="flex-1 flex flex-col lg:flex-row gap-0 overflow-hidden">
+      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+
         {/* Left: editor */}
-        <div className="lg:w-1/2 flex flex-col p-6 lg:p-8 gap-4" style={{ borderRight: '1px solid var(--border)' }}>
-          <div>
-            <label className="font-mono text-[9px] tracking-[0.2em] uppercase block mb-2" style={{ color: 'var(--muted)' }}>Subject</label>
+        <div
+          className="lg:w-1/2 flex flex-col overflow-y-auto"
+          style={{ borderRight: '1px solid var(--border)', background: '#fff' }}
+        >
+          {/* Subject + preview text */}
+          <div className="px-10 pt-10 pb-6" style={{ borderBottom: '1px solid var(--border)' }}>
             <input
               type="text"
               value={subject}
               onChange={e => setSubject(e.target.value)}
-              placeholder="Your email subject line…"
-              className="w-full px-4 py-2.5 text-sm font-sans"
-              style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--cream)', outline: 'none' }}
+              placeholder="Subject line…"
+              className="w-full bg-transparent outline-none"
+              style={{
+                fontFamily: 'var(--font-playfair)',
+                fontSize: '26px',
+                fontWeight: 700,
+                color: '#1a1a1a',
+                lineHeight: 1.3,
+                letterSpacing: '-0.01em',
+                marginBottom: '10px',
+              }}
             />
-          </div>
-          <div>
-            <label className="font-mono text-[9px] tracking-[0.2em] uppercase block mb-2" style={{ color: 'var(--muted)' }}>Preview Text</label>
             <input
               type="text"
               value={previewText}
               onChange={e => setPreviewText(e.target.value)}
-              placeholder="Short preview shown in inbox…"
-              className="w-full px-4 py-2.5 text-sm font-sans"
-              style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--cream)', outline: 'none' }}
+              placeholder="Preview text (shown in inbox)…"
+              className="w-full bg-transparent outline-none"
+              style={{
+                fontFamily: 'var(--font-dm)',
+                fontSize: '13px',
+                color: '#9a9488',
+                letterSpacing: '0.01em',
+              }}
             />
           </div>
-          <div className="flex-1 flex flex-col">
-            <div className="flex items-center justify-between mb-2">
-              <label className="font-mono text-[9px] tracking-[0.2em] uppercase" style={{ color: 'var(--muted)' }}>Body (Markdown)</label>
+
+          {/* Body */}
+          <div className="flex-1 flex flex-col px-10 py-6">
+            <div className="flex items-center justify-between mb-4">
+              <span
+                className="font-mono text-[9px] tracking-[0.2em] uppercase"
+                style={{ color: '#b8b0a6' }}
+              >
+                Markdown
+              </span>
               <MarkdownToolbar textareaRef={textareaRef} onChange={setBody} />
             </div>
             <textarea
               ref={textareaRef}
               value={body}
               onChange={e => setBody(e.target.value)}
-              placeholder="Write your newsletter in markdown…&#10;&#10;## AI Updates&#10;&#10;Your AI content here.&#10;&#10;---&#10;&#10;## Economy&#10;&#10;Your economy content here."
-              className="flex-1 min-h-[400px] w-full px-4 py-3 text-sm font-sans resize-none leading-relaxed"
-              style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--cream)', outline: 'none' }}
+              placeholder={'Write your newsletter here…\n\n## Section heading\n\nYour analysis goes here. Use **bold** for key terms.\n\n## The Takeaway\n\nWhat readers should do with this.'}
+              className="flex-1 w-full bg-transparent outline-none resize-none"
+              style={{
+                fontFamily: 'var(--font-playfair)',
+                fontSize: '17px',
+                lineHeight: 1.85,
+                color: '#1a1a1a',
+                minHeight: '480px',
+                caretColor: '#c8402a',
+              }}
             />
           </div>
         </div>
 
         {/* Right: preview */}
-        <div className="lg:w-1/2 p-6 lg:p-8">
+        <div
+          className="lg:w-1/2 overflow-y-auto p-6 lg:p-8"
+          style={{ background: 'var(--surface-2)' }}
+        >
+          <div className="mb-4">
+            <span className="font-mono text-[9px] tracking-[0.25em] uppercase" style={{ color: 'var(--muted)' }}>
+              Email Preview
+            </span>
+          </div>
           <EmailPreview html={previewHtml} />
         </div>
       </div>
