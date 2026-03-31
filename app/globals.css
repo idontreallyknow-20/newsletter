@@ -698,3 +698,41 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
   .pub-about-condensed { padding: 40px 0; }
   .pub-about-stats-row { gap: 24px; }
 }
+
+/* ─── Dark hero section ─── */
+.pub-hero-dark {
+  background: var(--ink);
+  padding: 80px 48px 72px;
+}
+.pub-hero-dark-inner {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+.pub-hero-dark-eyebrow {
+  font-family: var(--font-dm), sans-serif;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--red); margin: 0 0 20px;
+}
+.pub-hero-dark-heading {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 48px; font-weight: 900; line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--pub-cream); margin: 0 0 20px;
+}
+.pub-hero-dark-sub {
+  font-family: var(--font-dm), sans-serif;
+  font-size: 16px; line-height: 1.65;
+  color: rgba(245,240,232,0.6); margin: 0 0 36px;
+}
+.pub-hero-dark-stats {
+  display: flex; gap: 10px; align-items: center; justify-content: center;
+  margin-top: 20px;
+  font-family: var(--font-dm), sans-serif;
+  font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase;
+  color: rgba(245,240,232,0.35);
+}
+@media (max-width: 768px) {
+  .pub-hero-dark { padding: 56px 20px 52px; }
+  .pub-hero-dark-heading { font-size: 34px; }
+}

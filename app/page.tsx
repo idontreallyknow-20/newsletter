@@ -1,4 +1,3 @@
-import TopHeroBand from '@/components/TopHeroBand'
 import PublicNav from '@/components/PublicNav'
 import PublicSubscribeForm from '@/components/PublicSubscribeForm'
 import TopicsFilter from '@/components/TopicsFilter'
@@ -18,11 +17,29 @@ export default async function HomePage() {
 
   return (
     <>
-      <TopHeroBand />
       <PublicNav />
 
       {/* Skip-link target */}
       <span id="main-content" aria-hidden="true" style={{ position: 'absolute', top: 0 }} />
+
+      {/* Hero subscribe */}
+      <section className="pub-hero-dark" id="hero">
+        <div className="pub-hero-dark-inner">
+          <p className="pub-hero-dark-eyebrow">Economics &amp; AI &middot; Newsletter</p>
+          <h1 className="pub-hero-dark-heading">The economy and AI, explained without the jargon.</h1>
+          <p className="pub-hero-dark-sub">
+            A free newsletter decoding what actually moves markets and reshapes work. Choose daily or weekly delivery.
+          </p>
+          <PublicSubscribeForm />
+          <div className="pub-hero-dark-stats">
+            <span>40+ issues</span><span aria-hidden="true">&middot;</span>
+            <span>Free</span><span aria-hidden="true">&middot;</span>
+            <span>Daily &amp; Weekly</span>
+          </div>
+        </div>
+      </section>
+
+      <hr className="pub-rule" />
 
       {/* Feature Grid */}
       <FeatureGrid />

@@ -55,7 +55,7 @@ export default async function Image() {
           color: '#c8402a', fontSize: 14, letterSpacing: '0.08em',
           display: 'flex',
         }}>
-          newsletter-joseph.vercel.app
+          dailybriefhq.com
         </div>
 
         {/* Border accent */}
