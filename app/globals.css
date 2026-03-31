@@ -795,7 +795,7 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
 /* ─── Left side ribbon ─── */
 .left-ribbon {
   position: fixed;
-  left: 18px;
+  left: 40px;
   top: 50%;
   transform: translateY(-50%);
   display: flex;
@@ -804,24 +804,14 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
   gap: 28px;
   z-index: 40;
 }
-.left-ribbon::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: -32px; bottom: -32px;
-  width: 1px;
-  background: var(--pub-border);
-  transform: translateX(-50%);
-  z-index: -1;
-}
 .left-ribbon a {
   writing-mode: vertical-rl;
   text-orientation: mixed;
   transform: rotate(180deg);
   font-family: var(--font-dm), sans-serif;
-  font-size: 9px; font-weight: 600;
+  font-size: 9px; font-weight: 700;
   letter-spacing: 0.18em; text-transform: uppercase;
-  color: var(--tan); text-decoration: none;
+  color: rgba(26,26,26,0.55); text-decoration: none;
   transition: color 0.15s;
   padding: 4px 0;
 }
