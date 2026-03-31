@@ -169,6 +169,9 @@ export default function ComposeEditor({ language }: { language: 'en' | 'zh' }) {
                 <span>{label}</span>
               </label>
             ))}
+            <span style={{ opacity: 0.35, fontSize: '10px' }} title="Subscribers who chose 'Daily + Weekly' are included in both Daily and Weekly sends">
+              (Daily+Weekly subs count in both)
+            </span>
           </div>
 
           <button
