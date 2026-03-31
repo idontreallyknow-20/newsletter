@@ -26,14 +26,24 @@ export async function POST(req: Request) {
     if (existing.length > 0) {
       if (existing[0].status === 'unsubscribed') {
         await db.update(subscribers).set({ status: 'active', language: lang, frequency: freq }).where(eq(subscribers.email, email))
-        await syncToResendAudience({ email, firstName: name, unsubscribed: false, language: lang })
+        try {
+          await syncToResendAudience({ email, firstName: name, unsubscribed: false, language: lang })
+        } catch (syncErr) {
+          console.error('[subscribe] Resend audience sync failed:', syncErr instanceof Error ? syncErr.message : syncErr)
+        }
         return NextResponse.json({ success: true, resubscribed: true })
       }
       return NextResponse.json({ error: 'Already subscribed' }, { status: 409 })
     }
 
     await db.insert(subscribers).values({ name, email, status: 'active', language: lang, frequency: freq })
-    await syncToResendAudience({ email, firstName: name, unsubscribed: false, language: lang })
+
+    // Sync to Resend audience (best-effort — don't fail the subscription if it errors)
+    try {
+      await syncToResendAudience({ email, firstName: name, unsubscribed: false, language: lang })
+    } catch (syncErr) {
+      console.error('[subscribe] Resend audience sync failed:', syncErr instanceof Error ? syncErr.message : syncErr)
+    }
 
     // Send welcome email (best-effort — don't fail the subscription if it errors)
     try {
