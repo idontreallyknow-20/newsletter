@@ -1,29 +1,53 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import PublicSubscribeForm from '@/components/PublicSubscribeForm'
 
 export default function PublicNav() {
   const [open, setOpen] = useState(false)
+  const [showModal, setShowModal] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [showTop, setShowTop] = useState(false)
 
   useEffect(() => {
-    function onScroll() { setScrolled(window.scrollY > 20) }
+    function onScroll() {
+      setScrolled(window.scrollY > 20)
+      setShowTop(window.scrollY > 500)
+    }
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  useEffect(() => {
+    if (showModal) {
+      document.body.style.overflow = 'hidden'
+      const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setShowModal(false) }
+      window.addEventListener('keydown', onKey)
+      return () => {
+        document.body.style.overflow = ''
+        window.removeEventListener('keydown', onKey)
+      }
+    } else {
+      document.body.style.overflow = ''
+    }
+  }, [showModal])
 
   function close() { setOpen(false) }
 
   return (
     <>
       <nav className="pub-nav" style={scrolled ? { boxShadow: '0 2px 16px rgba(0,0,0,0.06)' } : {}}>
-        <a href="/" className="pub-logo">Joseph<span>.</span></a>
-        <ul className="pub-nav-links">
-          <li><a href="/#about" onClick={close}>About</a></li>
-          <li><a href="/#topics" onClick={close}>Topics</a></li>
-          <li><a href="/#issues" onClick={close}>Issues</a></li>
-        </ul>
-        <a href="/#subscribe" className="pub-nav-subscribe">Subscribe free →</a>
+        <div className="pub-nav-left">
+          <a href="/" className="pub-logo">Joseph<span>.</span></a>
+          <ul className="pub-nav-links">
+            <li><a href="/#about" onClick={close}>About</a></li>
+            <li><a href="/#topics" onClick={close}>Topics</a></li>
+            <li><a href="/#issues" onClick={close}>Issues</a></li>
+          </ul>
+        </div>
+        <button className="pub-nav-subscribe" onClick={() => setShowModal(true)}>
+          Subscribe free →
+        </button>
         <button className="pub-nav-toggle" onClick={() => setOpen(o => !o)} aria-label="Toggle menu">
           {open ? 'Close' : 'Menu'}
         </button>
@@ -41,7 +65,6 @@ export default function PublicNav() {
               { href: '/#about', label: 'About' },
               { href: '/#topics', label: 'Topics' },
               { href: '/#issues', label: 'Issues' },
-              { href: '/#subscribe', label: 'Subscribe' },
             ].map(item => (
               <a
                 key={item.href}
@@ -55,13 +78,43 @@ export default function PublicNav() {
               </a>
             ))}
             <div className="mt-8">
-              <a href="/#subscribe" onClick={close} className="pub-btn-primary" style={{ display: 'inline-block' }}>
+              <button onClick={() => { close(); setShowModal(true) }} className="pub-btn-primary">
                 Subscribe free →
-              </a>
+              </button>
             </div>
           </nav>
         </div>
       )}
+
+      {/* Subscribe modal */}
+      {showModal && (
+        <div
+          className="sub-modal-overlay"
+          onClick={() => setShowModal(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Subscribe to newsletter"
+        >
+          <div className="sub-modal-card" onClick={e => e.stopPropagation()}>
+            <button className="sub-modal-close" onClick={() => setShowModal(false)} aria-label="Close">
+              &#x2715;
+            </button>
+            <p className="pub-label" style={{ marginBottom: '12px' }}>Newsletter</p>
+            <h2 className="sub-modal-heading">Subscribe to AI &amp; Economy</h2>
+            <p className="sub-modal-sub">Free daily or weekly delivery. No spam, ever.</p>
+            <PublicSubscribeForm />
+          </div>
+        </div>
+      )}
+
+      {/* Scroll to top */}
+      <button
+        className={`scroll-to-top${showTop ? ' scroll-to-top-visible' : ''}`}
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        aria-label="Back to top"
+      >
+        &#8593;
+      </button>
     </>
   )
 }
