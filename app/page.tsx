@@ -3,85 +3,87 @@ export const dynamic = 'force-dynamic'
 import { db } from '@/lib/db'
 import { subscribers, sentEmails } from '@/lib/schema'
 import { eq, count, desc, isNotNull } from 'drizzle-orm'
-import HeroTypewriter from '@/components/HeroTypewriter'
-import HeroSubscribeForm from '@/components/HeroSubscribeForm'
-import PublicSubscribeForm from '@/components/PublicSubscribeForm'
+import TopHeroBand from '@/components/TopHeroBand'
 import PublicNav from '@/components/PublicNav'
-import { ARTICLES } from '@/lib/articles'
+import PublicSubscribeForm from '@/components/PublicSubscribeForm'
 import TopicsFilter from '@/components/TopicsFilter'
-import ArticleListClient, { type ArticleItem } from '@/components/ArticleListClient'
-
+import FeatureGrid from '@/components/FeatureGrid'
+import MagazineArticleFeed, { type FeedItem } from '@/components/MagazineArticleFeed'
+import { ARTICLES } from '@/lib/articles'
 
 async function getData() {
   try {
-    const [[subRow], dbIssues] = await Promise.all([
+    const [, dbIssues] = await Promise.all([
       db.select({ count: count() }).from(subscribers).where(eq(subscribers.status, 'active')),
       db.select({ id: sentEmails.id, subject: sentEmails.subject, slug: sentEmails.slug, sentAt: sentEmails.sentAt })
         .from(sentEmails)
         .where(isNotNull(sentEmails.slug))
         .orderBy(desc(sentEmails.sentAt))
-        .limit(10),
+        .limit(50),
     ])
-    return { subCount: subRow.count, dbIssues }
+    return { dbIssues }
   } catch {
-    return { subCount: 0, dbIssues: [] }
+    return { dbIssues: [] }
   }
 }
 
 export default async function HomePage() {
   const { dbIssues } = await getData()
 
+  const feedItems: FeedItem[] = dbIssues.length > 0
+    ? dbIssues.map(issue => ({
+        slug: issue.slug!,
+        title: issue.subject,
+        displayDate: new Date(issue.sentAt).toLocaleDateString('en-US', {
+          month: 'short', day: 'numeric', year: 'numeric',
+        }),
+      }))
+    : ARTICLES.map(a => ({
+        slug: a.slug,
+        title: a.title,
+        displayDate: a.date,
+        tag: a.tag,
+        readTime: a.readTime,
+        intro: a.intro,
+      }))
+
   return (
     <>
+      <TopHeroBand />
       <PublicNav />
 
       {/* Skip-link target */}
       <span id="main-content" aria-hidden="true" style={{ position: 'absolute', top: 0 }} />
 
-      {/* Hero */}
-      <section id="about">
-        <div className="pub-hero">
-          <div className="pub-eyebrow fade-up d0">Newsletter · Economics &amp; AI</div>
-          <HeroTypewriter />
-          <p className="pub-sub fade-up d2">
-            We decode economic forces and AI breakthroughs shaping your world &mdash; minus the jargon. Choose daily or weekly delivery.
-          </p>
-          <div className="fade-up d3">
-            <HeroSubscribeForm />
-          </div>
-        </div>
-      </section>
+      {/* Feature Grid */}
+      <FeatureGrid />
 
       <hr className="pub-rule" />
 
-      {/* About */}
-      <section>
-        <div className="pub-about">
+      {/* About — condensed */}
+      <section id="about">
+        <div className="pub-about-condensed">
           <div className="pub-wrap">
-            <div className="pub-about-grid">
-              <div>
-                <p className="pub-label">About</p>
-                <h2 className="pub-heading">I&apos;m 16, and I think the way we talk about AI is broken.</h2>
-                <p className="pub-copy">
-                  Most coverage is either breathless hype or doom. Neither helps anyone understand what&apos;s actually happening, or what it means for their job, their savings, or the economy around them.
-                </p>
-                <p className="pub-copy">
-                  I started this newsletter because I wanted to read something that treated people as smart adults, explaining the real economics behind the headlines without assuming you already work in tech or finance. My goal is simple: make AI and economic analysis accessible to everyone, not just insiders.
-                </p>
-              </div>
-              <div className="pub-stats">
-                {[
-                  { n: '40+', l: 'Issues Published' },
-                  { n: 'Daily', l: 'Delivery Cadence' },
-                  { n: '5 min', l: 'Avg. Read' },
-                  { n: 'Free', l: 'Always' },
-                ].map(s => (
-                  <div key={s.l} className="pub-stat">
-                    <div className="pub-stat-n">{s.n}</div>
-                    <div className="pub-stat-l">{s.l}</div>
-                  </div>
-                ))}
-              </div>
+            <p className="pub-label">About</p>
+            <h2 className="pub-heading" style={{ maxWidth: '640px' }}>
+              I&apos;m 16, and I think the way we talk about AI is broken.
+            </h2>
+            <p className="pub-copy" style={{ maxWidth: '560px' }}>
+              Most coverage is either breathless hype or doom. I started this newsletter to decode
+              the real economics behind AI headlines&mdash;without the jargon or insider assumptions.
+            </p>
+            <div className="pub-about-stats-row">
+              {([
+                { n: '40+', l: 'Issues' },
+                { n: 'Daily', l: 'Delivery' },
+                { n: '5 min', l: 'Read' },
+                { n: 'Free', l: 'Always' },
+              ] as const).map(s => (
+                <div key={s.l} className="pub-about-stat-inline">
+                  <span className="pub-stat-n">{s.n}</span>
+                  <span className="pub-stat-l">{s.l}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -104,7 +106,7 @@ export default async function HomePage() {
 
       <hr className="pub-rule" />
 
-      {/* Recent Issues */}
+      {/* Archive */}
       <section id="issues">
         <div className="pub-issues">
           <div className="pub-wrap">
@@ -113,25 +115,9 @@ export default async function HomePage() {
                 <p className="pub-label">Archive</p>
                 <h2 className="pub-heading">From the archive.</h2>
               </div>
-              <a href="#subscribe" className="pub-issues-link">Get all issues in your inbox →</a>
+              <a href="#subscribe" className="pub-issues-link">Get all issues in your inbox &rarr;</a>
             </div>
-
-            <ArticleListClient items={
-              dbIssues.length > 0
-                ? dbIssues.map(issue => ({
-                    slug: issue.slug!,
-                    title: issue.subject,
-                    displayDate: new Date(issue.sentAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-                  } satisfies ArticleItem))
-                : ARTICLES.map(a => ({
-                    slug: a.slug,
-                    title: a.title,
-                    displayDate: a.date,
-                    tag: a.tag,
-                    readTime: a.readTime,
-                    intro: a.intro,
-                  } satisfies ArticleItem))
-            } />
+            <MagazineArticleFeed items={feedItems} />
           </div>
         </div>
       </section>
@@ -142,7 +128,7 @@ export default async function HomePage() {
           <div className="pub-sub-inner">
             <h2 className="pub-sub-heading">Join readers who get a clear take on economics and AI.</h2>
             <p className="pub-sub-body">
-              Delivered to your inbox. Choose daily or weekly &mdash; unsubscribe anytime.
+              Delivered to your inbox. Choose daily or weekly&mdash;unsubscribe anytime.
             </p>
             <PublicSubscribeForm />
             <p className="pub-sub-fine">No spam. Unsubscribe anytime.</p>
@@ -152,7 +138,7 @@ export default async function HomePage() {
 
       {/* Footer */}
       <footer className="pub-footer">
-        <span className="pub-footer-copy">© 2026 Joseph. Made with curiosity.</span>
+        <span className="pub-footer-copy">&copy; 2026 Joseph. Made with curiosity.</span>
         <nav className="pub-footer-links">
           <a href="/#issues">Archive</a>
           <a href="/#subscribe">Subscribe</a>
