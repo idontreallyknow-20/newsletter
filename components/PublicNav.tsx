@@ -36,21 +36,24 @@ export default function PublicNav() {
 
   return (
     <>
+      {/* Sticky top nav — logo + subscribe only */}
       <nav className="pub-nav" style={scrolled ? { boxShadow: '0 2px 16px rgba(0,0,0,0.06)' } : {}}>
-        <div className="pub-nav-left">
-          <a href="/" className="pub-logo">Joseph<span>.</span></a>
-          <ul className="pub-nav-links">
-            <li><a href="/#about" onClick={close}>About</a></li>
-            <li><a href="/#topics" onClick={close}>Topics</a></li>
-            <li><a href="/#issues" onClick={close}>Issues</a></li>
-          </ul>
+        <a href="/" className="pub-logo">Joseph<span>.</span></a>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <button className="pub-nav-subscribe" onClick={() => setShowModal(true)}>
+            Subscribe free →
+          </button>
+          <button className="pub-nav-toggle" onClick={() => setOpen(o => !o)} aria-label="Toggle menu">
+            {open ? 'Close' : 'Menu'}
+          </button>
         </div>
-        <button className="pub-nav-subscribe" onClick={() => setShowModal(true)}>
-          Subscribe free →
-        </button>
-        <button className="pub-nav-toggle" onClick={() => setOpen(o => !o)} aria-label="Toggle menu">
-          {open ? 'Close' : 'Menu'}
-        </button>
+      </nav>
+
+      {/* Left side ribbon — hidden on mobile */}
+      <nav className="left-ribbon" aria-label="Page sections">
+        <a href="/#about">About</a>
+        <a href="/#topics">Topics</a>
+        <a href="/#issues">Issues</a>
       </nav>
 
       {/* Mobile drawer */}
