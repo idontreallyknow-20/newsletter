@@ -1,8 +1,3 @@
-export const dynamic = 'force-dynamic'
-
-import { db } from '@/lib/db'
-import { subscribers, sentEmails } from '@/lib/schema'
-import { eq, count, desc, isNotNull } from 'drizzle-orm'
 import TopHeroBand from '@/components/TopHeroBand'
 import PublicNav from '@/components/PublicNav'
 import PublicSubscribeForm from '@/components/PublicSubscribeForm'
@@ -11,41 +6,15 @@ import FeatureGrid from '@/components/FeatureGrid'
 import ArticleListClient, { type ArticleItem } from '@/components/ArticleListClient'
 import { ARTICLES } from '@/lib/articles'
 
-async function getData() {
-  try {
-    const [, dbIssues] = await Promise.all([
-      db.select({ count: count() }).from(subscribers).where(eq(subscribers.status, 'active')),
-      db.select({ id: sentEmails.id, subject: sentEmails.subject, slug: sentEmails.slug, sentAt: sentEmails.sentAt })
-        .from(sentEmails)
-        .where(isNotNull(sentEmails.slug))
-        .orderBy(desc(sentEmails.sentAt))
-        .limit(50),
-    ])
-    return { dbIssues }
-  } catch {
-    return { dbIssues: [] }
-  }
-}
-
 export default async function HomePage() {
-  const { dbIssues } = await getData()
-
-  const feedItems: ArticleItem[] = dbIssues.length > 0
-    ? dbIssues.map(issue => ({
-        slug: issue.slug!,
-        title: issue.subject,
-        displayDate: new Date(issue.sentAt).toLocaleDateString('en-US', {
-          month: 'short', day: 'numeric', year: 'numeric',
-        }),
-      }))
-    : ARTICLES.map(a => ({
-        slug: a.slug,
-        title: a.title,
-        displayDate: a.date,
-        tag: a.tag,
-        readTime: a.readTime,
-        intro: a.intro,
-      }))
+  const feedItems: ArticleItem[] = ARTICLES.map(a => ({
+    slug: a.slug,
+    title: a.title,
+    displayDate: a.date,
+    tag: a.tag,
+    readTime: a.readTime,
+    intro: a.intro,
+  }))
 
   return (
     <>
@@ -70,7 +39,7 @@ export default async function HomePage() {
             </h2>
             <p className="pub-copy" style={{ maxWidth: '560px' }}>
               Most coverage is either breathless hype or doom. I started this newsletter to decode
-              the real economics behind AI headlines&mdash;without the jargon or insider assumptions.
+              the real economics behind AI headlines, without the jargon or insider assumptions.
             </p>
             <div className="pub-about-stats-row">
               {([
@@ -128,10 +97,9 @@ export default async function HomePage() {
           <div className="pub-sub-inner">
             <h2 className="pub-sub-heading">Join readers who get a clear take on economics and AI.</h2>
             <p className="pub-sub-body">
-              Delivered to your inbox. Choose daily or weekly&mdash;unsubscribe anytime.
+              Delivered to your inbox. Choose daily or weekly. Unsubscribe anytime.
             </p>
             <PublicSubscribeForm />
-            <p className="pub-sub-fine">No spam. Unsubscribe anytime.</p>
           </div>
         </div>
       </section>
