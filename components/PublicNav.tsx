@@ -22,8 +22,8 @@ export default function PublicNav() {
           <li><a href="/#about" onClick={close}>About</a></li>
           <li><a href="/#topics" onClick={close}>Topics</a></li>
           <li><a href="/#issues" onClick={close}>Issues</a></li>
-          <li><a href="/#subscribe" onClick={close}>Subscribe</a></li>
         </ul>
+        <a href="/#subscribe" className="pub-nav-subscribe">Subscribe free →</a>
         <button className="pub-nav-toggle" onClick={() => setOpen(o => !o)} aria-label="Toggle menu">
           {open ? 'Close' : 'Menu'}
         </button>

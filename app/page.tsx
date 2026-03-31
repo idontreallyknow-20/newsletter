@@ -8,7 +8,7 @@ import PublicNav from '@/components/PublicNav'
 import PublicSubscribeForm from '@/components/PublicSubscribeForm'
 import TopicsFilter from '@/components/TopicsFilter'
 import FeatureGrid from '@/components/FeatureGrid'
-import MagazineArticleFeed, { type FeedItem } from '@/components/MagazineArticleFeed'
+import ArticleListClient, { type ArticleItem } from '@/components/ArticleListClient'
 import { ARTICLES } from '@/lib/articles'
 
 async function getData() {
@@ -30,7 +30,7 @@ async function getData() {
 export default async function HomePage() {
   const { dbIssues } = await getData()
 
-  const feedItems: FeedItem[] = dbIssues.length > 0
+  const feedItems: ArticleItem[] = dbIssues.length > 0
     ? dbIssues.map(issue => ({
         slug: issue.slug!,
         title: issue.subject,
@@ -117,7 +117,7 @@ export default async function HomePage() {
               </div>
               <a href="#subscribe" className="pub-issues-link">Get all issues in your inbox &rarr;</a>
             </div>
-            <MagazineArticleFeed items={feedItems} />
+            <ArticleListClient items={feedItems} />
           </div>
         </div>
       </section>
