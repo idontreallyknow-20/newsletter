@@ -827,3 +827,36 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
 }
 .left-ribbon a:hover { color: var(--ink); }
 @media (max-width: 1024px) { .left-ribbon { display: none; } }
+
+/* ─── Share QR popup ─── */
+.share-qr-popup {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--pub-cream);
+  border: 1px solid var(--pub-border);
+  padding: 18px 16px 14px;
+  text-align: center;
+  z-index: 60;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  min-width: 200px;
+}
+.share-qr-popup::after {
+  content: '';
+  position: absolute;
+  top: 100%; left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--pub-border);
+}
+.share-qr-label {
+  font-family: var(--font-dm), sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--tan); margin: 0 0 12px;
+}
+.share-qr-url {
+  font-family: var(--font-dm), sans-serif;
+  font-size: 10px; color: var(--tan); margin: 10px 0 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
