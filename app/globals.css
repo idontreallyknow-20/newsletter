@@ -162,15 +162,24 @@
   font-family: var(--font-dm), sans-serif;
   font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
   text-decoration: none; text-transform: uppercase;
-  border: none; border-radius: 6px; cursor: pointer;
+  border: none; cursor: pointer;
   white-space: nowrap;
   box-shadow: 0 1px 3px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.1);
-  transition: background 0.18s, box-shadow 0.18s, transform 0.15s;
+  transition: background 0.18s, box-shadow 0.18s;
 }
-.pub-nav-subscribe:hover {
-  background: #a8341f;
-  box-shadow: 0 3px 10px rgba(200,64,42,0.35), inset 0 1px 0 rgba(255,255,255,0.1);
-  transform: translateY(-1px);
+.pub-nav-subscribe:hover { background: #a8341f; }
+.pub-nav-subscribe:active {
+  background: #1a1a1a;
+  color: #f5f0e8;
+  border: 1px solid #000;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
+}
+/* Form subscribe button active state */
+.pub-form-subscribe-btn:active {
+  background: #1a1a1a !important;
+  color: #f5f0e8 !important;
+  border: 1px solid #000 !important;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.5) !important;
 }
 
 /* Mobile nav toggle */
