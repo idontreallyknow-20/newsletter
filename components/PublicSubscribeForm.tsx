@@ -144,10 +144,17 @@ export default function PublicSubscribeForm() {
           disabled={status === 'loading'}
           aria-label={status === 'loading' ? 'Subscribing, please wait' : 'Subscribe to newsletter'}
           style={{
-            padding: '14px 24px', background: 'var(--red)', color: '#f5f0e8',
+            padding: '14px 24px',
+            background: 'linear-gradient(135deg, #c8402a 0%, #a8341f 100%)',
+            color: '#f5f0e8',
             fontFamily: 'var(--font-dm)', fontSize: '14px', fontWeight: 500,
-            border: '1px solid var(--red)', cursor: 'pointer', whiteSpace: 'nowrap',
-            opacity: status === 'loading' ? 0.6 : 1, transition: 'opacity 0.15s',
+            border: 'none',
+            borderRadius: '0 6px 6px 0',
+            cursor: 'pointer', whiteSpace: 'nowrap',
+            letterSpacing: '0.02em',
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)',
+            opacity: status === 'loading' ? 0.6 : 1,
+            transition: 'opacity 0.15s, box-shadow 0.18s',
           }}
         >
           {status === 'loading' ? 'Joining…' : 'Subscribe →'}
