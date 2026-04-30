@@ -38,20 +38,14 @@ export default function ArticleListClient({ items }: { items: ArticleItem[] }) {
                 {illus ? illus.svg : null}
               </div>
               <div className="pub-article-body">
-                {(item.tag || item.readTime) && (
+                {(item.displayDate || item.readTime) && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px', flexWrap: 'wrap' }}>
-                    {item.tag && <span className="pub-issue-tag">{item.tag}</span>}
                     {item.displayDate && (
                       <span className="pub-issue-date" style={{ width: 'auto', textAlign: 'left' }}>
                         {shortMonth(item.displayDate)}{item.readTime ? ` · ${item.readTime}` : ''}
                       </span>
                     )}
                   </div>
-                )}
-                {!item.tag && (
-                  <span className="pub-issue-date" style={{ width: 'auto', marginBottom: '10px', display: 'block' }}>
-                    {item.displayDate}
-                  </span>
                 )}
                 <div className="pub-article-title">{item.title}</div>
                 {item.intro && (
