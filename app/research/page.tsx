@@ -77,15 +77,10 @@ export default function ResearchPage() {
       </section>
 
       {/* Footer */}
-      <footer className="pub-footer">
-        <span className="pub-footer-copy">&copy; 2026 Joseph &nbsp;|&nbsp; dailybriefhq.com</span>
-        <nav className="pub-footer-links">
-          <a href="/#issues">Archive</a>
-          <a href="/research">Research</a>
-          <a href="/#subscribe">Subscribe</a>
-          <a href="/#about">About</a>
-          <a href="#" aria-label="LinkedIn">LinkedIn</a>
-        </nav>
+      <footer className="pub-footer pub-footer-min">
+        <span className="pub-footer-copy">
+          &copy; 2026 Joseph &middot; <a href="/">dailybriefhq.com</a> &middot; <a href="#" aria-label="LinkedIn">LinkedIn</a>
+        </span>
       </footer>
     </>
   )

@@ -38,23 +38,16 @@ export default function ArticleListClient({ items }: { items: ArticleItem[] }) {
                 {illus ? illus.svg : null}
               </div>
               <div className="pub-article-body">
-                {(item.tag || item.readTime) && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px', flexWrap: 'wrap' }}>
-                    {item.tag && <span className="pub-issue-tag">{item.tag}</span>}
-                    {item.displayDate && (
-                      <span className="pub-issue-date" style={{ width: 'auto', textAlign: 'left' }}>
-                        {shortMonth(item.displayDate)}{item.readTime ? ` · ${item.readTime}` : ''}
-                      </span>
-                    )}
-                  </div>
-                )}
-                {!item.tag && (
-                  <span className="pub-issue-date" style={{ width: 'auto', marginBottom: '10px', display: 'block' }}>
-                    {item.displayDate}
-                  </span>
-                )}
+                <div className="pub-article-meta">
+                  {item.tag && <span className="pub-article-cat">{item.tag}</span>}
+                  {(item.displayDate || item.readTime) && (
+                    <span className="pub-article-meta-date">
+                      {item.displayDate ? shortMonth(item.displayDate) : ''}
+                      {item.readTime ? ` · ${item.readTime}` : ''}
+                    </span>
+                  )}
+                </div>
                 <div className="pub-article-title">{item.title}</div>
-                <div className="pub-article-byline">By Joseph, 16</div>
                 {item.intro && (
                   <p className="pub-article-intro">{item.intro.slice(0, 140)}…</p>
                 )}

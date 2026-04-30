@@ -681,101 +681,152 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
 .pub-about-row {
   display: flex; align-items: flex-start; gap: 56px; flex-wrap: wrap;
 }
-.pub-about-photo { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.pub-about-photo { flex: 0 0 auto; }
 .pub-about-photo-frame {
-  width: 132px; height: 132px; border-radius: 50%;
-  background: var(--pub-cream-2);
-  border: 1px solid var(--pub-border-dark);
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-dm), sans-serif; font-size: 11px;
-  font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
-  color: var(--tan);
-  background-image:
-    repeating-linear-gradient(45deg, rgba(0,0,0,0.03) 0 6px, transparent 6px 12px);
+  width: 128px; height: 128px; border-radius: 50%;
+  background: var(--pub-cream);
+  border: 1px dashed var(--pub-border-dark);
 }
-.pub-about-photo-cap {
-  display: flex; flex-direction: column; align-items: center; gap: 2px;
-  font-family: var(--font-dm), sans-serif; margin: 0; text-align: center;
-}
-.pub-about-photo-cap strong {
-  font-family: var(--font-playfair), Georgia, serif;
-  font-size: 16px; font-weight: 700; color: var(--ink);
-}
-.pub-about-photo-cap span { font-size: 11px; color: var(--tan); letter-spacing: 0.04em; }
 .pub-about-text { flex: 1 1 360px; min-width: 0; }
+.pub-about-stats-row {
+  flex-wrap: nowrap;
+}
 @media (max-width: 768px) {
   .pub-about-row { gap: 28px; }
-  .pub-about-photo-frame { width: 108px; height: 108px; }
+  .pub-about-photo-frame { width: 96px; height: 96px; }
+  .pub-about-stats-row { flex-wrap: wrap; }
 }
 
-/* ─── Article byline (in archive) ─── */
-.pub-article-byline {
+/* ─── Article card meta (archive) ─── */
+.pub-article-meta {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 10px; flex-wrap: wrap;
+}
+.pub-article-cat {
   font-family: var(--font-dm), sans-serif;
-  font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
-  text-transform: uppercase; color: var(--tan);
-  margin: 4px 0 10px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--red);
+}
+.pub-article-meta-date {
+  font-family: var(--font-dm), sans-serif;
+  font-size: 12px; color: var(--tan); letter-spacing: 0.02em;
 }
 
-/* ─── Testimonials ─── */
-.pub-testimonials { padding: 96px 0; background: var(--pub-cream-2); }
-.testimonial-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
+/* ─── Subscribe form (shared by hero, modal, bottom CTA) ─── */
+.sub-form-row {
+  display: flex; gap: 0; align-items: stretch;
 }
-.testimonial-card {
-  background: var(--pub-cream);
-  border: 1px solid var(--pub-border);
-  padding: 28px 24px;
-  display: flex; flex-direction: column; gap: 18px;
-  margin: 0;
+.sub-form-input {
+  flex: 1; min-width: 0;
+  padding: 14px 18px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-right: none;
+  color: #f5f0e8;
+  font-family: var(--font-dm), sans-serif; font-size: 15px;
+  outline: none;
 }
-.testimonial-quote {
-  font-family: var(--font-playfair), Georgia, serif;
-  font-size: 17px; font-weight: 400; font-style: italic;
-  color: var(--ink); line-height: 1.55; margin: 0;
+.sub-form-input::placeholder { color: rgba(255,255,255,0.35); }
+.sub-form-input:focus { border-color: rgba(255,255,255,0.35); }
+.sub-form-input-err { border-color: #fca5a5 !important; }
+.pub-form-subscribe-btn {
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #c8402a 0%, #a8341f 100%);
+  color: #f5f0e8;
+  font-family: var(--font-dm), sans-serif; font-size: 14px; font-weight: 500;
+  border: none; cursor: pointer; white-space: nowrap;
+  letter-spacing: 0.02em;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+  transition: opacity 0.15s, filter 0.15s;
 }
-.testimonial-cap {
-  display: flex; flex-direction: column; gap: 2px;
-  border-top: 1px solid var(--pub-border); padding-top: 14px;
+.pub-form-subscribe-btn:disabled { opacity: 0.6; cursor: default; }
+.sub-form-err {
+  color: #fca5a5; font-size: 13px; text-align: center; margin: 10px 0 0;
 }
-.testimonial-name {
-  font-family: var(--font-dm), sans-serif; font-size: 13px;
-  font-weight: 600; color: var(--ink);
-}
-.testimonial-desc {
+.sub-form-foot {
   font-family: var(--font-dm), sans-serif; font-size: 12px;
-  color: var(--tan); letter-spacing: 0.02em;
-}
-@media (max-width: 768px) {
-  .pub-testimonials { padding: 64px 0; }
+  color: rgba(255,255,255,0.35); text-align: center;
+  margin-top: 12px; letter-spacing: 0.01em;
 }
 
-/* ─── Subscribe modal — refreshed color theme (midnight + gold) ─── */
+/* ─── Modal variant (light card) — flip form colors so they look right on cream ─── */
+.sub-form-modal .sub-form-input {
+  background: #ffffff;
+  border-color: var(--pub-border-dark);
+  color: var(--ink);
+}
+.sub-form-modal .sub-form-input::placeholder { color: var(--tan); }
+.sub-form-modal .sub-form-input:focus { border-color: #c79328; }
+.sub-form-modal .sub-form-foot { color: var(--tan); }
+
+/* ─── Pill preference toggles ─── */
+.pref-stack {
+  display: flex; flex-direction: column; gap: 14px;
+  margin-bottom: 20px;
+}
+.pref-row {
+  display: flex; flex-direction: column; gap: 8px;
+}
+.pref-label {
+  font-family: var(--font-dm), sans-serif;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--tan);
+}
+.pref-pills {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.pref-pill {
+  font-family: var(--font-dm), sans-serif;
+  font-size: 13px; font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--pub-cream-2);
+  color: var(--ink);
+  border: 1px solid var(--pub-border);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.pref-pill:hover { border-color: var(--pub-border-dark); }
+.pref-pill-active {
+  background: linear-gradient(135deg, #e8b54a 0%, #c79328 100%);
+  color: #ffffff;
+  border-color: #c79328;
+}
+.pref-pill-active:hover { border-color: #c79328; }
+
+/* ─── Subscribe modal — light card, gold accent ─── */
 .sub-modal-overlay {
-  background: rgba(7, 14, 28, 0.78);
+  background: rgba(20, 16, 10, 0.55);
 }
 .sub-modal-card {
-  background: linear-gradient(165deg, #0f1a2e 0%, #142339 100%);
-  border: 1px solid rgba(232, 181, 74, 0.22);
-  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.55);
-  color: #f0ebe1;
+  background: var(--pub-cream);
+  border: 1px solid var(--pub-border);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.18);
+  color: var(--ink);
 }
-.sub-modal-close { color: rgba(240, 235, 225, 0.55); }
-.sub-modal-close:hover { color: #e8b54a; }
-.sub-modal-card .pub-label { color: #e8b54a; }
-.sub-modal-heading { color: #f5f0e8; }
-.sub-modal-sub { color: rgba(240, 235, 225, 0.65); }
-
-/* Tweak embedded subscribe form when used inside the modal */
+.sub-modal-card .pub-label { color: #c79328; }
 .sub-modal-card .pub-form-subscribe-btn {
-  background: linear-gradient(135deg, #e8b54a 0%, #c79328 100%) !important;
-  color: #0f1a2e !important;
-  font-weight: 600 !important;
+  background: linear-gradient(135deg, #e8b54a 0%, #c79328 100%);
+  color: #ffffff;
+  font-weight: 600;
 }
-.sub-modal-card .pub-form-subscribe-btn:hover {
-  filter: brightness(1.05);
+.sub-modal-card .pub-form-subscribe-btn:hover { filter: brightness(1.05); }
+
+/* ─── Minimal footer (single line) ─── */
+.pub-footer-min {
+  justify-content: center;
+  text-align: center;
+  padding: 24px 20px;
 }
+.pub-footer-min .pub-footer-copy {
+  font-size: 13px; color: var(--tan);
+  display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center;
+}
+.pub-footer-min .pub-footer-copy a {
+  color: var(--tan); text-decoration: none;
+  border-bottom: 1px solid transparent; transition: color 0.15s, border-color 0.15s;
+}
+.pub-footer-min .pub-footer-copy a:hover { color: var(--ink); border-bottom-color: var(--ink); }
 
 /* ─── Top Hero Band ─── */
 .top-hero-band {
