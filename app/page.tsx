@@ -6,7 +6,7 @@ import ArticleListClient, { type ArticleItem } from '@/components/ArticleListCli
 import { ARTICLES } from '@/lib/articles'
 
 export default async function HomePage() {
-  const feedItems: ArticleItem[] = ARTICLES.map(a => ({
+  const feedItems: ArticleItem[] = ARTICLES.slice(1).map(a => ({
     slug: a.slug,
     title: a.title,
     displayDate: a.date,
@@ -28,7 +28,7 @@ export default async function HomePage() {
           <p className="pub-hero-dark-eyebrow">Economics &amp; AI &middot; Newsletter</p>
           <h1 className="pub-hero-dark-heading">The economy and AI, explained without the jargon.</h1>
           <p className="pub-hero-dark-sub">
-            A free newsletter decoding what actually moves markets and reshapes work. Choose daily or weekly delivery.
+            Written by a 16-year-old who actually reads the data.
           </p>
           <PublicSubscribeForm />
           <div className="pub-hero-dark-stats">
