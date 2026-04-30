@@ -54,6 +54,7 @@ export default function PublicNav() {
         <a href="/#about">About</a>
         <a href="/#topics">Topics</a>
         <a href="/#issues">Issues</a>
+        <a href="/research">Research</a>
       </nav>
 
       {/* Mobile drawer */}
@@ -68,6 +69,7 @@ export default function PublicNav() {
               { href: '/#about', label: 'About' },
               { href: '/#topics', label: 'Topics' },
               { href: '/#issues', label: 'Issues' },
+              { href: '/research', label: 'Research' },
             ].map(item => (
               <a
                 key={item.href}

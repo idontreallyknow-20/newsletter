@@ -54,6 +54,7 @@ export default function ArticleListClient({ items }: { items: ArticleItem[] }) {
                   </span>
                 )}
                 <div className="pub-article-title">{item.title}</div>
+                <div className="pub-article-byline">By Joseph, 16</div>
                 {item.intro && (
                   <p className="pub-article-intro">{item.intro.slice(0, 140)}…</p>
                 )}
