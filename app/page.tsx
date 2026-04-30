@@ -6,7 +6,7 @@ import ArticleListClient, { type ArticleItem } from '@/components/ArticleListCli
 import { ARTICLES } from '@/lib/articles'
 
 export default async function HomePage() {
-  const feedItems: ArticleItem[] = ARTICLES.map(a => ({
+  const feedItems: ArticleItem[] = ARTICLES.slice(1).map(a => ({
     slug: a.slug,
     title: a.title,
     displayDate: a.date,
@@ -28,11 +28,11 @@ export default async function HomePage() {
           <p className="pub-hero-dark-eyebrow">Economics &amp; AI &middot; Newsletter</p>
           <h1 className="pub-hero-dark-heading">The economy and AI, explained without the jargon.</h1>
           <p className="pub-hero-dark-sub">
-            A free newsletter decoding what actually moves markets and reshapes work. Choose daily or weekly delivery.
+            Written by a 16-year-old who actually reads the data.
           </p>
-          <PublicSubscribeForm />
+          <PublicSubscribeForm showPreferences={false} />
           <div className="pub-hero-dark-stats">
-            <span>40+ issues</span><span aria-hidden="true">&middot;</span>
+            <span>200+ subscribers</span><span aria-hidden="true">&middot;</span>
             <span>Free</span><span aria-hidden="true">&middot;</span>
             <span>Daily &amp; Weekly</span>
           </div>
@@ -51,6 +51,11 @@ export default async function HomePage() {
         <div className="pub-about-condensed">
           <div className="pub-wrap">
             <p className="pub-label">About</p>
+            <img
+              src="/images/joseph.jpg"
+              alt="Joseph"
+              className="pub-about-photo"
+            />
             <h2 className="pub-heading" style={{ maxWidth: '640px' }}>
               I&apos;m 16, and I think the way we talk about AI is broken.
             </h2>
@@ -60,7 +65,7 @@ export default async function HomePage() {
             </p>
             <div className="pub-about-stats-row">
               {([
-                { n: '40+', l: 'Issues' },
+                { n: '200+', l: 'Subscribers' },
                 { n: 'Daily', l: 'Delivery' },
                 { n: '5 min', l: 'Read' },
                 { n: 'Free', l: 'Always' },

@@ -52,8 +52,8 @@ export default function PublicNav() {
       {/* Left side ribbon — hidden on mobile */}
       <nav className="left-ribbon" aria-label="Page sections">
         <a href="/#about">About</a>
-        <a href="/#topics">Topics</a>
         <a href="/#issues">Issues</a>
+        <a href="/research">Research</a>
       </nav>
 
       {/* Mobile drawer */}
@@ -66,8 +66,8 @@ export default function PublicNav() {
           <nav className="px-6 pt-10 flex flex-col gap-2">
             {[
               { href: '/#about', label: 'About' },
-              { href: '/#topics', label: 'Topics' },
               { href: '/#issues', label: 'Issues' },
+              { href: '/research', label: 'Research' },
             ].map(item => (
               <a
                 key={item.href}
