@@ -54,6 +54,7 @@ export default function PublicNav() {
         <a href="/#about">About</a>
         <a href="/#topics">Topics</a>
         <a href="/#issues">Issues</a>
+        <a href="/research">Research</a>
       </nav>
 
       {/* Mobile drawer */}
@@ -68,6 +69,7 @@ export default function PublicNav() {
               { href: '/#about', label: 'About' },
               { href: '/#topics', label: 'Topics' },
               { href: '/#issues', label: 'Issues' },
+              { href: '/research', label: 'Research' },
             ].map(item => (
               <a
                 key={item.href}
@@ -105,7 +107,7 @@ export default function PublicNav() {
             <p className="pub-label" style={{ marginBottom: '12px' }}>Newsletter</p>
             <h2 className="sub-modal-heading">Subscribe to AI &amp; Economy</h2>
             <p className="sub-modal-sub">Free daily or weekly delivery. No spam, ever.</p>
-            <PublicSubscribeForm />
+            <PublicSubscribeForm showPreferences modalVariant />
           </div>
         </div>
       )}

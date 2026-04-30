@@ -1,6 +1,5 @@
 import PublicNav from '@/components/PublicNav'
 import PublicSubscribeForm from '@/components/PublicSubscribeForm'
-import TopicsFilter from '@/components/TopicsFilter'
 import FeatureGrid from '@/components/FeatureGrid'
 import ArticleListClient, { type ArticleItem } from '@/components/ArticleListClient'
 import { ARTICLES } from '@/lib/articles'
@@ -22,20 +21,15 @@ export default async function HomePage() {
       {/* Skip-link target */}
       <span id="main-content" aria-hidden="true" style={{ position: 'absolute', top: 0 }} />
 
-      {/* Hero subscribe */}
+      {/* Hero — just headline, subhead, email */}
       <section className="pub-hero-dark" id="hero">
         <div className="pub-hero-dark-inner">
           <p className="pub-hero-dark-eyebrow">Economics &amp; AI &middot; Newsletter</p>
           <h1 className="pub-hero-dark-heading">The economy and AI, explained without the jargon.</h1>
           <p className="pub-hero-dark-sub">
-            A free newsletter decoding what actually moves markets and reshapes work. Choose daily or weekly delivery.
+            A free newsletter decoding what actually moves markets and reshapes work.
           </p>
           <PublicSubscribeForm />
-          <div className="pub-hero-dark-stats">
-            <span>40+ issues</span><span aria-hidden="true">&middot;</span>
-            <span>Free</span><span aria-hidden="true">&middot;</span>
-            <span>Daily &amp; Weekly</span>
-          </div>
         </div>
       </section>
 
@@ -49,43 +43,29 @@ export default async function HomePage() {
       {/* About — condensed */}
       <section id="about">
         <div className="pub-about-condensed">
-          <div className="pub-wrap">
-            <p className="pub-label">About</p>
-            <h2 className="pub-heading" style={{ maxWidth: '640px' }}>
-              I&apos;m 16, and I think the way we talk about AI is broken.
-            </h2>
-            <p className="pub-copy" style={{ maxWidth: '560px' }}>
-              Most coverage is either breathless hype or doom. I started this newsletter to decode
-              the real economics behind AI headlines, without the jargon or insider assumptions.
-            </p>
-            <div className="pub-about-stats-row">
-              {([
-                { n: '40+', l: 'Issues' },
-                { n: 'Daily', l: 'Delivery' },
-                { n: '5 min', l: 'Read' },
-                { n: 'Free', l: 'Always' },
-              ] as const).map(s => (
-                <div key={s.l} className="pub-about-stat-inline">
-                  <span className="pub-stat-n">{s.n}</span>
-                  <span className="pub-stat-l">{s.l}</span>
-                </div>
-              ))}
+          <div className="pub-wrap pub-about-row">
+            <div className="pub-about-photo">
+              <div className="pub-about-photo-frame" aria-hidden="true" />
             </div>
-          </div>
-        </div>
-      </section>
-
-      <hr className="pub-rule" />
-
-      {/* Topics */}
-      <section id="topics">
-        <div className="pub-topics">
-          <div className="pub-wrap">
-            <div style={{ marginBottom: '48px' }}>
-              <p className="pub-label">What you&apos;ll read</p>
-              <h2 className="pub-heading">Six lenses on the same shifting world.</h2>
+            <div className="pub-about-text">
+              <p className="pub-label">About</p>
+              <h2 className="pub-heading" style={{ maxWidth: '640px' }}>
+                I&apos;m Joseph, 16, from Toronto. I write the AI and economics piece I wish existed — clear, specific, no hype.
+              </h2>
+              <div className="pub-about-stats-row">
+                {([
+                  { n: '200+', l: 'Subscribers' },
+                  { n: 'Daily', l: 'Delivery' },
+                  { n: '5 min', l: 'Read' },
+                  { n: 'Free', l: 'Always' },
+                ] as const).map(s => (
+                  <div key={s.l} className="pub-about-stat-inline">
+                    <span className="pub-stat-n">{s.n}</span>
+                    <span className="pub-stat-l">{s.l}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <TopicsFilter />
           </div>
         </div>
       </section>
@@ -114,7 +94,7 @@ export default async function HomePage() {
           <div className="pub-sub-inner">
             <h2 className="pub-sub-heading">Join readers who get a clear take on economics and AI.</h2>
             <p className="pub-sub-body">
-              Delivered to your inbox. Choose daily or weekly. Unsubscribe anytime.
+              Delivered to your inbox. Unsubscribe anytime.
             </p>
             <PublicSubscribeForm />
           </div>
@@ -122,13 +102,10 @@ export default async function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="pub-footer">
-        <span className="pub-footer-copy">&copy; 2026 Joseph. Made with curiosity.</span>
-        <nav className="pub-footer-links">
-          <a href="/#issues">Archive</a>
-          <a href="/#subscribe">Subscribe</a>
-          <a href="/#about">About</a>
-        </nav>
+      <footer className="pub-footer pub-footer-min">
+        <span className="pub-footer-copy">
+          &copy; 2026 Joseph &middot; <a href="/">dailybriefhq.com</a> &middot; <a href="#" aria-label="LinkedIn">LinkedIn</a>
+        </span>
       </footer>
     </>
   )

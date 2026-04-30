@@ -84,7 +84,7 @@ export default async function IssuePage({ params }: { params: { slug: string } }
                 border: '1px solid #c0392b', borderRadius: '999px', padding: '4px 10px',
               }}>{article.tag}</span>
               <span style={{ fontFamily: 'var(--font-dm)', fontSize: '12px', color: 'var(--tan)' }}>
-                {article.num} · {article.date} · {article.readTime}
+                By Joseph, 16 · {article.num} · {article.date} · {article.readTime}
               </span>
             </div>
 

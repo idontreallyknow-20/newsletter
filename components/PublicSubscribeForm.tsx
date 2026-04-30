@@ -1,39 +1,27 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, type FormEvent } from 'react'
 import { isValidEmail } from '@/lib/validate-email'
 
-const selectStyle: React.CSSProperties = {
-  fontFamily: 'var(--font-dm), sans-serif',
-  fontSize: '11px',
-  fontWeight: 500,
-  letterSpacing: '0.06em',
-  color: 'rgba(255,255,255,0.5)',
-  background: '#1a1a1a',
-  colorScheme: 'dark' as const,
-  border: '1px solid rgba(255,255,255,0.18)',
-  borderRadius: '2px',
-  padding: '5px 22px 5px 8px',
-  cursor: 'pointer',
-  outline: 'none',
-  appearance: 'none' as const,
-  WebkitAppearance: 'none' as const,
-  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(255,255,255,0.4)'/%3E%3C/svg%3E")`,
-  backgroundRepeat: 'no-repeat',
-  backgroundPosition: 'right 7px center',
-  backgroundSize: '7px',
+type Lang = 'en' | 'zh'
+type Freq = 'daily' | 'weekly' | 'both'
+
+interface Props {
+  showPreferences?: boolean
+  /** Pass `true` when rendered on the dark navy modal so input/button colors flip */
+  modalVariant?: boolean
 }
 
-export default function PublicSubscribeForm() {
+export default function PublicSubscribeForm({ showPreferences = false, modalVariant = false }: Props) {
   const [email, setEmail] = useState('')
   const [honeypot, setHoneypot] = useState('')
-  const [language, setLanguage] = useState<'en' | 'zh'>('en')
-  const [frequency, setFrequency] = useState<'daily' | 'weekly' | 'both'>('daily')
+  const [language, setLanguage] = useState<Lang>('en')
+  const [frequency, setFrequency] = useState<Freq>('daily')
   const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
   const [errMsg, setErrMsg] = useState('')
   const [inputError, setInputError] = useState(false)
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     if (!isValidEmail(email)) {
       setInputError(true)
@@ -81,7 +69,7 @@ export default function PublicSubscribeForm() {
   }
 
   return (
-    <div style={{ maxWidth: '480px', margin: '0 auto' }}>
+    <div className={`sub-form${modalVariant ? ' sub-form-modal' : ''}`} style={{ maxWidth: '480px', margin: '0 auto' }}>
       {/* Honeypot */}
       <input
         type="text" name="website" value={honeypot}
@@ -90,33 +78,51 @@ export default function PublicSubscribeForm() {
         style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, width: 0 }}
       />
 
-      {/* Preferences row */}
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', justifyContent: 'center', alignItems: 'center' }}>
-        <span style={{ fontFamily: 'var(--font-dm)', fontSize: '11px', fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)' }}>
-          Preferences
-        </span>
-        <select
-          value={language}
-          onChange={e => setLanguage(e.target.value as 'en' | 'zh')}
-          aria-label="Language"
-          style={selectStyle}
-        >
-          <option value="en">English</option>
-          <option value="zh">中文 (Simplified)</option>
-        </select>
-        <select
-          value={frequency}
-          onChange={e => setFrequency(e.target.value as 'daily' | 'weekly' | 'both')}
-          aria-label="Delivery frequency"
-          style={selectStyle}
-        >
-          <option value="daily">Daily</option>
-          <option value="weekly">Weekly</option>
-          <option value="both">Daily + Weekly</option>
-        </select>
-      </div>
+      {showPreferences && (
+        <div className="pref-stack">
+          <div className="pref-row" role="group" aria-label="Language">
+            <span className="pref-label">Language</span>
+            <div className="pref-pills">
+              {([
+                { v: 'en', label: 'English' },
+                { v: 'zh', label: '中文' },
+              ] as const).map(opt => (
+                <button
+                  key={opt.v}
+                  type="button"
+                  className={`pref-pill${language === opt.v ? ' pref-pill-active' : ''}`}
+                  aria-pressed={language === opt.v}
+                  onClick={() => setLanguage(opt.v)}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="pref-row" role="group" aria-label="Delivery frequency">
+            <span className="pref-label">Frequency</span>
+            <div className="pref-pills">
+              {([
+                { v: 'daily', label: 'Daily' },
+                { v: 'weekly', label: 'Weekly' },
+                { v: 'both', label: 'Daily + Weekly' },
+              ] as const).map(opt => (
+                <button
+                  key={opt.v}
+                  type="button"
+                  className={`pref-pill${frequency === opt.v ? ' pref-pill-active' : ''}`}
+                  aria-pressed={frequency === opt.v}
+                  onClick={() => setFrequency(opt.v)}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex' }} noValidate>
+      <form onSubmit={handleSubmit} className="sub-form-row" noValidate>
         <label htmlFor="public-email" style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px', overflow: 'hidden' }}>
           Email address
         </label>
@@ -129,45 +135,25 @@ export default function PublicSubscribeForm() {
           autoComplete="email"
           aria-describedby={inputError ? 'public-email-error' : undefined}
           aria-invalid={inputError ? 'true' : undefined}
-          style={{
-            flex: 1, padding: '14px 18px',
-            background: 'rgba(255,255,255,0.07)',
-            border: `1px solid ${inputError ? '#fca5a5' : 'rgba(255,255,255,0.15)'}`,
-            borderRight: 'none', color: '#f5f0e8',
-            fontFamily: 'var(--font-dm)', fontSize: '15px', outline: 'none',
-          }}
-          onFocus={e => (e.target.style.borderColor = inputError ? '#fca5a5' : 'rgba(255,255,255,0.35)')}
-          onBlur={e => (e.target.style.borderColor = inputError ? '#fca5a5' : 'rgba(255,255,255,0.15)')}
+          className={`sub-form-input${inputError ? ' sub-form-input-err' : ''}`}
         />
         <button
           type="submit"
           disabled={status === 'loading'}
           aria-label={status === 'loading' ? 'Subscribing, please wait' : 'Subscribe to newsletter'}
           className="pub-form-subscribe-btn"
-          style={{
-            padding: '14px 24px',
-            background: 'linear-gradient(135deg, #c8402a 0%, #a8341f 100%)',
-            color: '#f5f0e8',
-            fontFamily: 'var(--font-dm)', fontSize: '14px', fontWeight: 500,
-            border: 'none',
-            cursor: 'pointer', whiteSpace: 'nowrap',
-            letterSpacing: '0.02em',
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)',
-            opacity: status === 'loading' ? 0.6 : 1,
-            transition: 'opacity 0.15s',
-          }}
         >
           {status === 'loading' ? 'Joining…' : 'Subscribe →'}
         </button>
       </form>
 
       {status === 'error' && (
-        <p id="public-email-error" role="alert" style={{ color: '#fca5a5', fontSize: '13px', textAlign: 'center', marginTop: '10px' }}>
+        <p id="public-email-error" role="alert" className="sub-form-err">
           {errMsg}
         </p>
       )}
 
-      <p style={{ fontFamily: 'var(--font-dm)', fontSize: '12px', color: 'rgba(255,255,255,0.35)', textAlign: 'center', marginTop: '12px', letterSpacing: '0.01em' }}>
+      <p className="sub-form-foot">
         No spam. Unsubscribe anytime.
       </p>
     </div>
