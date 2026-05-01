@@ -35,6 +35,17 @@ export default function PublicNav() {
 
   function close() { setOpen(false) }
 
+  function handleAnchor(e: React.MouseEvent<HTMLAnchorElement>, hash: string) {
+    if (typeof window === 'undefined') return
+    if (window.location.pathname !== '/') return
+    const el = document.getElementById(hash)
+    if (!el) return
+    e.preventDefault()
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    history.replaceState(null, '', `#${hash}`)
+    close()
+  }
+
   return (
     <>
       {/* Sticky top nav — logo, in-page links, subscribe */}
@@ -42,9 +53,9 @@ export default function PublicNav() {
         <div className="pub-nav-left">
           <a href="/" className="pub-logo">Joseph<span>.</span></a>
           <ul className="pub-nav-links" role="list">
-            <li><a href="/#about">About</a></li>
-            <li><a href="/#topics">Topics</a></li>
-            <li><a href="/#issues">Issues</a></li>
+            <li><a href="/#about" onClick={e => handleAnchor(e, 'about')}>About</a></li>
+            <li><a href="/#topics" onClick={e => handleAnchor(e, 'topics')}>Topics</a></li>
+            <li><a href="/#issues" onClick={e => handleAnchor(e, 'issues')}>Issues</a></li>
           </ul>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -67,14 +78,14 @@ export default function PublicNav() {
           </div>
           <nav className="px-6 pt-10 flex flex-col gap-2">
             {[
-              { href: '/#about', label: 'About' },
-              { href: '/#topics', label: 'Topics' },
-              { href: '/#issues', label: 'Issues' },
+              { href: '/#about', hash: 'about', label: 'About' },
+              { href: '/#topics', hash: 'topics', label: 'Topics' },
+              { href: '/#issues', hash: 'issues', label: 'Issues' },
             ].map(item => (
               <a
                 key={item.href}
                 href={item.href}
-                onClick={close}
+                onClick={e => handleAnchor(e, item.hash)}
                 style={{ fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '28px', fontWeight: 700, color: 'var(--ink)', textDecoration: 'none', lineHeight: 1.4 }}
                 onMouseEnter={e => (e.currentTarget.style.color = 'var(--red)')}
                 onMouseLeave={e => (e.currentTarget.style.color = 'var(--ink)')}
@@ -107,7 +118,7 @@ export default function PublicNav() {
             <p className="pub-label" style={{ marginBottom: '12px' }}>Newsletter</p>
             <h2 className="sub-modal-heading">Subscribe to AI &amp; Economy</h2>
             <p className="sub-modal-sub">Free daily or weekly delivery. No spam, ever.</p>
-            <PublicSubscribeForm />
+            <PublicSubscribeForm onLight />
           </div>
         </div>
       )}

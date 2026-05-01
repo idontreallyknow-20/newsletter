@@ -3,28 +3,57 @@
 import { useState } from 'react'
 import { isValidEmail } from '@/lib/validate-email'
 
-const selectStyle: React.CSSProperties = {
-  fontFamily: 'var(--font-dm), sans-serif',
-  fontSize: '11px',
-  fontWeight: 500,
-  letterSpacing: '0.06em',
-  color: 'rgba(255,255,255,0.5)',
-  background: '#1a1a1a',
-  colorScheme: 'dark' as const,
-  border: '1px solid rgba(255,255,255,0.18)',
-  borderRadius: '2px',
-  padding: '5px 22px 5px 8px',
-  cursor: 'pointer',
-  outline: 'none',
-  appearance: 'none' as const,
-  WebkitAppearance: 'none' as const,
-  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(255,255,255,0.4)'/%3E%3C/svg%3E")`,
-  backgroundRepeat: 'no-repeat',
-  backgroundPosition: 'right 7px center',
-  backgroundSize: '7px',
+type Variant = 'dark' | 'light'
+
+function selectStyleFor(variant: Variant): React.CSSProperties {
+  if (variant === 'light') {
+    return {
+      fontFamily: 'var(--font-dm), sans-serif',
+      fontSize: '11px',
+      fontWeight: 500,
+      letterSpacing: '0.06em',
+      color: 'var(--ink)',
+      background: 'var(--pub-cream-2)',
+      colorScheme: 'light',
+      border: '1px solid var(--pub-border)',
+      borderRadius: '2px',
+      padding: '5px 22px 5px 8px',
+      cursor: 'pointer',
+      outline: 'none',
+      appearance: 'none',
+      WebkitAppearance: 'none',
+      backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b6459'/%3E%3C/svg%3E")`,
+      backgroundRepeat: 'no-repeat',
+      backgroundPosition: 'right 7px center',
+      backgroundSize: '7px',
+    }
+  }
+  return {
+    fontFamily: 'var(--font-dm), sans-serif',
+    fontSize: '11px',
+    fontWeight: 500,
+    letterSpacing: '0.06em',
+    color: 'rgba(255,255,255,0.5)',
+    background: '#1a1a1a',
+    colorScheme: 'dark',
+    border: '1px solid rgba(255,255,255,0.18)',
+    borderRadius: '2px',
+    padding: '5px 22px 5px 8px',
+    cursor: 'pointer',
+    outline: 'none',
+    appearance: 'none',
+    WebkitAppearance: 'none',
+    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(255,255,255,0.4)'/%3E%3C/svg%3E")`,
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'right 7px center',
+    backgroundSize: '7px',
+  }
 }
 
-export default function PublicSubscribeForm({ minimal = false }: { minimal?: boolean } = {}) {
+type Props = { minimal?: boolean; onLight?: boolean }
+
+export default function PublicSubscribeForm({ minimal = false, onLight = false }: Props = {}) {
+  const variant: Variant = onLight ? 'light' : 'dark'
   const [email, setEmail] = useState('')
   const [honeypot, setHoneypot] = useState('')
   const [language, setLanguage] = useState<'en' | 'zh'>('en')
@@ -32,6 +61,30 @@ export default function PublicSubscribeForm({ minimal = false }: { minimal?: boo
   const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
   const [errMsg, setErrMsg] = useState('')
   const [inputError, setInputError] = useState(false)
+
+  const palette = variant === 'light'
+    ? {
+        prefLabel: 'var(--tan)',
+        inputBg: '#ffffff',
+        inputBorder: 'var(--pub-border)',
+        inputBorderFocus: 'var(--pub-border-dark)',
+        inputColor: 'var(--ink)',
+        helperColor: 'var(--tan)',
+        successColor: '#15803d',
+        successSub: 'var(--tan)',
+        archiveLink: 'var(--red)',
+      }
+    : {
+        prefLabel: 'rgba(255,255,255,0.25)',
+        inputBg: 'rgba(255,255,255,0.07)',
+        inputBorder: 'rgba(255,255,255,0.15)',
+        inputBorderFocus: 'rgba(255,255,255,0.35)',
+        inputColor: '#f5f0e8',
+        helperColor: 'rgba(255,255,255,0.35)',
+        successColor: '#4ade80',
+        successSub: 'rgba(255,255,255,0.4)',
+        archiveLink: '#a09890',
+      }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -66,14 +119,14 @@ export default function PublicSubscribeForm({ minimal = false }: { minimal?: boo
   if (status === 'done') {
     return (
       <div style={{ textAlign: 'center' }}>
-        <p style={{ color: '#4ade80', fontSize: '16px', fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '12px' }}>
+        <p style={{ color: palette.successColor, fontSize: '16px', fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '12px' }}>
           <span aria-hidden="true">✓</span>
           <span>You&apos;re in! Check your inbox.</span>
         </p>
-        <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginBottom: '10px' }}>
+        <p style={{ color: palette.successSub, fontSize: '12px', marginBottom: '10px' }}>
           Don&apos;t see it? Check your spam or promotions folder.
         </p>
-        <a href="/#issues" style={{ color: '#a09890', fontSize: '14px', textDecoration: 'underline', textUnderlineOffset: '3px' }}>
+        <a href="/#issues" style={{ color: palette.archiveLink, fontSize: '14px', textDecoration: 'underline', textUnderlineOffset: '3px' }}>
           Browse the archive while you wait →
         </a>
       </div>
@@ -92,15 +145,15 @@ export default function PublicSubscribeForm({ minimal = false }: { minimal?: boo
 
       {/* Preferences row — hidden on minimal hero variant; collected post-signup */}
       {!minimal && (
-        <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', justifyContent: 'center', alignItems: 'center' }}>
-          <span style={{ fontFamily: 'var(--font-dm)', fontSize: '11px', fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)' }}>
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
+          <span style={{ fontFamily: 'var(--font-dm)', fontSize: '11px', fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: palette.prefLabel }}>
             Preferences
           </span>
           <select
             value={language}
             onChange={e => setLanguage(e.target.value as 'en' | 'zh')}
             aria-label="Language"
-            style={selectStyle}
+            style={selectStyleFor(variant)}
           >
             <option value="en">English</option>
             <option value="zh">中文 (Simplified)</option>
@@ -109,7 +162,7 @@ export default function PublicSubscribeForm({ minimal = false }: { minimal?: boo
             value={frequency}
             onChange={e => setFrequency(e.target.value as 'daily' | 'weekly' | 'both')}
             aria-label="Delivery frequency"
-            style={selectStyle}
+            style={selectStyleFor(variant)}
           >
             <option value="daily">Daily</option>
             <option value="weekly">Weekly</option>
@@ -133,13 +186,13 @@ export default function PublicSubscribeForm({ minimal = false }: { minimal?: boo
           aria-invalid={inputError ? 'true' : undefined}
           style={{
             flex: 1, padding: '14px 18px',
-            background: 'rgba(255,255,255,0.07)',
-            border: `1px solid ${inputError ? '#fca5a5' : 'rgba(255,255,255,0.15)'}`,
-            borderRight: 'none', color: '#f5f0e8',
+            background: palette.inputBg,
+            border: `1px solid ${inputError ? '#dc2626' : palette.inputBorder}`,
+            borderRight: 'none', color: palette.inputColor,
             fontFamily: 'var(--font-dm)', fontSize: '15px', outline: 'none',
           }}
-          onFocus={e => (e.target.style.borderColor = inputError ? '#fca5a5' : 'rgba(255,255,255,0.35)')}
-          onBlur={e => (e.target.style.borderColor = inputError ? '#fca5a5' : 'rgba(255,255,255,0.15)')}
+          onFocus={e => (e.target.style.borderColor = inputError ? '#dc2626' : palette.inputBorderFocus)}
+          onBlur={e => (e.target.style.borderColor = inputError ? '#dc2626' : palette.inputBorder)}
         />
         <button
           type="submit"
@@ -164,12 +217,12 @@ export default function PublicSubscribeForm({ minimal = false }: { minimal?: boo
       </form>
 
       {status === 'error' && (
-        <p id="public-email-error" role="alert" style={{ color: '#fca5a5', fontSize: '13px', textAlign: 'center', marginTop: '10px' }}>
+        <p id="public-email-error" role="alert" style={{ color: variant === 'light' ? '#b91c1c' : '#fca5a5', fontSize: '13px', textAlign: 'center', marginTop: '10px' }}>
           {errMsg}
         </p>
       )}
 
-      <p style={{ fontFamily: 'var(--font-dm)', fontSize: '12px', color: 'rgba(255,255,255,0.35)', textAlign: 'center', marginTop: '12px', letterSpacing: '0.01em' }}>
+      <p style={{ fontFamily: 'var(--font-dm)', fontSize: '12px', color: palette.helperColor, textAlign: 'center', marginTop: '12px', letterSpacing: '0.01em' }}>
         {minimal ? 'No spam. Pick language & frequency after you sign up.' : 'No spam. Unsubscribe anytime.'}
       </p>
     </div>
