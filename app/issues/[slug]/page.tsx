@@ -65,11 +65,35 @@ export default async function IssuePage({ params }: { params: { slug: string } }
     const currentIndex = ARTICLES.findIndex(a => a.slug === article.slug)
     const prev = ARTICLES[currentIndex + 1] ?? null
     const next = ARTICLES[currentIndex - 1] ?? null
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://dailybriefhq.com'
+    const articleUrl = `${baseUrl}/issues/${article.slug}`
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: article.title,
+      description: article.intro,
+      datePublished: toIsoDate(article.date),
+      dateModified: toIsoDate(article.date),
+      author: { '@type': 'Person', name: 'Joseph', url: baseUrl },
+      publisher: {
+        '@type': 'Organization',
+        name: 'Joseph — Economics & AI',
+        url: baseUrl,
+      },
+      mainEntityOfPage: { '@type': 'WebPage', '@id': articleUrl },
+      url: articleUrl,
+      image: `${baseUrl}/opengraph-image`,
+      articleSection: article.tag,
+    }
 
     return (
       <>
         <ReadingProgress />
         <PublicNav />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
 
         {/* Article */}
         <article style={{ maxWidth: '720px', margin: '0 auto', padding: '120px 48px 32px' }}>
@@ -127,27 +151,31 @@ export default async function IssuePage({ params }: { params: { slug: string } }
 
           {/* Body */}
           <div>
-            {article.sections.map((section, i) => (
-              <div key={i} style={{ marginBottom: '36px' }}>
-                {section.heading && (
-                  <h2 style={{
-                    fontFamily: 'var(--font-playfair), Georgia, serif',
-                    fontSize: '22px', fontWeight: 700,
-                    color: 'var(--ink)', marginTop: '2.25rem', marginBottom: '0.75rem', lineHeight: 1.25,
-                  }}>
-                    {section.heading}
-                  </h2>
-                )}
-                {section.body.split('\n\n').map((para, j) => (
-                  <p key={j} style={{
-                    fontFamily: 'var(--font-dm)', fontSize: '17px', fontWeight: 300,
-                    color: 'var(--ink)', lineHeight: 1.8, marginBottom: '16px',
-                  }}>
-                    {para}
-                  </p>
-                ))}
-              </div>
-            ))}
+            {article.sections.map((section, i) => {
+              const midpoint = Math.floor(article.sections.length / 2)
+              return (
+                <div key={i} style={{ marginBottom: '36px' }}>
+                  {section.heading && (
+                    <h2 style={{
+                      fontFamily: 'var(--font-playfair), Georgia, serif',
+                      fontSize: '22px', fontWeight: 700,
+                      color: 'var(--ink)', marginTop: '2.25rem', marginBottom: '0.75rem', lineHeight: 1.25,
+                    }}>
+                      {section.heading}
+                    </h2>
+                  )}
+                  {section.body.split('\n\n').map((para, j) => (
+                    <p key={j} style={{
+                      fontFamily: 'var(--font-dm)', fontSize: '17px', fontWeight: 300,
+                      color: 'var(--ink)', lineHeight: 1.8, marginBottom: '16px',
+                    }}>
+                      {para}
+                    </p>
+                  ))}
+                  {i === midpoint && article.sections.length >= 3 && <InlineSubscribe />}
+                </div>
+              )
+            })}
           </div>
 
           <ShareRow title={article.title} />
@@ -263,6 +291,37 @@ function SubscribeCta() {
         <PublicSubscribeForm />
       </div>
     </section>
+  )
+}
+
+function InlineSubscribe() {
+  return (
+    <aside
+      aria-label="Subscribe to the newsletter"
+      style={{
+        margin: '40px 0',
+        padding: '28px 28px 24px',
+        background: 'var(--ink)',
+        color: '#f5f0e8',
+        borderLeft: '4px solid var(--red)',
+      }}
+    >
+      <p style={{
+        fontFamily: 'var(--font-dm)', fontSize: '11px', fontWeight: 600,
+        letterSpacing: '0.16em', textTransform: 'uppercase',
+        color: 'var(--red)', marginBottom: '10px',
+      }}>
+        Liking this issue?
+      </p>
+      <p style={{
+        fontFamily: 'var(--font-playfair), Georgia, serif',
+        fontSize: '22px', fontWeight: 700, lineHeight: 1.25,
+        color: '#f5f0e8', marginBottom: '18px',
+      }}>
+        Get the next one in your inbox. Free, ~5 minutes a read.
+      </p>
+      <PublicSubscribeForm minimal />
+    </aside>
   )
 }
 

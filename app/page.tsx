@@ -30,7 +30,7 @@ export default async function HomePage() {
           <p className="pub-hero-dark-sub">
             A free newsletter decoding what actually moves markets and reshapes work. Choose daily or weekly delivery.
           </p>
-          <PublicSubscribeForm />
+          <PublicSubscribeForm minimal />
           <div className="pub-hero-dark-stats">
             <span>40+ issues</span><span aria-hidden="true">&middot;</span>
             <span>Free</span><span aria-hidden="true">&middot;</span>

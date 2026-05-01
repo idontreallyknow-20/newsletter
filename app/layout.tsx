@@ -23,7 +23,6 @@ export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: 'Joseph: Economics & AI Newsletter',
   description: 'A weekly newsletter breaking down the economic forces and AI breakthroughs shaping our world, without the jargon.',
-  alternates: { canonical: '/' },
   openGraph: {
     siteName: 'Joseph Newsletter',
     title: 'Joseph: Economics & AI Newsletter',
@@ -37,6 +36,10 @@ export const metadata: Metadata = {
     title: 'Joseph: Economics & AI Newsletter',
     description: 'A weekly newsletter breaking down the economic forces and AI breakthroughs shaping our world, without the jargon.',
     images: ['/opengraph-image'],
+  },
+  alternates: {
+    canonical: '/',
+    types: { 'application/rss+xml': '/feed.xml' },
   },
 }
 

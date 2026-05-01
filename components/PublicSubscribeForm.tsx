@@ -24,7 +24,7 @@ const selectStyle: React.CSSProperties = {
   backgroundSize: '7px',
 }
 
-export default function PublicSubscribeForm() {
+export default function PublicSubscribeForm({ minimal = false }: { minimal?: boolean } = {}) {
   const [email, setEmail] = useState('')
   const [honeypot, setHoneypot] = useState('')
   const [language, setLanguage] = useState<'en' | 'zh'>('en')
@@ -90,31 +90,33 @@ export default function PublicSubscribeForm() {
         style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, width: 0 }}
       />
 
-      {/* Preferences row */}
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', justifyContent: 'center', alignItems: 'center' }}>
-        <span style={{ fontFamily: 'var(--font-dm)', fontSize: '11px', fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)' }}>
-          Preferences
-        </span>
-        <select
-          value={language}
-          onChange={e => setLanguage(e.target.value as 'en' | 'zh')}
-          aria-label="Language"
-          style={selectStyle}
-        >
-          <option value="en">English</option>
-          <option value="zh">中文 (Simplified)</option>
-        </select>
-        <select
-          value={frequency}
-          onChange={e => setFrequency(e.target.value as 'daily' | 'weekly' | 'both')}
-          aria-label="Delivery frequency"
-          style={selectStyle}
-        >
-          <option value="daily">Daily</option>
-          <option value="weekly">Weekly</option>
-          <option value="both">Daily + Weekly</option>
-        </select>
-      </div>
+      {/* Preferences row — hidden on minimal hero variant; collected post-signup */}
+      {!minimal && (
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', justifyContent: 'center', alignItems: 'center' }}>
+          <span style={{ fontFamily: 'var(--font-dm)', fontSize: '11px', fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)' }}>
+            Preferences
+          </span>
+          <select
+            value={language}
+            onChange={e => setLanguage(e.target.value as 'en' | 'zh')}
+            aria-label="Language"
+            style={selectStyle}
+          >
+            <option value="en">English</option>
+            <option value="zh">中文 (Simplified)</option>
+          </select>
+          <select
+            value={frequency}
+            onChange={e => setFrequency(e.target.value as 'daily' | 'weekly' | 'both')}
+            aria-label="Delivery frequency"
+            style={selectStyle}
+          >
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="both">Daily + Weekly</option>
+          </select>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} style={{ display: 'flex' }} noValidate>
         <label htmlFor="public-email" style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px', overflow: 'hidden' }}>
@@ -168,7 +170,7 @@ export default function PublicSubscribeForm() {
       )}
 
       <p style={{ fontFamily: 'var(--font-dm)', fontSize: '12px', color: 'rgba(255,255,255,0.35)', textAlign: 'center', marginTop: '12px', letterSpacing: '0.01em' }}>
-        No spam. Unsubscribe anytime.
+        {minimal ? 'No spam. Pick language & frequency after you sign up.' : 'No spam. Unsubscribe anytime.'}
       </p>
     </div>
   )

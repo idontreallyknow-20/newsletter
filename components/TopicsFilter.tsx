@@ -6,12 +6,12 @@ import { ARTICLE_ILLUSTRATIONS } from '@/components/ArticleIllustrations'
 import { IconMarkets, IconAI, IconGlobe, IconWork, IconAnalysis, IconDigest } from '@/components/TopicIcons'
 
 const TOPICS = [
-  { icon: <IconMarkets />, title: 'Macro & Markets', tags: ['Economics', 'Markets'] },
-  { icon: <IconAI />,      title: 'AI & Technology', tags: ['AI'] },
-  { icon: <IconGlobe />,   title: 'Global Economy',  tags: ['Global'] },
-  { icon: <IconWork />,    title: 'Future of Work',  tags: ['Work'] },
-  { icon: <IconAnalysis />,title: 'Ideas & Analysis',tags: ['Analysis'] },
-  { icon: <IconDigest />,  title: 'Weekly Digest',   tags: ['Digest'] },
+  { icon: <IconMarkets />, title: 'Macro & Markets', tags: ['Economics', 'Markets'], slug: 'macro-markets' },
+  { icon: <IconAI />,      title: 'AI & Technology', tags: ['AI'], slug: 'ai-technology' },
+  { icon: <IconGlobe />,   title: 'Global Economy',  tags: ['Global'], slug: 'global-economy' },
+  { icon: <IconWork />,    title: 'Future of Work',  tags: ['Work'], slug: 'future-of-work' },
+  { icon: <IconAnalysis />,title: 'Ideas & Analysis',tags: ['Analysis'], slug: 'ideas-analysis' },
+  { icon: <IconDigest />,  title: 'Weekly Digest',   tags: ['Digest'], slug: 'weekly-digest' },
 ]
 
 const TOPIC_DESCS: Record<string, string> = {
@@ -75,32 +75,52 @@ export default function TopicsFilter() {
             const isActive = activeTags.includes(t.tags[0])
             const hasArticles = ARTICLES.some(a => t.tags.includes(a.tag))
             return (
-              <button
-                key={t.title}
-                onClick={() => handleTopicClick(t.tags)}
-                className="pub-topic"
-                aria-pressed={isActive}
-                aria-label={`Filter by ${t.title}`}
-                style={{
-                  textAlign: 'left',
-                  background: isActive ? '#2c1810' : undefined,
-                  borderColor: isActive ? '#2c1810' : undefined,
-                  cursor: hasArticles ? 'pointer' : 'default',
-                  transform: isActive ? 'translate(-2px, -2px)' : undefined,
-                  boxShadow: isActive ? '5px 5px 0 var(--red)' : undefined,
-                }}
-              >
-                <div className="pub-topic-icon-wrap" role="img" aria-label={`${t.title} icon`} style={isActive ? { borderColor: 'var(--red)', color: '#f5f0e8', background: 'rgba(200,64,42,0.15)' } : {}}>
-                  {t.icon}
-                </div>
-                <div className="pub-topic-title" style={isActive ? { color: '#f5f0e8' } : {}}>{t.title}</div>
-                <p className="pub-topic-desc" style={isActive ? { color: 'rgba(245,240,232,0.6)' } : {}}>{TOPIC_DESCS[t.title]}</p>
-                {isActive && (
-                  <p style={{ marginTop: '12px', fontSize: '11px', fontWeight: 500, color: 'var(--red)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-                    ✓ Selected
-                  </p>
-                )}
-              </button>
+              <div key={t.title} className="pub-topic-cell" style={{ position: 'relative', display: 'flex' }}>
+                <button
+                  onClick={() => handleTopicClick(t.tags)}
+                  className="pub-topic"
+                  aria-pressed={isActive}
+                  aria-label={`Filter by ${t.title}`}
+                  style={{
+                    textAlign: 'left',
+                    background: isActive ? '#2c1810' : undefined,
+                    borderColor: isActive ? '#2c1810' : undefined,
+                    cursor: hasArticles ? 'pointer' : 'default',
+                    transform: isActive ? 'translate(-2px, -2px)' : undefined,
+                    boxShadow: isActive ? '5px 5px 0 var(--red)' : undefined,
+                    width: '100%',
+                    paddingBottom: '52px',
+                  }}
+                >
+                  <div className="pub-topic-icon-wrap" role="img" aria-label={`${t.title} icon`} style={isActive ? { borderColor: 'var(--red)', color: '#f5f0e8', background: 'rgba(200,64,42,0.15)' } : {}}>
+                    {t.icon}
+                  </div>
+                  <div className="pub-topic-title" style={isActive ? { color: '#f5f0e8' } : {}}>{t.title}</div>
+                  <p className="pub-topic-desc" style={isActive ? { color: 'rgba(245,240,232,0.6)' } : {}}>{TOPIC_DESCS[t.title]}</p>
+                  {isActive && (
+                    <p style={{ marginTop: '12px', fontSize: '11px', fontWeight: 500, color: 'var(--red)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                      ✓ Selected
+                    </p>
+                  )}
+                </button>
+                <a
+                  href={`/topics/${t.slug}`}
+                  style={{
+                    position: 'absolute',
+                    left: 'var(--topic-pad, 24px)',
+                    bottom: '20px',
+                    fontFamily: 'var(--font-dm)', fontSize: '11px', fontWeight: 600,
+                    letterSpacing: '0.1em', textTransform: 'uppercase',
+                    color: isActive ? '#f5f0e8' : 'var(--red)',
+                    textDecoration: 'none',
+                    borderBottom: `1px solid ${isActive ? 'rgba(245,240,232,0.4)' : 'var(--red)'}`,
+                    paddingBottom: '1px',
+                    zIndex: 2,
+                  }}
+                >
+                  Open topic →
+                </a>
+              </div>
             )
           })}
         </div>
