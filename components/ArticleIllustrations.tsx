@@ -14,7 +14,7 @@ const base = {
 // The Fed's Impossible Dilemma — balance scales
 function FedScales() {
   return (
-    <svg {...base} aria-label="Balance scales">
+    <svg {...base} role="img" aria-label="Illustration: a tilted balance scale weighing growth against inflation">
       {/* Base */}
       <line x1="100" y1="115" x2="100" y2="65" strokeWidth="1.5" />
       <line x1="78" y1="115" x2="122" y2="115" strokeWidth="1.5" />
@@ -46,7 +46,7 @@ function FedScales() {
 // GPT-5 Arms Race — two rockets racing upward
 function ArmsRace() {
   return (
-    <svg {...base} aria-label="Rockets racing">
+    <svg {...base} role="img" aria-label="Illustration: two rockets racing upward through a grid, marking the AI capability arms race">
       {/* Grid lines */}
       <line x1="30" y1="20" x2="30" y2="110" strokeWidth="0.6" strokeOpacity="0.15" />
       <line x1="80" y1="20" x2="80" y2="110" strokeWidth="0.6" strokeOpacity="0.15" />
@@ -78,7 +78,7 @@ function ArmsRace() {
 // Recession Predictions Wrong — forecast vs reality
 function RecessionChart() {
   return (
-    <svg {...base} aria-label="Forecast vs reality chart">
+    <svg {...base} role="img" aria-label="Illustration: a forecast line diverging from the actual outcome on a chart">
       {/* Axes */}
       <line x1="28" y1="20" x2="28" y2="105" strokeWidth="1.2" strokeOpacity="0.5" />
       <line x1="28" y1="105" x2="180" y2="105" strokeWidth="1.2" strokeOpacity="0.5" />
@@ -113,7 +113,7 @@ function RecessionChart() {
 // AI Takeover of White-Collar Work — desk + neural network overlay
 function AITakeover() {
   return (
-    <svg {...base} aria-label="AI overlaying office work">
+    <svg {...base} role="img" aria-label="Illustration: an AI overlay sitting on top of office desk work">
       {/* Desk */}
       <line x1="30" y1="90" x2="170" y2="90" strokeWidth="1.5" strokeOpacity="0.6" />
       <line x1="50" y1="90" x2="50" y2="110" strokeWidth="1.2" strokeOpacity="0.4" />
@@ -150,7 +150,7 @@ function AITakeover() {
 // Deglobalization — globe with shifting trade flows
 function Deglobalization() {
   return (
-    <svg {...base} aria-label="Globe with rerouting trade flows">
+    <svg {...base} role="img" aria-label="Illustration: a globe with trade flows rerouting between continents">
       {/* Globe */}
       <circle cx="75" cy="65" r="40" strokeWidth="1.3" strokeOpacity="0.8" />
       <ellipse cx="75" cy="65" rx="18" ry="40" strokeWidth="0.9" strokeOpacity="0.4" />

@@ -75,15 +75,15 @@ export default function PublicSubscribeForm({ minimal = false, onLight = false }
         archiveLink: 'var(--red)',
       }
     : {
-        prefLabel: 'rgba(255,255,255,0.25)',
+        prefLabel: 'rgba(255,255,255,0.55)',
         inputBg: 'rgba(255,255,255,0.07)',
-        inputBorder: 'rgba(255,255,255,0.15)',
-        inputBorderFocus: 'rgba(255,255,255,0.35)',
+        inputBorder: 'rgba(255,255,255,0.22)',
+        inputBorderFocus: 'rgba(255,255,255,0.45)',
         inputColor: '#f5f0e8',
-        helperColor: 'rgba(255,255,255,0.35)',
+        helperColor: 'rgba(255,255,255,0.6)',
         successColor: '#4ade80',
-        successSub: 'rgba(255,255,255,0.4)',
-        archiveLink: '#a09890',
+        successSub: 'rgba(255,255,255,0.55)',
+        archiveLink: '#c0b6a6',
       }
 
   async function handleSubmit(e: React.FormEvent) {

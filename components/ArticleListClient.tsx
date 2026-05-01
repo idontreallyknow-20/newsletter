@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useDeferredValue, useMemo, useState } from 'react'
 import { ARTICLE_ILLUSTRATIONS } from '@/components/ArticleIllustrations'
 
 export type ArticleItem = {
@@ -24,11 +24,55 @@ function shortMonth(date: string) {
 
 export default function ArticleListClient({ items }: { items: ArticleItem[] }) {
   const [shown, setShown] = useState(PAGE_SIZE)
-  const visible = items.slice(0, shown)
-  const remaining = items.length - shown
+  const [query, setQuery] = useState('')
+  const deferredQuery = useDeferredValue(query)
+
+  const filtered = useMemo(() => {
+    const q = deferredQuery.trim().toLowerCase()
+    if (!q) return items
+    return items.filter(i =>
+      i.title.toLowerCase().includes(q) ||
+      (i.intro?.toLowerCase().includes(q) ?? false) ||
+      (i.tag?.toLowerCase().includes(q) ?? false)
+    )
+  }, [items, deferredQuery])
+
+  const visible = filtered.slice(0, shown)
+  const remaining = filtered.length - shown
+  const isSearching = query.trim().length > 0
 
   return (
     <>
+      <div className="pub-archive-search">
+        <label htmlFor="archive-search" className="pub-visually-hidden">Search issues</label>
+        <span aria-hidden="true" className="pub-archive-search-icon">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-3.5-3.5" />
+          </svg>
+        </span>
+        <input
+          id="archive-search"
+          type="search"
+          placeholder="Search issues by title, topic, or keyword…"
+          value={query}
+          onChange={e => { setQuery(e.target.value); setShown(PAGE_SIZE) }}
+          autoComplete="off"
+        />
+        {query && (
+          <button type="button" onClick={() => setQuery('')} aria-label="Clear search" className="pub-archive-search-clear">
+            ×
+          </button>
+        )}
+      </div>
+      {isSearching && (
+        <p className="pub-archive-search-meta" role="status" aria-live="polite">
+          {filtered.length === 0
+            ? `No issues match "${query.trim()}".`
+            : `${filtered.length} issue${filtered.length !== 1 ? 's' : ''} for "${query.trim()}"`}
+        </p>
+      )}
+
       <div className="pub-article-list">
         {visible.map(item => {
           const illus = ARTICLE_ILLUSTRATIONS[item.slug]

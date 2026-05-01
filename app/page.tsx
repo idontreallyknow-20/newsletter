@@ -4,6 +4,8 @@ import TopicsFilter from '@/components/TopicsFilter'
 import FeatureGrid from '@/components/FeatureGrid'
 import ArticleListClient, { type ArticleItem } from '@/components/ArticleListClient'
 import AudioIntro from '@/components/AudioIntro'
+import Testimonials from '@/components/Testimonials'
+import SiteFooter from '@/components/SiteFooter'
 import { ARTICLES } from '@/lib/articles'
 
 export default async function HomePage() {
@@ -74,6 +76,8 @@ export default async function HomePage() {
 
       <hr className="pub-rule" />
 
+      <Testimonials />
+
       {/* About — feature */}
       <section id="about">
         <div className="pub-about-condensed">
@@ -96,6 +100,10 @@ export default async function HomePage() {
                 <h2 className="pub-heading">
                   I&apos;m 16, and I think the way we talk about AI is broken.
                 </h2>
+                <p className="pub-byline">
+                  By <strong>Joseph</strong> · High-school student &amp; independent researcher ·
+                  Writing this newsletter since 2025.
+                </p>
                 <p className="pub-copy">
                   Most coverage is either breathless hype or doom. I started this newsletter to
                   decode the real economics behind AI headlines, without the jargon or insider
@@ -172,15 +180,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="pub-footer">
-        <span className="pub-footer-copy">&copy; 2026 Joseph. Made with curiosity.</span>
-        <nav className="pub-footer-links">
-          <a href="/#issues">Archive</a>
-          <a href="/#subscribe">Subscribe</a>
-          <a href="/#about">About</a>
-        </nav>
-      </footer>
+      <SiteFooter />
     </>
   )
 }

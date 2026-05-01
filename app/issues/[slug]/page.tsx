@@ -10,6 +10,7 @@ import { markdownToHtml } from '@/lib/markdown'
 import { ARTICLE_ILLUSTRATIONS } from '@/components/ArticleIllustrations'
 import ReadingProgress from '@/components/ReadingProgress'
 import ShareRow from '@/components/ShareRow'
+import SharedSiteFooter from '@/components/SiteFooter'
 
 export const dynamic = 'force-dynamic'
 
@@ -370,13 +371,5 @@ function InlineSubscribe() {
 }
 
 function SiteFooter() {
-  return (
-    <footer className="pub-footer">
-      <span className="pub-footer-copy">© 2026 Joseph. Made with curiosity.</span>
-      <nav className="pub-footer-links">
-        <a href="/">← Back to home</a>
-        <a href="/#issues">All issues</a>
-      </nav>
-    </footer>
-  )
+  return <SharedSiteFooter />
 }

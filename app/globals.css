@@ -20,8 +20,8 @@
     --pub-cream: #f5f0e8;
     --pub-cream-2: #ede8de;
     --ink: #1a1a1a;
-    --red: #c8402a;
-    --tan: #6b6459;
+    --red: #b8361f;
+    --tan: #5a544a;
     --pub-border: #d6cfc4;
     --pub-border-dark: #b8b0a6;
   }
@@ -530,6 +530,19 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
   border-bottom: 1px solid transparent; padding-bottom: 1px;
 }
 .pub-footer-links a:hover { color: var(--ink); border-bottom-color: var(--ink); }
+.pub-footer-socials {
+  display: flex; gap: 8px; list-style: none; padding: 0; margin: 0;
+}
+.pub-footer-socials a {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px;
+  border: 1px solid var(--pub-border);
+  color: var(--tan);
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.pub-footer-socials a:hover {
+  color: var(--ink); border-color: var(--ink); background: var(--pub-cream-2);
+}
 
 /* ─── Article prose (DB-rendered markdown) ─── */
 .prose-issue { font-family: var(--font-dm), sans-serif; }
@@ -595,6 +608,20 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
 
 @media (max-width: 480px) {
   .pub-stats { grid-template-columns: 1fr; }
+}
+
+/* Touch tap-target minimums */
+@media (pointer: coarse) {
+  .pub-nav-toggle,
+  .pub-theme-toggle,
+  .pub-nav-subscribe,
+  .pub-archive-search-clear,
+  .show-more-btn,
+  .pub-share-btn,
+  .scroll-to-top { min-height: 44px; min-width: 44px; }
+  .pub-nav-links a,
+  .pub-footer-links a { padding: 10px 0; }
+  .pub-archive-search input { padding-top: 16px; padding-bottom: 16px; }
 }
 
 /* ─── Focus-visible outlines (keyboard navigation) ─── */
@@ -771,6 +798,79 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
   color: #2c2624;
 }
 .pub-about-body .pub-copy + .pub-copy { margin-top: 18px; }
+.pub-byline {
+  font-family: var(--font-dm), sans-serif;
+  font-size: 13px; color: var(--tan); margin-bottom: 24px;
+  letter-spacing: 0.01em;
+}
+.pub-byline strong { color: var(--ink); font-weight: 600; }
+
+/* Archive search */
+.pub-visually-hidden {
+  position: absolute !important; width: 1px !important; height: 1px !important;
+  padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+  clip: rect(0,0,0,0) !important; white-space: nowrap !important; border: 0 !important;
+}
+.pub-archive-search {
+  position: relative;
+  display: flex; align-items: center;
+  margin-bottom: 24px;
+  background: var(--pub-cream-2);
+  border: 1px solid var(--pub-border);
+  transition: border-color 0.15s, background 0.15s;
+}
+.pub-archive-search:focus-within { border-color: var(--ink); background: var(--pub-cream); }
+.pub-archive-search-icon {
+  display: inline-flex; padding: 0 10px 0 14px; color: var(--tan);
+}
+.pub-archive-search input {
+  flex: 1;
+  background: transparent; border: none; outline: none;
+  padding: 14px 12px 14px 0;
+  font-family: var(--font-dm), sans-serif;
+  font-size: 14px; color: var(--ink);
+  min-width: 0;
+}
+.pub-archive-search input::placeholder { color: var(--tan); opacity: 1; }
+.pub-archive-search-clear {
+  background: none; border: none; cursor: pointer;
+  font-size: 22px; line-height: 1; color: var(--tan);
+  padding: 6px 14px;
+}
+.pub-archive-search-clear:hover { color: var(--ink); }
+.pub-archive-search-meta {
+  font-family: var(--font-dm), sans-serif;
+  font-size: 13px; color: var(--tan);
+  margin: -8px 0 18px;
+}
+
+/* Testimonials */
+.pub-testimonials { padding: 96px 0; background: var(--pub-cream); }
+.pub-testimonials-grid {
+  display: grid; gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+.pub-testimonial {
+  margin: 0; padding: 28px 28px 24px;
+  background: var(--pub-cream-2);
+  border: 1px solid var(--pub-border);
+  border-left: 3px solid var(--red);
+}
+.pub-testimonial-quote {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 18px; font-weight: 400; font-style: italic;
+  color: var(--ink); line-height: 1.55; margin: 0 0 18px;
+}
+.pub-testimonial-attr {
+  display: flex; flex-direction: column; gap: 2px;
+  font-family: var(--font-dm), sans-serif;
+}
+.pub-testimonial-name { font-size: 13px; font-weight: 600; color: var(--ink); }
+.pub-testimonial-role { font-size: 12px; color: var(--tan); }
+.pub-testimonial-handle { font-size: 12px; color: var(--red); }
+@media (max-width: 768px) {
+  .pub-testimonials { padding: 64px 0; }
+}
 .pub-about-stats-row {
   display: flex; gap: 48px; margin-top: 40px; flex-wrap: wrap;
   padding-top: 32px; border-top: 1px solid var(--pub-border);
