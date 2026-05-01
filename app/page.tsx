@@ -46,30 +46,45 @@ export default async function HomePage() {
 
       <hr className="pub-rule" />
 
-      {/* About — condensed */}
+      {/* About — feature */}
       <section id="about">
         <div className="pub-about-condensed">
           <div className="pub-wrap">
-            <p className="pub-label">About</p>
-            <h2 className="pub-heading" style={{ maxWidth: '640px' }}>
-              I&apos;m 16, and I think the way we talk about AI is broken.
-            </h2>
-            <p className="pub-copy" style={{ maxWidth: '560px' }}>
-              Most coverage is either breathless hype or doom. I started this newsletter to decode
-              the real economics behind AI headlines, without the jargon or insider assumptions.
-            </p>
-            <div className="pub-about-stats-row">
-              {([
-                { n: '40+', l: 'Issues' },
-                { n: 'Daily', l: 'Delivery' },
-                { n: '5 min', l: 'Read' },
-                { n: 'Free', l: 'Always' },
-              ] as const).map(s => (
-                <div key={s.l} className="pub-about-stat-inline">
-                  <span className="pub-stat-n">{s.n}</span>
-                  <span className="pub-stat-l">{s.l}</span>
+            <div className="pub-about-grid">
+              <div className="pub-about-portrait">
+                <span className="pub-about-portrait-fallback" aria-hidden="true">J</span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/joseph.jpg" alt="Joseph at his desk, working on the newsletter" />
+              </div>
+              <div className="pub-about-body">
+                <p className="pub-label">About &amp; Research</p>
+                <h2 className="pub-heading">
+                  I&apos;m 16, and I think the way we talk about AI is broken.
+                </h2>
+                <p className="pub-copy">
+                  Most coverage is either breathless hype or doom. I started this newsletter to
+                  decode the real economics behind AI headlines, without the jargon or insider
+                  assumptions.
+                </p>
+                <p className="pub-copy">
+                  Every issue starts with primary research: papers, filings, central-bank notes,
+                  and earnings transcripts. Then I cut it down to the part that actually matters
+                  for how you work, save, and think about what&apos;s next.
+                </p>
+                <div className="pub-about-stats-row">
+                  {([
+                    { n: '40+', l: 'Issues' },
+                    { n: 'Daily', l: 'Delivery' },
+                    { n: '5 min', l: 'Read' },
+                    { n: 'Free', l: 'Always' },
+                  ] as const).map(s => (
+                    <div key={s.l} className="pub-about-stat-inline">
+                      <span className="pub-stat-n">{s.n}</span>
+                      <span className="pub-stat-l">{s.l}</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
             </div>
           </div>
         </div>

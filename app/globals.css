@@ -681,22 +681,59 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
 }
 .mag-feed-more { text-align: center; padding: 36px 0; }
 
-/* ─── About (condensed) ─── */
-.pub-about-condensed { padding: 56px 0; background: var(--pub-cream); }
+/* ─── About (feature) ─── */
+.pub-about-condensed { padding: 96px 0; background: var(--pub-cream); }
+.pub-about-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 380px) 1fr;
+  gap: 72px;
+  align-items: start;
+}
+.pub-about-portrait {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  background: #2c1810;
+  overflow: hidden;
+  box-shadow: 14px 14px 0 var(--red);
+}
+.pub-about-portrait img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.pub-about-portrait-fallback {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 120px; font-weight: 700;
+  color: rgba(245,240,232,0.18);
+  letter-spacing: -0.04em;
+}
+.pub-about-body { padding-top: 8px; }
+.pub-about-body .pub-heading {
+  font-size: clamp(36px, 4.4vw, 56px);
+  line-height: 1.05;
+  margin-bottom: 24px;
+  max-width: 620px;
+}
+.pub-about-body .pub-copy {
+  font-size: 18px; line-height: 1.65; max-width: 560px;
+  color: #2c2624;
+}
+.pub-about-body .pub-copy + .pub-copy { margin-top: 18px; }
 .pub-about-stats-row {
-  display: flex; gap: 40px; margin-top: 32px; flex-wrap: wrap;
+  display: flex; gap: 48px; margin-top: 40px; flex-wrap: wrap;
+  padding-top: 32px; border-top: 1px solid var(--pub-border);
 }
 .pub-about-stat-inline {
-  display: flex; align-items: baseline; gap: 8px;
+  display: flex; flex-direction: column; gap: 4px;
 }
 .pub-about-stat-inline .pub-stat-n {
   font-family: var(--font-playfair), Georgia, serif;
-  font-size: 22px; font-weight: 700; color: var(--ink);
+  font-size: 28px; font-weight: 700; color: var(--ink);
 }
 .pub-about-stat-inline .pub-stat-l {
   font-family: var(--font-dm), sans-serif;
-  font-size: 12px; font-weight: 600; color: var(--tan);
-  text-transform: uppercase; letter-spacing: 0.1em;
+  font-size: 11px; font-weight: 600; color: var(--tan);
+  text-transform: uppercase; letter-spacing: 0.12em;
 }
 
 /* ─── Responsive overrides for new components ─── */
@@ -711,7 +748,11 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
   .mag-row { grid-template-columns: 1fr; }
   .mag-card { border-right: none; border-bottom: 1px solid var(--pub-border); padding: 20px; }
   .mag-card:last-child { border-bottom: none; }
-  .pub-about-condensed { padding: 40px 0; }
+  .pub-about-condensed { padding: 56px 0; }
+  .pub-about-grid { grid-template-columns: 1fr; gap: 36px; }
+  .pub-about-portrait { max-width: 320px; box-shadow: 10px 10px 0 var(--red); }
+  .pub-about-body .pub-heading { font-size: 32px; }
+  .pub-about-body .pub-copy { font-size: 16px; }
   .pub-about-stats-row { gap: 24px; }
 }
 
@@ -825,13 +866,16 @@ hr.pub-rule { border: none; border-top: 1px solid var(--pub-border); margin: 0; 
   text-orientation: mixed;
   transform: rotate(180deg);
   font-family: var(--font-dm), sans-serif;
-  font-size: 9px; font-weight: 700;
-  letter-spacing: 0.18em; text-transform: uppercase;
-  color: rgba(26,26,26,0.55); text-decoration: none;
-  transition: color 0.15s;
-  padding: 4px 0;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: #ffffff;
+  mix-blend-mode: difference;
+  text-decoration: none;
+  transition: opacity 0.15s;
+  padding: 6px 2px;
+  opacity: 0.85;
 }
-.left-ribbon a:hover { color: var(--ink); }
+.left-ribbon a:hover { opacity: 1; }
 @media (max-width: 1024px) { .left-ribbon { display: none; } }
 
 /* ─── Share QR popup ─── */
