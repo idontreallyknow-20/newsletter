@@ -152,7 +152,7 @@ export default function TopicPage({ params }: { params: { slug: string } }) {
           )}
         </section>
 
-        <section style={{ background: 'var(--ink)', padding: '64px 48px' }}>
+        <section style={{ background: '#1a1a1a', padding: '64px 48px' }}>
           <div style={{ maxWidth: '540px', margin: '0 auto', textAlign: 'center' }}>
             <p style={{
               fontFamily: 'var(--font-dm)', fontSize: '11px', fontWeight: 500,

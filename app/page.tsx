@@ -3,6 +3,7 @@ import PublicSubscribeForm from '@/components/PublicSubscribeForm'
 import TopicsFilter from '@/components/TopicsFilter'
 import FeatureGrid from '@/components/FeatureGrid'
 import ArticleListClient, { type ArticleItem } from '@/components/ArticleListClient'
+import AudioIntro from '@/components/AudioIntro'
 import { ARTICLES } from '@/lib/articles'
 
 export default async function HomePage() {
@@ -15,9 +16,36 @@ export default async function HomePage() {
     intro: a.intro,
   }))
 
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://dailybriefhq.com'
+  const homeJsonLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: 'Joseph — Economics & AI',
+      url: baseUrl,
+      description: 'A free newsletter decoding what actually moves markets and reshapes work.',
+      potentialAction: {
+        '@type': 'SubscribeAction',
+        target: `${baseUrl}/#hero`,
+      },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Person',
+      name: 'Joseph',
+      url: baseUrl,
+      jobTitle: 'Newsletter Author',
+      description: '16-year-old writer covering economics and AI without the jargon.',
+    },
+  ]
+
   return (
     <>
       <PublicNav />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }}
+      />
 
       {/* Skip-link target */}
       <span id="main-content" aria-hidden="true" style={{ position: 'absolute', top: 0 }} />
@@ -54,7 +82,14 @@ export default async function HomePage() {
               <div className="pub-about-portrait">
                 <span className="pub-about-portrait-fallback" aria-hidden="true">J</span>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/joseph.jpg" alt="Joseph at his desk, working on the newsletter" />
+                <img
+                  src="/joseph.jpg"
+                  alt="Joseph at his desk, working on the newsletter"
+                  loading="lazy"
+                  decoding="async"
+                  width="800"
+                  height="1000"
+                />
               </div>
               <div className="pub-about-body">
                 <p className="pub-label">About &amp; Research</p>
@@ -71,6 +106,7 @@ export default async function HomePage() {
                   and earnings transcripts. Then I cut it down to the part that actually matters
                   for how you work, save, and think about what&apos;s next.
                 </p>
+                <AudioIntro />
                 <div className="pub-about-stats-row">
                   {([
                     { n: '40+', l: 'Issues' },

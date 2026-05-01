@@ -182,6 +182,8 @@ export default async function IssuePage({ params }: { params: { slug: string } }
 
           <hr style={{ border: 'none', borderTop: '1px solid var(--border)', margin: '40px 0' }} />
 
+          <RelatedIssues currentSlug={article.slug} tag={article.tag} />
+
           {/* Prev / Next */}
           <div style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', marginBottom: '24px' }}>
             {prev ? (
@@ -269,7 +271,7 @@ export default async function IssuePage({ params }: { params: { slug: string } }
 
 function SubscribeCta() {
   return (
-    <section style={{ background: 'var(--ink)', padding: '72px 48px' }}>
+    <section style={{ background: '#1a1a1a', padding: '72px 48px' }}>
       <div style={{ maxWidth: '540px', margin: '0 auto', textAlign: 'center' }}>
         <p style={{
           fontFamily: 'var(--font-dm)', fontSize: '11px', fontWeight: 500,
@@ -294,6 +296,48 @@ function SubscribeCta() {
   )
 }
 
+function RelatedIssues({ currentSlug, tag }: { currentSlug: string; tag: string }) {
+  const sameTag = ARTICLES.filter(a => a.tag === tag && a.slug !== currentSlug).slice(0, 3)
+  const filler = sameTag.length < 3
+    ? ARTICLES.filter(a => a.slug !== currentSlug && a.tag !== tag).slice(0, 3 - sameTag.length)
+    : []
+  const related = [...sameTag, ...filler]
+  if (related.length === 0) return null
+  return (
+    <section aria-label="Related issues" style={{ margin: '8px 0 32px' }}>
+      <p className="pub-label" style={{ marginBottom: '20px' }}>Keep reading</p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
+        {related.map(a => (
+          <a key={a.slug} href={`/issues/${a.slug}`} style={{
+            display: 'block',
+            padding: '20px',
+            background: 'var(--pub-cream-2)',
+            border: '1px solid var(--pub-border)',
+            textDecoration: 'none',
+            transition: 'transform 0.15s, box-shadow 0.15s',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+              <span style={{
+                fontFamily: 'var(--font-dm)', fontSize: '10px', fontWeight: 600,
+                letterSpacing: '0.12em', textTransform: 'uppercase',
+                color: 'var(--red)', borderBottom: '1px solid var(--red)',
+              }}>{a.tag}</span>
+              <span style={{ fontFamily: 'var(--font-dm)', fontSize: '11px', color: 'var(--tan)' }}>
+                {a.readTime}
+              </span>
+            </div>
+            <div style={{
+              fontFamily: 'var(--font-playfair), Georgia, serif',
+              fontSize: '17px', fontWeight: 700, lineHeight: 1.3,
+              color: 'var(--ink)',
+            }}>{a.title}</div>
+          </a>
+        ))}
+      </div>
+    </section>
+  )
+}
+
 function InlineSubscribe() {
   return (
     <aside
@@ -301,7 +345,7 @@ function InlineSubscribe() {
       style={{
         margin: '40px 0',
         padding: '28px 28px 24px',
-        background: 'var(--ink)',
+        background: '#1a1a1a',
         color: '#f5f0e8',
         borderLeft: '4px solid var(--red)',
       }}

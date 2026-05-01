@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 // Paths that start with these prefixes are public (no auth needed)
-const PUBLIC_PREFIXES = ['/login', '/subscribe', '/preferences', '/issues', '/topics', '/feed.xml', '/sitemap.xml', '/robots.txt', '/api/login', '/api/subscribe', '/api/unsubscribe', '/api/logout', '/api/setup', '/api/preferences', '/_next', '/favicon.ico']
+const PUBLIC_PREFIXES = ['/login', '/subscribe', '/preferences', '/issues', '/topics', '/feed.xml', '/sitemap.xml', '/robots.txt', '/opengraph-image', '/api/login', '/api/subscribe', '/api/unsubscribe', '/api/logout', '/api/setup', '/api/preferences', '/_next', '/favicon.ico']
 
 // Derive a session token from the admin password using Web Crypto (Edge-compatible).
 // The cookie stores this derived token — never the raw password.
@@ -66,5 +66,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:jpg|jpeg|png|gif|webp|svg|ico|mp3|mp4|webm|wav|ogg|pdf|woff|woff2|ttf|eot|txt|xml)).*)'],
 }

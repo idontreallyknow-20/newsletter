@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import PublicSubscribeForm from '@/components/PublicSubscribeForm'
+import ThemeToggle from '@/components/ThemeToggle'
 
 export default function PublicNav() {
   const [open, setOpen] = useState(false)
@@ -47,6 +48,7 @@ export default function PublicNav() {
           </ul>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <ThemeToggle />
           <button className="pub-nav-subscribe" onClick={() => setShowModal(true)}>
             Subscribe free →
           </button>
@@ -58,7 +60,7 @@ export default function PublicNav() {
 
       {/* Mobile drawer */}
       {open && (
-        <div className="fixed inset-0 z-[99]" style={{ background: 'rgba(245,240,232,0.97)', backdropFilter: 'blur(12px)' }}>
+        <div className="fixed inset-0 z-[99] pub-drawer">
           <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: 'var(--pub-border)', height: '62px' }}>
             <a href="/" className="pub-logo" onClick={close}>Joseph<span>.</span></a>
             <button onClick={close} className="pub-nav-toggle" style={{ display: 'block' }}>Close</button>
