@@ -1,8 +1,37 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-// Paths that start with these prefixes are public (no auth needed)
-const PUBLIC_PREFIXES = ['/login', '/subscribe', '/preferences', '/issues', '/api/login', '/api/subscribe', '/api/unsubscribe', '/api/logout', '/api/setup', '/api/preferences', '/_next', '/favicon.ico']
+// Exact public paths (no auth needed)
+const PUBLIC_EXACT = [
+  '/',
+  '/favicon.ico',
+  '/icon.svg',
+  '/robots.txt',
+  '/sitemap.xml',
+  '/opengraph-image',
+]
+
+// Public path prefixes. Matched with a path-segment boundary so that e.g.
+// '/api/subscribe' does NOT expose '/api/subscribers' (admin-only PII).
+const PUBLIC_PREFIXES = [
+  '/login',
+  '/subscribe',
+  '/preferences',
+  '/issues',
+  '/unsubscribed',
+  '/api/login',
+  '/api/subscribe',
+  '/api/unsubscribe',
+  '/api/logout',
+  '/api/setup', // performs its own session check
+  '/api/preferences',
+  '/_next',
+]
+
+function isPublicPath(pathname: string): boolean {
+  if (PUBLIC_EXACT.includes(pathname)) return true
+  return PUBLIC_PREFIXES.some(p => pathname === p || pathname.startsWith(p + '/'))
+}
 
 // Derive a session token from the admin password using Web Crypto (Edge-compatible).
 // The cookie stores this derived token — never the raw password.
@@ -29,27 +58,21 @@ function hexEqual(a: string, b: string): boolean {
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
 
-  // Allow homepage exactly
-  if (pathname === '/') return NextResponse.next()
-
-  // Allow public path prefixes
-  if (PUBLIC_PREFIXES.some(p => pathname.startsWith(p))) {
+  if (isPublicPath(pathname)) {
     return NextResponse.next()
   }
 
   // Allow cron routes (secured by CRON_SECRET header, not cookie)
-  if (pathname.startsWith('/api/cron/')) {
-    return NextResponse.next()
-  }
-
-  // Allow preferences (used in email links)
-  if (pathname.startsWith('/api/preferences')) {
+  if (pathname === '/api/cron' || pathname.startsWith('/api/cron/')) {
     return NextResponse.next()
   }
 
   // Block all access if no password is configured (fail closed)
   const stored = process.env.DASHBOARD_PASSWORD
   if (!stored) {
+    if (pathname.startsWith('/api/')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     return NextResponse.redirect(new URL('/login', req.url))
   }
 
@@ -60,7 +83,10 @@ export async function middleware(req: NextRequest) {
     if (hexEqual(session.value, expected)) return NextResponse.next()
   }
 
-  // Redirect unauthenticated requests to login, preserving destination
+  // API routes get a JSON 401; pages redirect to login, preserving destination
+  if (pathname.startsWith('/api/')) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
   const from = encodeURIComponent(pathname)
   return NextResponse.redirect(new URL(`/login?from=${from}`, req.url))
 }

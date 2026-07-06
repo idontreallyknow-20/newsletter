@@ -1,5 +1,6 @@
 import { ARTICLES } from '@/lib/articles'
 import PublicNav from '@/components/PublicNav'
+import SiteFooter from '@/components/SiteFooter'
 
 export default function NotFound() {
   return (
@@ -34,14 +35,7 @@ export default function NotFound() {
         </div>
       </div>
 
-      <footer className="pub-footer">
-        <span className="pub-footer-copy">© 2026 Joseph. Made with curiosity.</span>
-        <nav className="pub-footer-links">
-          <a href="/">Home</a>
-          <a href="/#issues">Issues</a>
-          <a href="/#subscribe">Subscribe</a>
-        </nav>
-      </footer>
+      <SiteFooter />
     </>
   )
 }

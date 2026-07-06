@@ -1,3 +1,10 @@
+// Canonical form used everywhere an address is stored, looked up, or signed —
+// keeps DB lookups and HMAC email tokens consistent regardless of how the
+// address was typed.
+export function normalizeEmail(email: unknown): string {
+  return typeof email === 'string' ? email.trim().toLowerCase() : ''
+}
+
 // Basic email validation. Good enough for a newsletter — intentionally
 // permissive to avoid rejecting valid addresses from unusual TLDs.
 export function isValidEmail(email: string): boolean {

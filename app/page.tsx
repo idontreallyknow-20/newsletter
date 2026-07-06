@@ -3,6 +3,7 @@ import PublicSubscribeForm from '@/components/PublicSubscribeForm'
 import TopicsFilter from '@/components/TopicsFilter'
 import FeatureGrid from '@/components/FeatureGrid'
 import ArticleListClient, { type ArticleItem } from '@/components/ArticleListClient'
+import SiteFooter from '@/components/SiteFooter'
 import { ARTICLES } from '@/lib/articles'
 
 export default async function HomePage() {
@@ -15,8 +16,18 @@ export default async function HomePage() {
     intro: a.intro,
   }))
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Joseph: Economics & AI Newsletter',
+    url: 'https://dailybriefhq.com',
+    description: 'A newsletter breaking down the economic forces and AI breakthroughs shaping our world, without the jargon.',
+    publisher: { '@type': 'Person', name: 'Joseph' },
+  }
+
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <PublicNav />
 
       {/* Skip-link target */}
@@ -121,15 +132,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="pub-footer">
-        <span className="pub-footer-copy">&copy; 2026 Joseph. Made with curiosity.</span>
-        <nav className="pub-footer-links">
-          <a href="/#issues">Archive</a>
-          <a href="/#subscribe">Subscribe</a>
-          <a href="/#about">About</a>
-        </nav>
-      </footer>
+      <SiteFooter />
     </>
   )
 }

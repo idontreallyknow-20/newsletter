@@ -113,7 +113,12 @@ export async function GET(req: Request) {
       subs.map(sub => {
         const token = signEmailToken(sub.email, emailSecret)
         const unsubscribeUrl = `${baseUrl}/api/unsubscribe?email=${encodeURIComponent(sub.email)}&token=${token}`
-        return { email: sub.email, html: buildEmailHtml({ newsletterName, bodyHtml, unsubscribeUrl }) }
+        const preferencesUrl = `${baseUrl}/preferences?email=${encodeURIComponent(sub.email)}&token=${token}`
+        return {
+          email: sub.email,
+          unsubscribeUrl,
+          html: buildEmailHtml({ newsletterName, bodyHtml, unsubscribeUrl, preferencesUrl, previewText: enDraft.previewText || undefined }),
+        }
       })
 
     const [enResults, zhResults] = await Promise.all([

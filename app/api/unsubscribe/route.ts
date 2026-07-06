@@ -4,36 +4,56 @@ import { subscribers } from '@/lib/schema'
 import { eq } from 'drizzle-orm'
 import { rateLimit } from '@/lib/rate-limit'
 import { verifyEmailToken } from '@/lib/token'
+import { normalizeEmail } from '@/lib/validate-email'
 
-export async function GET(req: Request) {
+async function handleUnsubscribe(req: Request): Promise<{ ok: boolean; status?: number; error?: string }> {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
   if (!rateLimit(`unsubscribe:${ip}`, 10, 60_000)) {
-    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+    return { ok: false, status: 429, error: 'Too many requests' }
   }
 
+  const { searchParams } = new URL(req.url)
+  const email = normalizeEmail(searchParams.get('email'))
+  const token = searchParams.get('token') ?? ''
+  if (!email) return { ok: false, status: 400, error: 'Email required' }
+
+  const secret = process.env.EMAIL_TOKEN_SECRET || process.env.DASHBOARD_PASSWORD || ''
+  if (!token || !verifyEmailToken(email, token, secret)) {
+    return { ok: false, status: 403, error: 'Invalid token' }
+  }
+
+  await db
+    .update(subscribers)
+    .set({ status: 'unsubscribed' })
+    .where(eq(subscribers.email, email))
+
+  return { ok: true }
+}
+
+export async function GET(req: Request) {
   try {
-    const { searchParams } = new URL(req.url)
-    const email = searchParams.get('email')
-    const token = searchParams.get('token') ?? ''
-    if (!email) return NextResponse.json({ error: 'Email required' }, { status: 400 })
-
-    const secret = process.env.EMAIL_TOKEN_SECRET || process.env.DASHBOARD_PASSWORD || ''
-    if (!token || !verifyEmailToken(email, token, secret)) {
-      return NextResponse.json({ error: 'Invalid token' }, { status: 403 })
+    const result = await handleUnsubscribe(req)
+    if (!result.ok) {
+      return NextResponse.json({ error: result.error }, { status: result.status })
     }
+    // Show the branded confirmation page (with one-click resubscribe)
+    const { searchParams } = new URL(req.url)
+    const email = normalizeEmail(searchParams.get('email'))
+    return NextResponse.redirect(new URL(`/unsubscribed?email=${encodeURIComponent(email)}`, req.url))
+  } catch {
+    return NextResponse.json({ error: 'Unsubscribe failed' }, { status: 500 })
+  }
+}
 
-    await db
-      .update(subscribers)
-      .set({ status: 'unsubscribed' })
-      .where(eq(subscribers.email, email))
-
-    return new NextResponse(
-      `<!DOCTYPE html><html><body style="font-family:Georgia,serif;text-align:center;padding:80px;background:#0A0A0A;color:#F5F0E8;">
-        <h1 style="font-size:24px;">You've been unsubscribed.</h1>
-        <p style="color:#9b9b8f;">You won't receive any more emails from this newsletter.</p>
-      </body></html>`,
-      { headers: { 'Content-Type': 'text/html' } }
-    )
+// RFC 8058 one-click unsubscribe: mail clients POST to the List-Unsubscribe
+// URL with no user interaction, so this must succeed silently.
+export async function POST(req: Request) {
+  try {
+    const result = await handleUnsubscribe(req)
+    if (!result.ok) {
+      return NextResponse.json({ error: result.error }, { status: result.status })
+    }
+    return NextResponse.json({ success: true })
   } catch {
     return NextResponse.json({ error: 'Unsubscribe failed' }, { status: 500 })
   }

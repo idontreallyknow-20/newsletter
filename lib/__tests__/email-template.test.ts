@@ -26,4 +26,25 @@ describe('buildEmailHtml', () => {
     expect(html).toContain('<!DOCTYPE html>')
     expect(html).toContain('</body>')
   })
+
+  it('escapes HTML in the newsletter name', () => {
+    const html = buildEmailHtml({ ...base, newsletterName: '<script>alert(1)</script>' })
+    expect(html).not.toContain('<script>alert(1)</script>')
+    expect(html).toContain('&lt;script&gt;')
+  })
+
+  it('renders a hidden preheader when previewText is given', () => {
+    const html = buildEmailHtml({ ...base, previewText: 'This week: rates, chips, and jobs' })
+    expect(html).toContain('This week: rates, chips, and jobs')
+    expect(html).toContain('display:none')
+  })
+
+  it('omits the preferences link when no preferencesUrl is given', () => {
+    expect(buildEmailHtml(base)).not.toContain('>Preferences</a>')
+  })
+
+  it('includes the preferences link when preferencesUrl is given', () => {
+    const html = buildEmailHtml({ ...base, preferencesUrl: 'https://example.com/preferences?email=a&token=b' })
+    expect(html).toContain('>Preferences</a>')
+  })
 })

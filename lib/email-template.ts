@@ -1,11 +1,31 @@
 // Pure HTML template — no server deps, safe to import from client components.
 
+/** Escape a string for safe interpolation into HTML. */
+export function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
 export function buildEmailHtml(opts: {
   newsletterName: string
   bodyHtml: string
   unsubscribeUrl: string
+  preferencesUrl?: string
+  previewText?: string
 }): string {
-  const { newsletterName, bodyHtml, unsubscribeUrl } = opts
+  const { bodyHtml, unsubscribeUrl, preferencesUrl, previewText } = opts
+  const newsletterName = escapeHtml(opts.newsletterName)
+  const unsubscribeHref = escapeHtml(unsubscribeUrl)
+  const preferencesHref = preferencesUrl ? escapeHtml(preferencesUrl) : ''
+
+  // Hidden preheader: shown next to the subject line in most inboxes.
+  const preheader = previewText
+    ? `<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">${escapeHtml(previewText)}&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;</div>`
+    : ''
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -57,9 +77,13 @@ export function buildEmailHtml(opts: {
       font-style: italic;
       color: #5a504a;
     }
+    @media (max-width: 620px) {
+      .card-pad { padding: 32px 24px 28px !important; }
+    }
   </style>
 </head>
 <body style="margin:0;padding:0;background:#ede8de;font-family:Georgia,'Times New Roman',serif;">
+  ${preheader}
   <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ede8de;padding:48px 16px;">
     <tr>
       <td align="center">
@@ -86,7 +110,7 @@ export function buildEmailHtml(opts: {
 
           <!-- Body card -->
           <tr>
-            <td style="background:#ffffff;padding:44px 48px 40px;">
+            <td class="card-pad" style="background:#ffffff;padding:44px 48px 40px;">
               <div class="body-content">
                 ${bodyHtml}
               </div>
@@ -99,7 +123,7 @@ export function buildEmailHtml(opts: {
               <p style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#9a8f85;text-align:center;line-height:1.7;letter-spacing:0.03em;">
                 You're subscribed to <strong style="color:#5a504a;">${newsletterName}</strong>
                 &nbsp;·&nbsp;
-                <a href="${unsubscribeUrl}" style="color:#9a8f85;text-decoration:underline;">Unsubscribe</a>
+                ${preferencesHref ? `<a href="${preferencesHref}" style="color:#9a8f85;text-decoration:underline;">Preferences</a>&nbsp;·&nbsp;` : ''}<a href="${unsubscribeHref}" style="color:#9a8f85;text-decoration:underline;">Unsubscribe</a>
               </p>
             </td>
           </tr>
