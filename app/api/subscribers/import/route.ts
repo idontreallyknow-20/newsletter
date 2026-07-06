@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { subscribers } from '@/lib/schema'
+import { isValidEmail, normalizeEmail } from '@/lib/validate-email'
 
 export async function POST(req: Request) {
   try {
@@ -12,7 +13,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Maximum 10,000 rows per import' }, { status: 400 })
     }
 
-    const valid = rows.filter(r => r.email?.trim())
+    const valid = rows
+      .map(r => ({ name: (r.name ?? '').slice(0, 100), email: normalizeEmail(r.email) }))
+      .filter(r => isValidEmail(r.email))
     if (valid.length === 0) {
       return NextResponse.json({ inserted: 0, skipped: rows.length })
     }
@@ -20,7 +23,7 @@ export async function POST(req: Request) {
     // Batch upsert — ON CONFLICT DO NOTHING skips existing emails
     const result = await db
       .insert(subscribers)
-      .values(valid.map(r => ({ name: r.name ?? '', email: r.email.trim(), status: 'active' as const })))
+      .values(valid.map(r => ({ name: r.name, email: r.email, status: 'active' as const })))
       .onConflictDoNothing()
       .returning({ id: subscribers.id })
 

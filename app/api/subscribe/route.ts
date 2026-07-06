@@ -3,8 +3,9 @@ import { db } from '@/lib/db'
 import { subscribers, settings } from '@/lib/schema'
 import { eq } from 'drizzle-orm'
 import { rateLimit } from '@/lib/rate-limit'
-import { isValidEmail } from '@/lib/validate-email'
+import { isValidEmail, normalizeEmail } from '@/lib/validate-email'
 import { buildEmailHtml, sendToRecipients, syncToResendAudience } from '@/lib/email'
+import { escapeHtml } from '@/lib/email-template'
 import { signEmailToken } from '@/lib/token'
 
 export async function POST(req: Request) {
@@ -14,10 +15,14 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { name, email, language, frequency, website } = await req.json()
+    const body = await req.json()
+    const { language, frequency, website } = body
     // Honeypot: bots fill hidden fields, real users never see them
     if (website) return NextResponse.json({ success: true })
+
+    const email = normalizeEmail(body.email)
     if (!email || !isValidEmail(email)) return NextResponse.json({ error: 'Valid email is required' }, { status: 400 })
+    const name = typeof body.name === 'string' ? body.name.trim().slice(0, 100) : undefined
 
     const lang = language === 'zh' ? 'zh' : 'en'
     const freq = frequency === 'daily' ? 'daily' : frequency === 'both' ? 'both' : 'weekly'
@@ -54,6 +59,7 @@ export async function POST(req: Request) {
       const fromName = s.from_name || 'Joseph'
       const fromEmail = s.from_email || process.env.FROM_EMAIL || ''
       const newsletterName = s.newsletter_name || 'AI & Economy'
+      const safeName = escapeHtml(newsletterName)
       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://dailybriefhq.com'
 
       if (fromEmail) {
@@ -66,7 +72,7 @@ export async function POST(req: Request) {
 
         const bodyHtml = lang === 'zh' ? `
           <p style="font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:700;color:#1a1a1a;margin:0 0 24px;">欢迎。</p>
-          <p>您已成功订阅 <strong>${newsletterName}</strong>。您的第一期将很快发送到您的收件箱。</p>
+          <p>您已成功订阅 <strong>${safeName}</strong>。您的第一期将很快发送到您的收件箱。</p>
           <p>同时，您可以 <a href="${baseUrl}/#issues" style="color:#c8402a;">浏览往期内容</a>。</p>
           <hr style="border:none;border-top:1px solid #e0dbd3;margin:32px 0;">
           <p style="font-size:13px;color:#6b6459;margin-bottom:12px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;">您的偏好设置</p>
@@ -78,7 +84,7 @@ export async function POST(req: Request) {
           <p style="margin-top:32px;">Joseph</p>
         ` : `
           <p style="font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:700;color:#1a1a1a;margin:0 0 24px;">Welcome.</p>
-          <p>You're now subscribed to <strong>${newsletterName}</strong>. Your first issue will land in your inbox soon.</p>
+          <p>You're now subscribed to <strong>${safeName}</strong>. Your first issue will land in your inbox soon.</p>
           <p>In the meantime, <a href="${baseUrl}/#issues" style="color:#c8402a;">browse the archive</a> on the site.</p>
           <hr style="border:none;border-top:1px solid #e0dbd3;margin:32px 0;">
           <p style="font-size:13px;color:#6b6459;margin-bottom:12px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;">Your preferences</p>
@@ -91,13 +97,23 @@ export async function POST(req: Request) {
           <p style="margin-top:32px;">Joseph</p>
         `
         const welcomeSubject = lang === 'zh' ? `欢迎订阅 ${newsletterName}` : `Welcome to ${newsletterName}`
-        const html = buildEmailHtml({ newsletterName, bodyHtml, unsubscribeUrl })
+        const previewText = lang === 'zh'
+          ? '您已成功订阅——这是您需要了解的信息。'
+          : "You're in — here's what to expect and how to tune your delivery."
+        const html = buildEmailHtml({
+          newsletterName,
+          bodyHtml,
+          unsubscribeUrl,
+          preferencesUrl: `${baseUrl}/preferences?email=${encodeURIComponent(email)}&token=${emailToken}`,
+          previewText,
+        })
         await sendToRecipients({
           to: [email],
           subject: welcomeSubject,
           html,
           fromName,
           fromEmail,
+          unsubscribeUrl,
         })
       }
     } catch (emailErr) {

@@ -4,6 +4,7 @@ import { subscribers } from '@/lib/schema'
 import { eq } from 'drizzle-orm'
 import { verifyEmailToken } from '@/lib/token'
 import { rateLimit } from '@/lib/rate-limit'
+import { normalizeEmail } from '@/lib/validate-email'
 
 export async function GET(req: Request) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
@@ -12,7 +13,7 @@ export async function GET(req: Request) {
   }
 
   const { searchParams } = new URL(req.url)
-  const email = searchParams.get('email')
+  const email = normalizeEmail(searchParams.get('email'))
   const token = searchParams.get('token') ?? ''
   const freq = searchParams.get('freq')
   const lang = searchParams.get('lang')
@@ -36,7 +37,8 @@ export async function GET(req: Request) {
 
   try {
     await db.update(subscribers).set(updates).where(eq(subscribers.email, email))
-    const params = new URLSearchParams({ updated: '1', ...(freq ? { freq } : {}), ...(lang ? { lang } : {}) })
+    // Keep email+token so the page re-renders the options with the new state
+    const params = new URLSearchParams({ updated: '1', email, token, ...(freq ? { freq } : {}), ...(lang ? { lang } : {}) })
     return NextResponse.redirect(new URL(`/preferences?${params}`, req.url))
   } catch {
     return NextResponse.redirect(new URL('/preferences?error=1', req.url))

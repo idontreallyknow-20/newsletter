@@ -50,7 +50,12 @@ export async function POST(req: Request) {
     const recipients = targets.map(sub => {
       const token = signEmailToken(sub.email, emailSecret)
       const unsubscribeUrl = `${baseUrl}/api/unsubscribe?email=${encodeURIComponent(sub.email)}&token=${token}`
-      return { email: sub.email, html: buildEmailHtml({ newsletterName, bodyHtml, unsubscribeUrl }) }
+      const preferencesUrl = `${baseUrl}/preferences?email=${encodeURIComponent(sub.email)}&token=${token}`
+      return {
+        email: sub.email,
+        unsubscribeUrl,
+        html: buildEmailHtml({ newsletterName, bodyHtml, unsubscribeUrl, preferencesUrl, previewText: previewText || undefined }),
+      }
     })
 
     const batchResults = await sendBatch({ recipients, subject, fromName, fromEmail })

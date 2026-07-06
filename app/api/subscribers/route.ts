@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { subscribers } from '@/lib/schema'
 import { eq } from 'drizzle-orm'
 import { count } from 'drizzle-orm'
+import { isValidEmail, normalizeEmail } from '@/lib/validate-email'
 
 export async function GET(req: Request) {
   try {
@@ -23,8 +24,10 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const { name, email } = await req.json()
-    if (!email) return NextResponse.json({ error: 'Email is required' }, { status: 400 })
+    const body = await req.json()
+    const email = normalizeEmail(body.email)
+    if (!email || !isValidEmail(email)) return NextResponse.json({ error: 'Valid email is required' }, { status: 400 })
+    const name = typeof body.name === 'string' ? body.name.trim().slice(0, 100) : undefined
 
     const existing = await db.select().from(subscribers).where(eq(subscribers.email, email))
     if (existing.length > 0) {

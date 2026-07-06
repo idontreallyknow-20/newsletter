@@ -27,12 +27,12 @@ export async function POST(req: Request) {
     }
 
     const bodyHtml = markdownToHtml(bodyMarkdown)
-    const emailSecret = process.env.DASHBOARD_PASSWORD || ''
+    const emailSecret = process.env.EMAIL_TOKEN_SECRET || process.env.DASHBOARD_PASSWORD || ''
     const token = signEmailToken(ownerEmail, emailSecret)
     const unsubscribeUrl = `${baseUrl}/api/unsubscribe?email=${encodeURIComponent(ownerEmail)}&token=${token}`
     const html = buildEmailHtml({ newsletterName, bodyHtml, unsubscribeUrl })
 
-    await sendToRecipients({ to: [ownerEmail], subject: `[TEST] ${subject}`, html, fromName, fromEmail })
+    await sendToRecipients({ to: [ownerEmail], subject: `[TEST] ${subject}`, html, fromName, fromEmail, unsubscribeUrl })
 
     return NextResponse.json({ success: true, sentTo: ownerEmail })
   } catch {

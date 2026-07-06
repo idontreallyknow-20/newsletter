@@ -7,14 +7,26 @@ function getResend() {
   return _resend
 }
 
+// RFC 8058 one-click unsubscribe headers. Gmail/Yahoo require these for bulk
+// senders — they surface the native "Unsubscribe" button and protect sender
+// reputation (which keeps emails out of spam).
+function unsubscribeHeaders(unsubscribeUrl?: string): Record<string, string> | undefined {
+  if (!unsubscribeUrl) return undefined
+  return {
+    'List-Unsubscribe': `<${unsubscribeUrl}>`,
+    'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+  }
+}
+
 export async function sendToRecipients(opts: {
   to: string[]
   subject: string
   html: string
   fromName: string
   fromEmail: string
+  unsubscribeUrl?: string
 }) {
-  const { to, subject, html, fromName, fromEmail } = opts
+  const { to, subject, html, fromName, fromEmail, unsubscribeUrl } = opts
 
   // Resend supports up to 50 recipients per call — batch if needed
   const batchSize = 50
@@ -27,6 +39,7 @@ export async function sendToRecipients(opts: {
       to: batch,
       subject,
       html,
+      headers: unsubscribeHeaders(unsubscribeUrl),
     })
     results.push(result)
   }
@@ -37,7 +50,7 @@ export async function sendToRecipients(opts: {
 // Send personalized emails (different HTML per recipient) using Resend's batch API.
 // One HTTP request per 100 recipients instead of one per subscriber.
 export async function sendBatch(opts: {
-  recipients: Array<{ email: string; html: string }>
+  recipients: Array<{ email: string; html: string; unsubscribeUrl?: string }>
   subject: string
   fromName: string
   fromEmail: string
@@ -50,7 +63,13 @@ export async function sendBatch(opts: {
   for (let i = 0; i < recipients.length; i += batchSize) {
     const chunk = recipients.slice(i, i + batchSize)
     const result = await getResend().batch.send(
-      chunk.map(r => ({ from, to: [r.email], subject, html: r.html }))
+      chunk.map(r => ({
+        from,
+        to: [r.email],
+        subject,
+        html: r.html,
+        headers: unsubscribeHeaders(r.unsubscribeUrl),
+      }))
     )
     results.push(result)
   }

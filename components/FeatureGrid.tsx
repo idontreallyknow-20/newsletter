@@ -1,12 +1,13 @@
 import { ARTICLES } from '@/lib/articles'
 
+// Muted tones that sit with the cream/ink/red editorial palette
 const TAG_COLORS: Record<string, string> = {
   Economics: '#c8402a',
-  AI: '#2563eb',
-  Policy: '#7c3aed',
-  Markets: '#0891b2',
-  Labor: '#059669',
-  Tech: '#d97706',
+  AI: '#3d6b7d',
+  Policy: '#6f5b8f',
+  Markets: '#33707e',
+  Labor: '#4a7c59',
+  Tech: '#a86a1f',
 }
 
 export default function FeatureGrid() {
