@@ -13,6 +13,7 @@ import { signEmailToken } from '@/lib/token'
 import { markdownToHtml } from '@/lib/markdown'
 import { slugify } from '@/lib/slug'
 import { cronAuthorized, loadSettings, senderFrom, logRun, notifyOwner, errorMessage } from '@/lib/cron'
+import { ensureSchema } from '@/lib/ensure-schema'
 
 export async function GET(req: Request) {
   if (!cronAuthorized(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -20,6 +21,8 @@ export async function GET(req: Request) {
   const issueDate = getIssueDate()
   let s: Record<string, string> = {}
   try {
+    // Idempotent. A deploy that adds a column must not be able to break the morning.
+    await ensureSchema()
     s = await loadSettings()
 
     const [[enDraft], [zhDraft], [sentRow]] = await Promise.all([
@@ -85,7 +88,8 @@ export async function GET(req: Request) {
         }
       }
 
-      const buildRecipients = (subs: typeof allActive, bodyHtml: string) =>
+      const readOnlineUrl = `${baseUrl}/issues/${slugify(enSubject)}`
+      const buildRecipients = (subs: typeof allActive, bodyHtml: string, language: 'en' | 'zh', subject: string) =>
         subs.map(sub => {
           const token = signEmailToken(sub.email, emailSecret)
           const unsubscribeUrl = `${baseUrl}/api/unsubscribe?email=${encodeURIComponent(sub.email)}&token=${token}`
@@ -93,16 +97,16 @@ export async function GET(req: Request) {
           return {
             email: sub.email,
             unsubscribeUrl,
-            html: buildEmailHtml({ newsletterName, bodyHtml, unsubscribeUrl, preferencesUrl, previewText: enDraft.previewText || undefined }),
+            html: buildEmailHtml({ newsletterName, subject, issueDate, language, bodyHtml, unsubscribeUrl, preferencesUrl, readOnlineUrl, siteUrl: baseUrl, previewText: (language === 'zh' ? zhDraft?.previewText : enDraft.previewText) || undefined }),
           }
         })
 
       const [enResults, zhResults] = await Promise.all([
         enTargets.length > 0
-          ? sendBatch({ recipients: buildRecipients(enTargets, enBodyHtml), subject: enSubject, fromName, fromEmail })
+          ? sendBatch({ recipients: buildRecipients(enTargets, enBodyHtml, 'en', enSubject), subject: enSubject, fromName, fromEmail })
           : Promise.resolve([]),
         zhTargets.length > 0
-          ? sendBatch({ recipients: buildRecipients(zhTargets, zhBodyHtml), subject: zhSubject, fromName, fromEmail })
+          ? sendBatch({ recipients: buildRecipients(zhTargets, zhBodyHtml, 'zh', zhSubject), subject: zhSubject, fromName, fromEmail })
           : Promise.resolve([]),
       ])
 

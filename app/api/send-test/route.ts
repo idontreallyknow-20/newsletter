@@ -4,10 +4,11 @@ import { settings } from '@/lib/schema'
 import { buildEmailHtml, sendToRecipients } from '@/lib/email'
 import { signEmailToken } from '@/lib/token'
 import { markdownToHtml } from '@/lib/markdown'
+import { getIssueDate } from '@/lib/schedule'
 
 export async function POST(req: Request) {
   try {
-    const { subject, bodyMarkdown } = await req.json()
+    const { subject, bodyMarkdown, previewText, language } = await req.json()
     if (!subject || !bodyMarkdown) {
       return NextResponse.json({ error: 'Subject and body are required' }, { status: 400 })
     }
@@ -30,7 +31,7 @@ export async function POST(req: Request) {
     const emailSecret = process.env.EMAIL_TOKEN_SECRET || process.env.DASHBOARD_PASSWORD || ''
     const token = signEmailToken(ownerEmail, emailSecret)
     const unsubscribeUrl = `${baseUrl}/api/unsubscribe?email=${encodeURIComponent(ownerEmail)}&token=${token}`
-    const html = buildEmailHtml({ newsletterName, bodyHtml, unsubscribeUrl })
+    const html = buildEmailHtml({ newsletterName, subject, issueDate: getIssueDate(), language: language === 'zh' ? 'zh' : 'en', bodyHtml, unsubscribeUrl, siteUrl: baseUrl, previewText: previewText || undefined })
 
     await sendToRecipients({ to: [ownerEmail], subject: `[TEST] ${subject}`, html, fromName, fromEmail, unsubscribeUrl })
 

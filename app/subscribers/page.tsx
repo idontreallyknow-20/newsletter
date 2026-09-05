@@ -117,8 +117,8 @@ export default function SubscribersPage() {
   const unsub = subscribers.filter(s => s.status === 'unsubscribed').length
 
   return (
-    <div className="p-8 lg:p-12 max-w-5xl">
-      <div className="flex items-start justify-between mb-10 flex-wrap gap-4 animate-fade-up">
+    <div className="p-5 sm:p-8 lg:p-12 max-w-5xl">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-8 sm:mb-10 gap-4 animate-fade-up">
         <div>
           <p className="font-mono text-[9px] tracking-[0.25em] uppercase mb-3" style={{ color: 'var(--muted)', opacity: 0.5 }}>Manage</p>
           <h2 className="font-display text-4xl font-bold mb-2" style={{ color: 'var(--cream)' }}>Subscribers</h2>
@@ -139,13 +139,13 @@ export default function SubscribersPage() {
       </div>
 
       {/* Add form */}
-      <form onSubmit={addSubscriber} className="flex gap-3 flex-wrap mb-8 pb-8 animate-fade-up delay-1" style={{ borderBottom: '1px solid var(--border)' }}>
+      <form onSubmit={addSubscriber} className="flex flex-col sm:flex-row gap-3 mb-8 pb-8 animate-fade-up delay-1" style={{ borderBottom: '1px solid var(--border)' }}>
         <input
           type="text"
           value={name}
           onChange={e => setName(e.target.value)}
           placeholder="Name (optional)"
-          className="flex-1 min-w-[140px] px-3 py-2.5 text-sm font-sans"
+          className="flex-1 sm:min-w-[140px] px-3 py-2.5 text-sm font-sans"
           style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--cream)', outline: 'none' }}
         />
         <input
@@ -154,7 +154,7 @@ export default function SubscribersPage() {
           onChange={e => setEmail(e.target.value)}
           placeholder="Email address"
           required
-          className="flex-1 min-w-[200px] px-3 py-2.5 text-sm font-sans"
+          className="flex-1 sm:min-w-[200px] px-3 py-2.5 text-sm font-sans"
           style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--cream)', outline: 'none' }}
         />
         <button
@@ -178,7 +178,30 @@ export default function SubscribersPage() {
         </div>
       ) : (
         <div className="animate-fade-up delay-2" style={{ border: '1px solid var(--border)' }}>
-          <table className="w-full text-sm font-sans">
+          {/* Phones: one card per subscriber */}
+          <ul className="sm:hidden">
+            {subscribers.map((s, i) => (
+              <li key={s.id} className="px-4 py-3.5 flex items-start gap-3" style={{ borderBottom: i < subscribers.length - 1 ? '1px solid var(--border)' : 'none', background: 'var(--surface)' }}>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm truncate" style={{ color: 'var(--cream)' }}>{s.name || <span style={{ color: 'var(--muted)', opacity: 0.6 }}>No name</span>}</p>
+                  <p className="font-mono text-[11px] break-all mt-0.5" style={{ color: 'var(--muted)' }}>{s.email}</p>
+                  <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                    <span className="font-mono text-[9px] tracking-widest uppercase px-2 py-0.5" style={{
+                      color: s.status === 'active' ? '#6ee7b7' : 'var(--muted)',
+                      background: s.status === 'active' ? 'rgba(110,231,183,0.08)' : 'rgba(255,255,255,0.03)',
+                      border: `1px solid ${s.status === 'active' ? 'rgba(110,231,183,0.2)' : 'var(--border)'}`,
+                    }}>{s.status}</span>
+                    <span className="font-mono text-[9px] tracking-widest uppercase px-2 py-0.5" style={{ color: 'var(--accent)', background: 'var(--accent-dim)', border: '1px solid var(--border-accent)' }}>{s.language === 'zh' ? '中文' : 'EN'}</span>
+                    <span className="font-mono text-[9px] tracking-widest uppercase px-2 py-0.5" style={{ color: 'var(--muted)', border: '1px solid var(--border)' }}>{s.frequency === 'daily' ? 'Daily' : 'Weekly'}</span>
+                    <span className="font-mono text-[9px] ml-auto" style={{ color: 'var(--muted)', opacity: 0.6 }}>{new Date(s.createdAt).toLocaleDateString('en-CA', { month: 'short', day: 'numeric' })}</span>
+                  </div>
+                </div>
+                <button onClick={() => setDeleteTarget(s)} className="font-mono text-[9px] tracking-widest uppercase flex-shrink-0 -mr-2 px-2 py-2" style={{ color: 'var(--muted)', opacity: 0.6 }}>Remove</button>
+              </li>
+            ))}
+          </ul>
+          {/* Tablets and up: the table */}
+          <table className="hidden sm:table w-full text-sm font-sans">
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border)' }}>
                 <th className="text-left px-4 py-3 font-normal font-mono text-[9px] tracking-[0.2em] uppercase" style={{ color: 'var(--muted)', opacity: 0.6 }}>Name</th>
@@ -194,7 +217,7 @@ export default function SubscribersPage() {
               {subscribers.map((s, i) => (
                 <tr key={s.id} className="transition-colors hover:bg-white/[0.02]" style={{ borderBottom: i < subscribers.length - 1 ? '1px solid var(--border)' : 'none' }}>
                   <td className="px-4 py-3 text-sm" style={{ color: 'var(--cream)' }}>{s.name || <span style={{ color: 'var(--muted)', opacity: 0.4 }}>-</span>}</td>
-                  <td className="px-4 py-3 text-sm font-mono" style={{ color: 'var(--muted)', fontSize: '11px' }}>{s.email}</td>
+                  <td className="px-4 py-3 text-sm font-mono break-all" style={{ color: 'var(--muted)', fontSize: '11px' }}>{s.email}</td>
                   <td className="px-4 py-3 hidden lg:table-cell">
                     <span className="font-mono text-[9px] tracking-widest uppercase px-2 py-1" style={{ color: 'var(--accent)', background: 'var(--accent-dim)', border: '1px solid var(--border-accent)' }}>
                       {s.language === 'zh' ? '中文' : 'EN'}
@@ -205,7 +228,7 @@ export default function SubscribersPage() {
                       {s.frequency === 'daily' ? 'Daily' : 'Weekly'}
                     </span>
                   </td>
-                  <td className="px-4 py-3 hidden sm:table-cell font-mono text-[10px]" style={{ color: 'var(--muted)', opacity: 0.6 }}>{new Date(s.createdAt).toLocaleDateString()}</td>
+                  <td className="px-4 py-3 hidden sm:table-cell font-mono text-[10px]" style={{ color: 'var(--muted)', opacity: 0.6 }}>{new Date(s.createdAt).toLocaleDateString('en-CA', { timeZone: 'America/Toronto', dateStyle: 'medium' })}</td>
                   <td className="px-4 py-3">
                     <span className="font-mono text-[9px] tracking-widest uppercase px-2 py-1" style={{
                       color: s.status === 'active' ? '#6ee7b7' : 'var(--muted)',

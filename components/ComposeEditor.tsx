@@ -8,10 +8,16 @@ import ConfirmModal from '@/components/ConfirmModal'
 import { markdownToHtml } from '@/lib/markdown'
 import { buildEmailHtml } from '@/lib/email-template'
 
-function buildPreviewHtml(bodyMarkdown: string): string {
+function todayToronto(): string {
+  const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Toronto', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date())
+  const get = (t: string) => parts.find(p => p.type === t)?.value ?? ''
+  return `${get('year')}-${get('month')}-${get('day')}`
+}
+
+function buildPreviewHtml(bodyMarkdown: string, subject: string, previewText: string, language: 'en' | 'zh'): string {
   if (!bodyMarkdown) return ''
   const bodyHtml = markdownToHtml(bodyMarkdown)
-  return buildEmailHtml({ newsletterName: 'Joseph', bodyHtml, unsubscribeUrl: '#' })
+  return buildEmailHtml({ newsletterName: 'Daily Brief', subject, issueDate: todayToronto(), language, bodyHtml, previewText: previewText || undefined, unsubscribeUrl: '#', preferencesUrl: '#' })
 }
 
 export default function ComposeEditor({ language }: { language: 'en' | 'zh' }) {
@@ -28,7 +34,7 @@ export default function ComposeEditor({ language }: { language: 'en' | 'zh' }) {
   const [fontSize, setFontSize] = useState<'sm' | 'md' | 'lg'>('md')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  const previewHtml = buildPreviewHtml(body)
+  const previewHtml = buildPreviewHtml(body, subject, previewText, language)
   const langLabel = language === 'zh' ? '中文' : 'English'
 
   const wordCount = body.trim() ? body.trim().split(/\s+/).length : 0
@@ -69,7 +75,7 @@ export default function ComposeEditor({ language }: { language: 'en' | 'zh' }) {
       const res = await fetch('/api/send-test', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subject, previewText, bodyMarkdown: body }),
+        body: JSON.stringify({ subject, previewText, bodyMarkdown: body, language }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
@@ -106,7 +112,7 @@ export default function ComposeEditor({ language }: { language: 'en' | 'zh' }) {
     <div className="flex flex-col h-full">
       {/* Header */}
       <div
-        className="px-8 lg:px-10 py-4 flex items-center justify-between gap-4 flex-wrap"
+        className="px-4 sm:px-8 lg:px-10 py-3 sm:py-4 flex items-center justify-between gap-3 sm:gap-4 flex-wrap"
         style={{ borderBottom: '1px solid var(--border)', background: 'var(--surface)' }}
       >
         <div className="flex items-center gap-3">
@@ -123,9 +129,9 @@ export default function ComposeEditor({ language }: { language: 'en' | 'zh' }) {
           )}
         </div>
 
-        <div className="flex gap-2 flex-wrap items-center">
+        <div className="flex gap-2 flex-wrap items-center w-full sm:w-auto">
           {/* Font size */}
-          <div className="flex items-center gap-0 font-mono text-[10px]" style={{ border: '1px solid var(--border)' }}>
+          <div className="hidden sm:flex items-center gap-0 font-mono text-[10px]" style={{ border: '1px solid var(--border)' }}>
             {(['sm', 'md', 'lg'] as const).map(s => (
               <button
                 key={s}
@@ -147,7 +153,7 @@ export default function ComposeEditor({ language }: { language: 'en' | 'zh' }) {
           {/* Copy markdown */}
           <button
             onClick={copyMarkdown}
-            className="px-3 py-1.5 text-[11px] font-mono tracking-wide transition-colors"
+            className="hidden sm:inline-block px-3 py-1.5 text-[11px] font-mono tracking-wide transition-colors"
             style={{ color: 'var(--muted)', border: '1px solid var(--border)' }}
             title="Copy raw markdown"
           >
@@ -156,10 +162,10 @@ export default function ComposeEditor({ language }: { language: 'en' | 'zh' }) {
 
           {/* Frequency checkboxes */}
           <div
-            className="flex items-center gap-3 px-3 py-1.5 text-[11px] font-mono tracking-wide"
+            className="flex items-center gap-3 px-3 py-2 sm:py-1.5 text-[11px] font-mono tracking-wide w-full sm:w-auto"
             style={{ border: '1px solid var(--border)', color: 'var(--muted)' }}
           >
-            <span style={{ opacity: 0.5 }}>Freq:</span>
+            <span style={{ opacity: 0.5 }}>Send to:</span>
             {([
               ['daily', 'Daily', freqDaily, setFreqDaily],
               ['weekly', 'Weekly', freqWeekly, setFreqWeekly],
@@ -169,7 +175,7 @@ export default function ComposeEditor({ language }: { language: 'en' | 'zh' }) {
                 <span>{label}</span>
               </label>
             ))}
-            <span style={{ opacity: 0.35, fontSize: '10px' }} title="Subscribers who chose 'Daily + Weekly' are included in both Daily and Weekly sends">
+            <span className="hidden lg:inline" style={{ opacity: 0.35, fontSize: '10px' }} title="Subscribers who chose 'Daily + Weekly' are included in both Daily and Weekly sends">
               (Daily+Weekly subs count in both)
             </span>
           </div>
@@ -177,7 +183,7 @@ export default function ComposeEditor({ language }: { language: 'en' | 'zh' }) {
           <button
             onClick={saveDraft}
             disabled={saving}
-            className="px-4 py-1.5 text-[11px] font-mono tracking-wide transition-colors disabled:opacity-40"
+            className="flex-1 sm:flex-none px-4 py-2.5 sm:py-1.5 text-[11px] font-mono tracking-wide transition-colors disabled:opacity-40"
             style={{ color: 'var(--muted)', border: '1px solid var(--border)' }}
           >
             {saving ? 'Saving…' : 'Save Draft'}
@@ -185,7 +191,7 @@ export default function ComposeEditor({ language }: { language: 'en' | 'zh' }) {
           <button
             onClick={sendTest}
             disabled={testing}
-            className="px-4 py-1.5 text-[11px] font-mono tracking-wide transition-colors disabled:opacity-40"
+            className="flex-1 sm:flex-none px-4 py-2.5 sm:py-1.5 text-[11px] font-mono tracking-wide transition-colors disabled:opacity-40"
             style={{ color: 'var(--cream)', border: '1px solid var(--border)' }}
           >
             {testing ? 'Sending…' : 'Send Test'}
@@ -193,7 +199,7 @@ export default function ComposeEditor({ language }: { language: 'en' | 'zh' }) {
           <button
             onClick={() => setConfirmSend(true)}
             disabled={sending || !subject || !body}
-            className="px-4 py-1.5 text-[11px] font-mono tracking-wide transition-all duration-150 disabled:opacity-40"
+            className="flex-1 sm:flex-none px-4 py-2.5 sm:py-1.5 text-[11px] font-mono tracking-wide transition-all duration-150 disabled:opacity-40 whitespace-nowrap"
             style={{ background: 'var(--accent-dim)', color: 'var(--accent)', border: '1px solid var(--border-accent)' }}
           >
             {sending ? 'Sending…' : 'Send Now →'}
@@ -202,17 +208,17 @@ export default function ComposeEditor({ language }: { language: 'en' | 'zh' }) {
       </div>
 
       {/* Editor + Preview */}
-      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+      <div className="flex-1 flex flex-col lg:flex-row lg:overflow-hidden">
         {/* Left: editor */}
-        <div className="lg:w-1/2 flex flex-col overflow-y-auto" style={{ borderRight: '1px solid var(--border)', background: 'var(--surface)' }}>
-          <div className="px-10 pt-10 pb-6" style={{ borderBottom: '1px solid var(--border)' }}>
+        <div className="lg:w-1/2 flex flex-col lg:overflow-y-auto" style={{ borderRight: '1px solid var(--border)', background: 'var(--surface)' }}>
+          <div className="px-5 sm:px-10 pt-6 sm:pt-10 pb-5 sm:pb-6" style={{ borderBottom: '1px solid var(--border)' }}>
             <input
               type="text"
               value={subject}
               onChange={e => setSubject(e.target.value)}
               placeholder={language === 'zh' ? '邮件主题…' : 'Subject line…'}
               className="compose-subject w-full bg-transparent outline-none"
-              style={{ fontFamily: 'var(--font-playfair)', fontSize: '26px', fontWeight: 700, color: 'var(--cream)', lineHeight: 1.3, letterSpacing: '-0.01em', marginBottom: '10px' }}
+              style={{ fontFamily: 'var(--font-playfair)', fontSize: 'clamp(22px, 5.5vw, 26px)', fontWeight: 700, color: 'var(--cream)', lineHeight: 1.3, letterSpacing: '-0.01em', marginBottom: '10px' }}
             />
             <input
               type="text"
@@ -223,8 +229,8 @@ export default function ComposeEditor({ language }: { language: 'en' | 'zh' }) {
               style={{ fontFamily: 'var(--font-dm)', fontSize: '13px', color: 'var(--muted)', letterSpacing: '0.01em' }}
             />
           </div>
-          <div className="flex-1 flex flex-col px-10 py-6">
-            <div className="flex items-center justify-between mb-4">
+          <div className="flex-1 flex flex-col px-5 sm:px-10 py-5 sm:py-6">
+            <div className="flex items-center justify-between gap-3 mb-4">
               <span className="font-mono text-[9px] tracking-[0.2em] uppercase" style={{ color: 'var(--muted)', opacity: 0.6 }}>Markdown</span>
               <MarkdownToolbar textareaRef={textareaRef} onChange={setBody} />
             </div>
@@ -234,11 +240,11 @@ export default function ComposeEditor({ language }: { language: 'en' | 'zh' }) {
               onChange={e => setBody(e.target.value)}
               placeholder={language === 'zh' ? '在此用 Markdown 写中文稿…\n\n## 章节标题\n\n正文内容。' : 'Write your newsletter here…\n\n## Section heading\n\nYour analysis goes here.'}
               className="compose-body flex-1 w-full bg-transparent outline-none resize-none"
-              style={{ fontFamily: 'var(--font-playfair)', fontSize: fontSizeMap[fontSize], lineHeight: 1.85, color: 'var(--cream)', minHeight: '480px', caretColor: 'var(--accent)' }}
+              style={{ fontFamily: 'var(--font-playfair)', fontSize: fontSizeMap[fontSize], lineHeight: 1.85, color: 'var(--cream)', minHeight: 'min(480px, 55vh)', caretColor: 'var(--accent)' }}
             />
           </div>
           {/* Stats bar */}
-          <div className="flex items-center gap-5 px-10 py-2.5 flex-wrap" style={{ borderTop: '1px solid var(--border)', background: 'var(--surface-2)' }}>
+          <div className="flex items-center gap-5 px-5 sm:px-10 py-2.5 flex-wrap" style={{ borderTop: '1px solid var(--border)', background: 'var(--surface-2)' }}>
             <span className="font-mono text-[10px] tracking-wide" style={{ color: 'var(--muted)' }}>
               {wordCount.toLocaleString()} <span style={{ opacity: 0.5 }}>words</span>
             </span>
@@ -258,7 +264,7 @@ export default function ComposeEditor({ language }: { language: 'en' | 'zh' }) {
         </div>
 
         {/* Right: preview */}
-        <div className="lg:w-1/2 overflow-y-auto p-6 lg:p-8" style={{ background: 'var(--surface-2)' }}>
+        <div className="lg:w-1/2 lg:overflow-y-auto p-5 sm:p-6 lg:p-8" style={{ background: 'var(--surface-2)' }}>
           <div className="mb-4">
             <span className="font-mono text-[9px] tracking-[0.25em] uppercase" style={{ color: 'var(--muted)' }}>Email Preview</span>
           </div>
@@ -272,7 +278,7 @@ export default function ComposeEditor({ language }: { language: 'en' | 'zh' }) {
         message={
           <div className="space-y-4">
             {subject && (
-              <div className="px-3 py-2.5" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <div className="px-3 py-2.5" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
                 <p className="font-mono text-[9px] tracking-[0.2em] uppercase mb-1" style={{ color: 'var(--muted)', opacity: 0.6 }}>Subject</p>
                 <p className="font-sans text-sm font-medium" style={{ color: 'var(--cream)' }}>{subject}</p>
               </div>

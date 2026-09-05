@@ -26,13 +26,13 @@ const geistMono = localFont({ src: './fonts/GeistMonoVF.woff', variable: '--font
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: `Daily Brief (dailybriefhq) by ${AUTHOR_NAME}: economics and AI, before school`, template: '%s | Daily Brief' },
+  title: { default: `Daily Brief (dailybriefhq) by ${AUTHOR_NAME}: economics and AI, before school`, template: '%s | Daily Brief by Joseph Leung' },
   description: SITE_DESCRIPTION,
   applicationName: 'Daily Brief',
   authors: [{ name: AUTHOR_NAME, url: `${SITE_URL}/about` }],
   creator: AUTHOR_NAME,
   publisher: 'Daily Brief',
-  keywords: ['dailybriefhq', 'Daily Brief HQ', 'Joseph', 'Daily Brief', 'economics newsletter', 'AI newsletter', 'Richmond Hill', 'Ontario', 'chess champion', 'Grade 11', 'Canadian economy', 'artificial intelligence'],
+  keywords: ['dailybriefhq', 'dailybriefhq.com', 'Daily Brief HQ', 'Daily Brief', 'Joseph Leung', 'Joseph Leung newsletter', 'Joseph Leung chess', 'Joseph Leung Richmond Hill', 'economics newsletter', 'AI newsletter', 'Canadian economics newsletter', 'Richmond Hill', 'Ontario', 'chess champion', 'Grade 11', 'Canadian economy', 'artificial intelligence', 'Bank of Canada'],
   alternates: { canonical: '/', types: { 'application/rss+xml': [{ url: '/feed.xml', title: 'Daily Brief RSS' }] } },
   openGraph: {
     siteName: 'Daily Brief',

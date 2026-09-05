@@ -60,7 +60,8 @@ export default function MarkdownToolbar({ textareaRef, onChange }: MarkdownToolb
           type="button"
           title={tool.title}
           onClick={() => applyAction(tool.action)}
-          className="px-2.5 py-1 text-xs font-sans text-muted hover:text-cream bg-surface-2 hover:bg-white/10 border border-white/10 rounded transition-colors"
+          className="px-2.5 py-1.5 text-xs font-sans transition-colors"
+          style={{ color: 'var(--muted)', background: 'var(--surface-2)', border: '1px solid var(--border)' }}
         >
           {tool.label}
         </button>

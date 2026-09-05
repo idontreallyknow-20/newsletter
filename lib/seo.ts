@@ -2,14 +2,26 @@
 export const SITE_URL = 'https://dailybriefhq.com'
 export const SITE_NAME = 'Daily Brief'
 export const SITE_HANDLE = 'dailybriefhq'
-export const AUTHOR_NAME = 'Joseph'
-export const AUTHOR_DESCRIPTION = 'Joseph is a Grade 11 student in Richmond Hill, Ontario, a three-time national team chess champion, and the writer of Daily Brief, a morning newsletter on economics and AI.'
-export const SITE_DESCRIPTION = 'Daily Brief is a morning newsletter on economics and AI, written before school by Joseph, a Grade 11 student and three-time national team chess champion in Richmond Hill, Ontario. Free, in English and Chinese.'
+export const AUTHOR_NAME = 'Joseph Leung'
+export const AUTHOR_FIRST_NAME = 'Joseph'
+export const AUTHOR_DESCRIPTION = 'Joseph Leung is a Grade 11 student in Richmond Hill, Ontario, a three-time Canadian national team chess champion with FIDE and CFC ratings, and the writer of Daily Brief (dailybriefhq.com), a morning newsletter on economics and AI.'
+export const SITE_DESCRIPTION = 'Daily Brief (dailybriefhq) is a morning newsletter on economics and AI, written before school by Joseph Leung, a Grade 11 student and three-time national team chess champion in Richmond Hill, Ontario. Free, in English and Chinese.'
+
+// Public chess records. Linked from the About page and the Person entity so a
+// search for the name resolves to one person.
+export const CHESS_PROFILES = {
+  fide: { label: 'FIDE profile', url: 'https://ratings.fide.com/profile/2636654', id: '2636654' },
+  cfc: { label: 'CFC profile', url: 'https://www.chess.ca/en/ratings/p/?id=167606', id: '167606' },
+  chesscom: { label: 'Chess.com', url: 'https://www.chess.com/member/squeakycrab', id: 'squeakycrab' },
+}
 
 // Profiles Joseph controls. Add LinkedIn, X, Lichess, Chess.com here as they exist;
 // search engines use these to tie the name to one entity.
 export const SAME_AS: string[] = [
   'https://github.com/idontreallyknow-20',
+  CHESS_PROFILES.fide.url,
+  CHESS_PROFILES.cfc.url,
+  CHESS_PROFILES.chesscom.url,
 ]
 
 export const KNOWS_ABOUT = [
@@ -23,15 +35,28 @@ export function personJsonLd() {
     '@type': 'Person',
     '@id': `${SITE_URL}/#joseph`,
     name: AUTHOR_NAME,
+    givenName: AUTHOR_FIRST_NAME,
+    familyName: 'Leung',
+    alternateName: [AUTHOR_FIRST_NAME, 'Joseph Leung (dailybriefhq)'],
     url: `${SITE_URL}/about`,
     image: `${SITE_URL}/joseph.jpg`,
     description: AUTHOR_DESCRIPTION,
-    jobTitle: 'Writer, Daily Brief',
+    jobTitle: 'Writer and publisher, Daily Brief',
+    birthDate: '2010',
+    identifier: [
+      { '@type': 'PropertyValue', propertyID: 'FIDE ID', value: CHESS_PROFILES.fide.id, url: CHESS_PROFILES.fide.url },
+      { '@type': 'PropertyValue', propertyID: 'CFC ID', value: CHESS_PROFILES.cfc.id, url: CHESS_PROFILES.cfc.url },
+    ],
+    memberOf: [
+      { '@type': 'Organization', name: 'Chess Federation of Canada', url: 'https://www.chess.ca' },
+      { '@type': 'Organization', name: 'FIDE', url: 'https://www.fide.com' },
+    ],
     homeLocation: { '@type': 'Place', name: 'Richmond Hill, Ontario, Canada' },
     nationality: { '@type': 'Country', name: 'Canada' },
     knowsAbout: KNOWS_ABOUT,
     knowsLanguage: ['en', 'zh'],
     award: ['Three-time Canadian national team chess champion'],
+    alumniOf: { '@type': 'EducationalOrganization', name: 'York Region District School Board' },
     sameAs: SAME_AS,
     worksFor: { '@id': `${SITE_URL}/#publication` },
   }
@@ -43,7 +68,7 @@ export function publicationJsonLd() {
     '@type': ['Organization', 'NewsMediaOrganization'],
     '@id': `${SITE_URL}/#publication`,
     name: SITE_NAME,
-    alternateName: [SITE_HANDLE, 'Daily Brief HQ', 'dailybriefhq.com'],
+    alternateName: [SITE_HANDLE, 'Daily Brief HQ', 'dailybriefhq.com', 'Daily Brief by Joseph Leung'],
     url: SITE_URL,
     logo: `${SITE_URL}/opengraph-image`,
     founder: { '@id': `${SITE_URL}/#joseph` },
@@ -58,7 +83,7 @@ export function websiteJsonLd() {
     '@type': 'WebSite',
     '@id': `${SITE_URL}/#website`,
     name: `${SITE_NAME} by ${AUTHOR_NAME}`,
-    alternateName: [SITE_HANDLE, 'Daily Brief HQ'],
+    alternateName: [SITE_HANDLE, 'Daily Brief HQ', 'dailybriefhq.com'],
     url: SITE_URL,
     description: SITE_DESCRIPTION,
     inLanguage: ['en', 'zh'],

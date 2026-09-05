@@ -24,25 +24,25 @@ export default function ConfirmModal({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-3 sm:p-4">
       <div className="absolute inset-0 bg-black/70" onClick={onCancel} />
-      <div className="relative bg-surface border border-white/10 rounded-lg p-6 w-full max-w-md shadow-2xl">
-        <h3 className="font-display text-lg font-bold text-cream mb-2">{title}</h3>
-        <div className="text-muted text-sm font-sans mb-6 leading-relaxed">{message}</div>
-        <div className="flex gap-3 justify-end">
+      <div className="relative p-5 sm:p-6 w-full max-w-md shadow-2xl" style={{ background: 'var(--surface)', border: '1px solid var(--border-dark)' }}>
+        <h3 className="font-display text-lg font-bold mb-2" style={{ color: 'var(--cream)' }}>{title}</h3>
+        <div className="text-sm font-sans mb-6 leading-relaxed break-words" style={{ color: 'var(--muted)' }}>{message}</div>
+        <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 sm:justify-end">
           <button
             onClick={onCancel}
-            className="px-4 py-2 text-sm font-sans text-muted hover:text-cream border border-white/10 rounded-md transition-colors"
+            className="px-4 py-2.5 text-sm font-sans transition-colors"
+            style={{ color: 'var(--muted)', border: '1px solid var(--border)' }}
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            className={`px-4 py-2 text-sm font-sans rounded-md transition-colors ${
-              dangerous
-                ? 'bg-red-900/50 hover:bg-red-800/60 text-red-200 border border-red-800/40'
-                : 'bg-accent/20 hover:bg-accent/30 text-accent border border-accent/30'
-            }`}
+            className="px-4 py-2.5 text-sm font-sans font-medium transition-colors"
+            style={dangerous
+              ? { background: 'var(--red)', color: '#fff', border: '1px solid var(--red)' }
+              : { background: 'var(--accent-dim)', color: 'var(--accent)', border: '1px solid var(--border-accent)' }}
           >
             {confirmLabel}
           </button>

@@ -7,12 +7,13 @@ import { useTheme } from './ThemeContext'
 
 const nav = [
   { href: '/dashboard', label: 'Dashboard', abbr: '01' },
-  { href: '/compose/en', label: 'Compose EN', abbr: '02' },
-  { href: '/compose/zh', label: 'Compose 中文', abbr: '03' },
-  { href: '/subscribers', label: 'Subscribers', abbr: '04' },
-  { href: '/schedule', label: 'Schedule', abbr: '05' },
-  { href: '/history', label: 'History', abbr: '06' },
-  { href: '/settings', label: 'Settings', abbr: '07' },
+  { href: '/preview', label: 'Preview', abbr: '02' },
+  { href: '/compose/en', label: 'Compose EN', abbr: '03' },
+  { href: '/compose/zh', label: 'Compose 中文', abbr: '04' },
+  { href: '/subscribers', label: 'Subscribers', abbr: '05' },
+  { href: '/schedule', label: 'Schedule', abbr: '06' },
+  { href: '/history', label: 'History', abbr: '07' },
+  { href: '/settings', label: 'Settings', abbr: '08' },
 ]
 
 function NavLinks({ onNav }: { onNav?: () => void }) {
@@ -140,12 +141,12 @@ export default function Sidebar() {
       </aside>
 
       {/* Mobile bar */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 py-4" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 h-14 flex items-center justify-between px-5" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <Link href="/dashboard" className="flex items-center gap-2.5">
           <div className="w-[2px] h-5" style={{ background: 'var(--accent)' }} />
           <span className="font-display text-sm font-bold" style={{ color: 'var(--cream)' }}>NewsletterHQ</span>
         </Link>
-        <button onClick={() => setOpen(o => !o)} className="font-mono text-[10px] tracking-widest uppercase" style={{ color: 'var(--muted)' }}>
+        <button onClick={() => setOpen(o => !o)} className="font-mono text-[10px] tracking-widest uppercase -mr-3 px-3 py-2" style={{ color: 'var(--muted)' }} aria-expanded={open} aria-controls="admin-drawer">
           {open ? 'Close' : 'Menu'}
         </button>
       </div>
@@ -154,14 +155,20 @@ export default function Sidebar() {
       {open && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setOpen(false)} />
-          <aside className="relative w-56 flex flex-col" style={{ background: 'var(--surface)', borderRight: '1px solid var(--border)' }}>
-            <div className="px-6 py-7" style={{ borderBottom: '1px solid var(--border)' }}>
-              <h1 className="font-display text-lg font-bold" style={{ color: 'var(--cream)' }}>NewsletterHQ</h1>
+          <aside id="admin-drawer" className="relative w-64 max-w-[85vw] flex flex-col overflow-y-auto" style={{ background: 'var(--surface)', borderRight: '1px solid var(--border)' }}>
+            <div className="h-14 px-6 flex items-center justify-between" style={{ borderBottom: '1px solid var(--border)' }}>
+              <h1 className="font-display text-base font-bold" style={{ color: 'var(--cream)' }}>NewsletterHQ</h1>
+              <button onClick={() => setOpen(false)} className="font-mono text-[10px] tracking-widest uppercase -mr-3 px-3 py-2" style={{ color: 'var(--muted)' }}>Close</button>
             </div>
             <nav className="flex-1 py-5">
               <NavLinks onNav={() => setOpen(false)} />
             </nav>
             <div style={{ borderTop: '1px solid var(--border)' }}>
+              <ThemeToggle />
+              <Link href="/" target="_blank" className="flex items-center gap-4 px-4 py-3 text-sm" style={{ color: 'var(--muted)' }}>
+                <span className="font-mono text-[10px] tracking-widest opacity-40 w-4 flex-shrink-0">↗</span>
+                <span className="font-sans tracking-wide uppercase text-xs">View site</span>
+              </Link>
               <LogoutButton />
             </div>
           </aside>

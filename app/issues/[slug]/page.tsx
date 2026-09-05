@@ -52,7 +52,7 @@ function Head({ tag, num, date, readTime, title, intro }: { tag: string; num: st
         <p className="eyebrow">{tag}</p>
         <h1 className="t-display art-title">{title}</h1>
         <div className="art-meta">
-          <span>{num}</span><span>{date}</span><span>{readTime}</span><span>By <a href="/about" style={{ textDecoration: 'none', borderBottom: '1px solid currentColor' }}>Joseph</a></span>
+          <span>{num}</span><span>{date}</span><span>{readTime}</span><span>By <a href="/about" style={{ textDecoration: 'none', borderBottom: '1px solid currentColor' }}>Joseph Leung</a></span>
         </div>
         <p className="lede" style={{ marginTop: 28, maxWidth: '60ch' }}>{intro}</p>
       </div>
