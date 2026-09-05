@@ -490,12 +490,10 @@
 .beat:hover .beat-arrow { transform: translateX(6px); color: var(--red); }
 @media (max-width: 700px) { .beat { grid-template-columns: 1fr; gap: 10px; } .beat-meta { justify-content: space-between; } }
 
-.theme-toggle { display: inline-flex; align-items: center; gap: 8px; background: none; border: 0; cursor: pointer; color: var(--muted); padding: 6px; }
-.theme-toggle .t-mono { font-size: 10px; }
-.theme-toggle-track { width: 34px; height: 18px; border: 1px solid var(--rule-2); border-radius: 999px; position: relative; background: var(--paper-2); transition: background 0.2s; }
-.theme-toggle-knob { position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 999px; background: var(--ink); transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1); }
-[data-theme='dark'] .theme-toggle-knob { transform: translateX(16px); background: var(--red); }
-@media (max-width: 900px) { .theme-toggle .t-mono { display: none; } }
+.theme-seg { display: inline-flex; border: 1px solid var(--rule-2); padding: 2px; gap: 2px; background: var(--paper-2); }
+.theme-seg-btn { height: 28px; padding: 0 10px; border: 0; background: transparent; color: var(--muted); cursor: pointer; font-size: 10px; transition: background 0.15s, color 0.15s; }
+.theme-seg-btn[aria-checked='true'] { background: var(--ink); color: var(--paper); }
+@media (max-width: 900px) { .theme-seg-btn { padding: 0 8px; } }
 
 /* ============================================================
    Night edition. Same tokens, remapped.
