@@ -7,9 +7,6 @@ import { and, eq, isNull, desc } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { drafts } from '@/lib/schema'
 import { getIssueDate, NEWSLETTER_TZ } from '@/lib/schedule'
-import { buildEmailHtml, sendToRecipients } from '@/lib/email'
-import { markdownToHtml } from '@/lib/markdown'
-import { signActionToken } from '@/lib/token'
 import {
   extractText, parseIssue, usedWebSearch, topicFor,
   issueSystemPrompt, issueUserPrompt,
@@ -17,29 +14,10 @@ import {
 import { translateIssue } from '@/lib/translate'
 import { cronAuthorized, loadSettings, senderFrom, logRun, notifyOwner, errorMessage } from '@/lib/cron'
 import { ensureSchema } from '@/lib/ensure-schema'
+import { queuedFromGitHub } from '@/lib/queue'
+import { sendOwnerPreview } from '@/lib/preview'
 
 const GENERATE_MODEL = 'claude-opus-5'
-const QUEUE_REPO = 'https://raw.githubusercontent.com/idontreallyknow-20/newsletter'
-// The nightly Routine commits to the `queue` branch, which does not trigger a
-// Vercel deploy. `main` is checked second so a hand-committed file also works.
-const QUEUE_REFS = ['queue', 'main'] as const
-
-/** A draft committed to the repo's queue folder for this date, if any. */
-async function queuedFromGitHub(issueDate: string, lang: 'en' | 'zh'): Promise<{ subject: string; bodyMarkdown: string; previewText: string } | null> {
-  for (const ref of QUEUE_REFS) {
-    try {
-      const res = await fetch(`${QUEUE_REPO}/${ref}/queue/${issueDate}.${lang}.json?t=${Date.now()}`, { cache: 'no-store', signal: AbortSignal.timeout(8_000) })
-      if (!res.ok) continue
-      const j = await res.json() as { subject?: string; bodyMarkdown?: string; previewText?: string }
-      if (!j.subject || !j.bodyMarkdown || j.bodyMarkdown.length < 200) continue
-      const bodyMarkdown = j.bodyMarkdown.replace(/—|–/g, ', ').trim()
-      const previewText = (j.previewText || bodyMarkdown.split('\n').map(l => l.trim()).find(l => l && !l.startsWith('#')) || '').replace(/[*_`]/g, '').slice(0, 140)
-      return { subject: j.subject.trim().slice(0, 200), bodyMarkdown, previewText }
-    } catch { /* try the next ref */ }
-  }
-  return null
-}
-
 // Vercel caps this route at maxDuration. Every network call below takes its
 // timeout from the time left, so a slow search can never starve the preview.
 const BUDGET_MS = 55_000
@@ -105,7 +83,7 @@ export async function GET(req: Request) {
     // Idempotent. A deploy that adds a column must not be able to break the morning.
     await ensureSchema()
     s = await loadSettings()
-    const { newsletterName, fromName, fromEmail, ownerEmail, baseUrl, emailSecret } = senderFrom(s)
+    const { newsletterName } = senderFrom(s)
 
     const [existing] = await db.select().from(drafts)
       .where(and(eq(drafts.issueDate, issueDate), eq(drafts.language, 'en'))).limit(1)
@@ -189,31 +167,7 @@ export async function GET(req: Request) {
     }
 
     // Preview to the owner. Sending is refused until this succeeds.
-    if (!ownerEmail) throw new Error('No owner email configured (Settings or OWNER_EMAIL)')
-    if (!fromEmail) throw new Error('No from email configured (Settings or FROM_EMAIL)')
-
-    const skipToken = signActionToken(`skip:${issueDate}`, emailSecret)
-    const skipUrl = `${baseUrl}/api/skip?date=${issueDate}&token=${skipToken}`
-    const composeUrl = `${baseUrl}/compose/en`
-    const banner = `
-      <div style="margin:0 0 24px;padding:16px 18px;background:#0C0E14;color:#E7E9E6;font:14px/1.5 -apple-system,Segoe UI,sans-serif">
-        <p style="margin:0 0 10px"><strong>Preview for ${issueDate}.</strong> This goes to subscribers at about 7:00 AM Toronto unless you stop it.</p>
-        <p style="margin:0">
-          <a href="${skipUrl}" style="display:inline-block;padding:10px 14px;background:#FF5A1F;color:#0C0E14;text-decoration:none;font-weight:600">Skip today's send</a>
-          &nbsp;&nbsp;<a href="${composeUrl}" style="color:#E7E9E6">Edit in compose</a>
-        </p>
-      </div>`
-    const html = buildEmailHtml({
-      newsletterName,
-      bodyHtml: banner + markdownToHtml(en.bodyMarkdown),
-      unsubscribeUrl: `${baseUrl}/preferences`,
-      previewText: en.previewText || undefined,
-    })
-    await sendToRecipients({
-      to: [ownerEmail], subject: `[Preview ${issueDate}] ${en.subject}`, html, fromName, fromEmail,
-    })
-    await db.update(drafts).set({ previewSentAt: new Date() })
-      .where(and(eq(drafts.issueDate, issueDate), eq(drafts.language, 'en')))
+    const { to: ownerEmail } = await sendOwnerPreview({ settings: s, issueDate, issue: en })
 
     await logRun({
       job: 'generate', issueDate, status: 'ok',

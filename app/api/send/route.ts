@@ -7,6 +7,7 @@ import { signEmailToken } from '@/lib/token'
 import { markdownToHtml } from '@/lib/markdown'
 import { slugify } from '@/lib/slug'
 import { subscriberFrequenciesFor } from '@/lib/preferences'
+import { getIssueDate } from '@/lib/schedule'
 
 export async function POST(req: Request) {
   try {
@@ -45,6 +46,8 @@ export async function POST(req: Request) {
     }
 
     const bodyHtml = markdownToHtml(bodyMarkdown)
+    const slug = slugify(subject)
+    const language: 'en' | 'zh' = langList.length === 1 && langList[0] === 'zh' ? 'zh' : 'en'
     const emailSecret = process.env.EMAIL_TOKEN_SECRET || process.env.DASHBOARD_PASSWORD || ''
 
     const recipients = targets.map(sub => {
@@ -54,7 +57,7 @@ export async function POST(req: Request) {
       return {
         email: sub.email,
         unsubscribeUrl,
-        html: buildEmailHtml({ newsletterName, bodyHtml, unsubscribeUrl, preferencesUrl, previewText: previewText || undefined }),
+        html: buildEmailHtml({ newsletterName, subject, issueDate: getIssueDate(), language, bodyHtml, unsubscribeUrl, preferencesUrl, readOnlineUrl: `${baseUrl}/issues/${slug}`, siteUrl: baseUrl, previewText: previewText || undefined }),
       }
     })
 
@@ -66,7 +69,7 @@ export async function POST(req: Request) {
       previewText,
       bodyHtml,
       bodyMarkdown,
-      slug: slugify(subject),
+      slug,
       recipientCount: targets.length,
       status: errorCount === 0 ? 'sent' : 'partial',
     })

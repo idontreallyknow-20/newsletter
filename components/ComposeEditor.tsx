@@ -8,10 +8,16 @@ import ConfirmModal from '@/components/ConfirmModal'
 import { markdownToHtml } from '@/lib/markdown'
 import { buildEmailHtml } from '@/lib/email-template'
 
-function buildPreviewHtml(bodyMarkdown: string): string {
+function todayToronto(): string {
+  const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Toronto', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date())
+  const get = (t: string) => parts.find(p => p.type === t)?.value ?? ''
+  return `${get('year')}-${get('month')}-${get('day')}`
+}
+
+function buildPreviewHtml(bodyMarkdown: string, subject: string, previewText: string, language: 'en' | 'zh'): string {
   if (!bodyMarkdown) return ''
   const bodyHtml = markdownToHtml(bodyMarkdown)
-  return buildEmailHtml({ newsletterName: 'Joseph', bodyHtml, unsubscribeUrl: '#' })
+  return buildEmailHtml({ newsletterName: 'Daily Brief', subject, issueDate: todayToronto(), language, bodyHtml, previewText: previewText || undefined, unsubscribeUrl: '#', preferencesUrl: '#' })
 }
 
 export default function ComposeEditor({ language }: { language: 'en' | 'zh' }) {
@@ -28,7 +34,7 @@ export default function ComposeEditor({ language }: { language: 'en' | 'zh' }) {
   const [fontSize, setFontSize] = useState<'sm' | 'md' | 'lg'>('md')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  const previewHtml = buildPreviewHtml(body)
+  const previewHtml = buildPreviewHtml(body, subject, previewText, language)
   const langLabel = language === 'zh' ? '中文' : 'English'
 
   const wordCount = body.trim() ? body.trim().split(/\s+/).length : 0
@@ -69,7 +75,7 @@ export default function ComposeEditor({ language }: { language: 'en' | 'zh' }) {
       const res = await fetch('/api/send-test', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subject, previewText, bodyMarkdown: body }),
+        body: JSON.stringify({ subject, previewText, bodyMarkdown: body, language }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)

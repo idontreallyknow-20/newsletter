@@ -7,12 +7,13 @@ import { useTheme } from './ThemeContext'
 
 const nav = [
   { href: '/dashboard', label: 'Dashboard', abbr: '01' },
-  { href: '/compose/en', label: 'Compose EN', abbr: '02' },
-  { href: '/compose/zh', label: 'Compose 中文', abbr: '03' },
-  { href: '/subscribers', label: 'Subscribers', abbr: '04' },
-  { href: '/schedule', label: 'Schedule', abbr: '05' },
-  { href: '/history', label: 'History', abbr: '06' },
-  { href: '/settings', label: 'Settings', abbr: '07' },
+  { href: '/preview', label: 'Preview', abbr: '02' },
+  { href: '/compose/en', label: 'Compose EN', abbr: '03' },
+  { href: '/compose/zh', label: 'Compose 中文', abbr: '04' },
+  { href: '/subscribers', label: 'Subscribers', abbr: '05' },
+  { href: '/schedule', label: 'Schedule', abbr: '06' },
+  { href: '/history', label: 'History', abbr: '07' },
+  { href: '/settings', label: 'Settings', abbr: '08' },
 ]
 
 function NavLinks({ onNav }: { onNav?: () => void }) {

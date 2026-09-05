@@ -19,6 +19,7 @@ Everything is keyed by the **issue date**, the calendar day in `America/Toronto`
 | UTC | Toronto (summer / winter) | Route | What happens |
 |---|---|---|---|
 | 09:00 | 5:00 / 4:00 AM | `/api/cron/generate` | With `ANTHROPIC_API_KEY` set: writes today's issue (Claude Opus 5 with web search, no-search fallback that forbids invented citations) and the Chinese edition. Without it: takes the newest draft saved in Compose. Either way it emails a **preview to you** with a one-tap *Skip today's send* link. |
+| on commit | any time | `/api/cron/preview` | Triggered by GitHub Actions when the Routine commits `queue/<date>.en.json`: stores the draft and emails the preview immediately. |
 | 11:00 | 7:00 / 6:00 AM | `/api/cron/send` | Sends to subscribers, unless autosend is off, today is skipped, no preview was delivered, or it already went out. |
 
 Safety rails:
@@ -35,6 +36,10 @@ Vercel Hobby crons are UTC only and can fire anywhere inside the hour. If you wa
 A scheduled Claude Code Routine writes tomorrow's issue on a claude.ai subscription and commits it to `queue/YYYY-MM-DD.en.json` (and `.zh.json`) on the **`queue` branch**. The 5 AM cron fetches the file from `raw.githubusercontent.com` (checking `queue`, then `main`), previews it to the owner, and the 7 AM cron sends it. See `queue/README.md` for the file shape.
 
 The Routine needs the repository attached to it, otherwise its sandbox has no checkout and a token scoped to nothing. Writing the file through the GitHub API rather than `git push` avoids needing a checkout at all. The `queue` branch is deliberate: `vercel.json` deploys `main` only, so nightly commits never trigger a production build.
+
+**Instant preview.** `.github/workflows/preview.yml` runs on every push to the `queue` branch that touches `queue/*.en.json`. It calls `POST /api/cron/preview?date=<DATE>` (bearer `CRON_SECRET`), which stores the file as that day's draft and emails the preview to the owner within a minute or two of the commit, instead of waiting for 5 AM. Add `CRON_SECRET` as a repository secret (Settings, Secrets and variables, Actions) with the same value as on Vercel. Schedule the Routine at least an hour before the 5 AM job (4:00 AM Toronto works) so the commit is in place when the site looks for it. The prompt to paste into the Routine is in `docs/routine-prompt.md`.
+
+**Read the preview any time.** The dashboard's **Preview** page (`/preview`) lists every issue queued for today or later, from the database and from files on GitHub that have not been imported yet, rendered with the real email template in English and Chinese. From there you can email yourself the preview again, skip or restore a day, or import a GitHub file on the spot.
 
 There is also `POST /api/drafts/queue` (bearer `CRON_SECRET`, same JSON plus `"language"`) for any machine that can reach the site directly. Claude's sandboxes cannot; `dailybriefhq.com` is blocked by their egress policy, which is why the hand-off goes through GitHub.
 
@@ -87,6 +92,7 @@ The public site keeps the newsletter's section headers (About, Topics, Issues, S
 | Issue | `/issues/[slug]` |
 | Subscribe | `/subscribe` |
 | Dashboard | `/dashboard` |
+| Preview | `/preview` |
 | Compose | `/compose/en`, `/compose/zh` |
 | Subscribers | `/subscribers` |
 | Schedule | `/schedule` |

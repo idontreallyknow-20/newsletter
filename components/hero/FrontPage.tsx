@@ -33,7 +33,7 @@ export default function FrontPage({ pages, issueCount, dateline, volume }: { pag
                   : <span aria-hidden="true">J</span>}
               </div>
               <div>
-                <strong>Written by Joseph</strong>
+                <strong>Written by Joseph Leung</strong>
                 <span>Grade 11, Richmond Hill. Three-time national team chess champion. Reads the filings so you do not have to.</span>
               </div>
             </div>

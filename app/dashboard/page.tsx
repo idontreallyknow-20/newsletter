@@ -87,9 +87,14 @@ export default async function DashboardPage() {
             </p>
           )}
         </div>
-        <Link href="/schedule" className="font-mono text-[10px] tracking-widest uppercase px-3 py-2 flex-shrink-0" style={{ color: stats.autosend ? '#6ee7b7' : 'var(--accent)', border: '1px solid var(--border)' }}>
-          {stats.autosend ? 'Autosend on' : 'Autosend off'} →
-        </Link>
+        <div className="flex gap-2 flex-shrink-0">
+          <Link href="/preview" className="font-mono text-[10px] tracking-widest uppercase px-3 py-2" style={{ color: 'var(--cream)', border: '1px solid var(--border)' }}>
+            Read preview →
+          </Link>
+          <Link href="/schedule" className="font-mono text-[10px] tracking-widest uppercase px-3 py-2" style={{ color: stats.autosend ? '#6ee7b7' : 'var(--accent)', border: '1px solid var(--border)' }}>
+            {stats.autosend ? 'Autosend on' : 'Autosend off'} →
+          </Link>
+        </div>
       </div>
 
       {/* Quick actions */}

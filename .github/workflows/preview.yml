@@ -1,0 +1,50 @@
+# The moment the Routine commits tomorrow's issue to the queue branch, tell the
+# site so it can store the draft and email Joseph the preview right away.
+# Needs one repository secret: CRON_SECRET (same value as on Vercel).
+name: Send preview on queue commit
+
+on:
+  push:
+    branches: [queue]
+    paths: ['queue/*.en.json']
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Recompute dates from the checkout
+        id: changed
+        run: |
+          set -euo pipefail
+          BEFORE="${{ github.event.before }}"
+          if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ] || ! git cat-file -e "$BEFORE" 2>/dev/null; then
+            FILES=$(git show --pretty= --name-only HEAD -- queue/)
+          else
+            FILES=$(git diff --name-only "$BEFORE" HEAD -- queue/)
+          fi
+          DATES=$(echo "$FILES" | sed -n 's#^queue/\([0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}\)\.en\.json$#\1#p' | sort -u | tr '\n' ' ')
+          echo "dates=$DATES" >> "$GITHUB_OUTPUT"
+          echo "Changed issue dates: $DATES"
+      - name: Ask the site to store the draft and email the preview
+        if: steps.changed.outputs.dates != ''
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          SITE_URL: https://dailybriefhq.com
+        run: |
+          set -uo pipefail
+          if [ -z "$CRON_SECRET" ]; then
+            echo "::error::Add the CRON_SECRET repository secret (Settings > Secrets and variables > Actions)."
+            exit 1
+          fi
+          status=0
+          for d in ${{ steps.changed.outputs.dates }}; do
+            echo "Previewing $d"
+            code=$(curl -sS -o /tmp/out.json -w '%{http_code}' --max-time 90 --retry 3 --retry-delay 10 --retry-all-errors \
+              -X POST -H "Authorization: Bearer $CRON_SECRET" "$SITE_URL/api/cron/preview?date=$d") || code=000
+            cat /tmp/out.json 2>/dev/null; echo
+            if [ "$code" != "200" ]; then echo "::error::Preview for $d returned HTTP $code"; status=1; fi
+          done
+          exit $status
