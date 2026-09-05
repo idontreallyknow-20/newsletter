@@ -28,6 +28,7 @@ const PUBLIC_PREFIXES = [
   '/api/setup', // performs its own session check
   '/api/preferences',
   '/api/skip', // signed, date-scoped token
+  '/api/drafts/queue', // bearer CRON_SECRET, checked in the route
   '/_next',
 ]
 
