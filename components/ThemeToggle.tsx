@@ -37,7 +37,10 @@ export default function ThemeToggle() {
   function choose(next: Pref) {
     setPref(next)
     document.documentElement.setAttribute('data-theme', resolve(next))
-    try { next === 'system' ? localStorage.removeItem('db-theme') : localStorage.setItem('db-theme', next) } catch { /* private mode */ }
+    try {
+      if (next === 'system') localStorage.removeItem('db-theme')
+      else localStorage.setItem('db-theme', next)
+    } catch { /* private mode */ }
   }
 
   return (
