@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { getIssueDate, isSendDay, evaluateSend, weekdayOf, nextSendLabel } from '../schedule'
+import { getIssueDate, isSendDay, evaluateSend, weekdayOf, nextSendLabel, recipientFrequenciesFor, weeklyDay } from '../schedule'
 
 describe('getIssueDate', () => {
   it('uses the Toronto calendar day, not UTC', () => {
@@ -36,7 +36,28 @@ describe('isSendDay', () => {
     expect(isSendDay('daily', '2026-09-05')).toBe(true)
     expect(isSendDay('manual', '2026-09-07')).toBe(false)
     expect(isSendDay(undefined, '2026-09-07')).toBe(false)
-    expect(isSendDay('weekly', '2026-09-07')).toBe(false) // legacy value treated as off
+  })
+  it('weekly sends only on the configured day (default Monday)', () => {
+    expect(isSendDay('weekly', '2026-09-07')).toBe(true)      // Monday
+    expect(isSendDay('weekly', '2026-09-08')).toBe(false)
+    expect(isSendDay('weekly', '2026-09-09', 3)).toBe(true)   // Wednesday when day=3
+  })
+})
+
+describe('recipientFrequenciesFor', () => {
+  it('weekly readers get the issue on the weekly edition day of a daily schedule', () => {
+    const daily = { schedule_frequency: 'daily' }
+    expect(recipientFrequenciesFor(daily, '2026-09-07')).toEqual(['daily', 'weekly', 'both']) // Monday
+    expect(recipientFrequenciesFor(daily, '2026-09-08')).toEqual(['daily', 'both'])
+    expect(recipientFrequenciesFor({ schedule_frequency: 'weekdays', schedule_day: '5' }, '2026-09-11')).toEqual(['daily', 'weekly', 'both']) // Friday
+  })
+  it('weekly schedule targets weekly and both readers', () => {
+    expect(recipientFrequenciesFor({ schedule_frequency: 'weekly' }, '2026-09-07')).toEqual(['weekly', 'both'])
+  })
+  it('weeklyDay tolerates garbage', () => {
+    expect(weeklyDay({ schedule_day: '9' })).toBe(1)
+    expect(weeklyDay({ schedule_day: 'x' })).toBe(1)
+    expect(weeklyDay({ schedule_day: '0' })).toBe(0)
   })
 })
 
@@ -82,5 +103,9 @@ describe('nextSendLabel', () => {
   it('reports off states', () => {
     expect(nextSendLabel({ autosend_enabled: 'false' })).toBe('Automatic sending is off')
     expect(nextSendLabel({ autosend_enabled: 'true', schedule_frequency: 'manual' })).toBe('Frequency is off')
+  })
+  it('weekly schedule points at the configured day', () => {
+    // Tuesday 9 AM EDT, weekly on Monday -> next Monday
+    expect(nextSendLabel({ autosend_enabled: 'true', schedule_frequency: 'weekly' }, new Date('2026-09-08T13:00:00Z'))).toBe('Monday, about 7:00 AM Toronto')
   })
 })

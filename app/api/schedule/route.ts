@@ -4,9 +4,9 @@ import { NextResponse } from 'next/server'
 import { desc } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { settings, sendLog } from '@/lib/schema'
-import { nextSendLabel, normalizeFrequency, getIssueDate } from '@/lib/schedule'
+import { nextSendLabel, normalizeFrequency, getIssueDate, weeklyDay } from '@/lib/schedule'
 
-const SCHEDULE_KEYS = ['schedule_frequency', 'autosend_enabled'] as const
+const SCHEDULE_KEYS = ['schedule_frequency', 'autosend_enabled', 'schedule_day'] as const
 
 export async function GET() {
   try {
@@ -20,6 +20,7 @@ export async function GET() {
     const current = {
       schedule_frequency: normalizeFrequency(map.schedule_frequency),
       autosend_enabled: map.autosend_enabled === 'true' ? 'true' : 'false',
+      schedule_day: String(weeklyDay(map)),
     }
     return NextResponse.json({
       ...current,
@@ -37,7 +38,9 @@ export async function POST(req: Request) {
     const body = await req.json()
     for (const key of SCHEDULE_KEYS) {
       if (body[key] === undefined) continue
-      const value = key === 'schedule_frequency' ? normalizeFrequency(String(body[key])) : (body[key] === true || body[key] === 'true' ? 'true' : 'false')
+      const value = key === 'schedule_frequency' ? normalizeFrequency(String(body[key]))
+        : key === 'schedule_day' ? String(weeklyDay({ schedule_day: String(body[key]) }))
+        : (body[key] === true || body[key] === 'true' ? 'true' : 'false')
       await db.insert(settings).values({ key, value }).onConflictDoUpdate({ target: settings.key, set: { value } })
     }
     return NextResponse.json({ success: true })
