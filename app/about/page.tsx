@@ -41,7 +41,7 @@ export default function AboutPage() {
             <h1 className="t-display" style={{ fontSize: 'clamp(40px, 6vw, 84px)', marginBottom: 24 }}>Joseph writes Daily Brief.</h1>
             <p className="copy">I am a Grade 11 student in Richmond Hill, Ontario. Every school morning I write a short newsletter on economics and AI, send it to readers in English and Chinese, and then go to first period.</p>
             <p className="copy">Before this I played chess at the national level. I won the national team championship three times and retired from tournament play to spend the same hours on this. The habit carried over: sit with a position until you understand it, and do not publish a claim that will not survive a second look.</p>
-            <p className="copy">I train calisthenics most days. I am working toward Rotman Commerce at the University of Toronto, and after that I want to build companies.</p>
+            <p className="copy">The plan is Rotman Commerce at the University of Toronto, then companies of my own. I treat this newsletter as the first one: a product, a reader base, and a deadline every morning.</p>
             <dl className="ledger">
               <div className="ledger-row"><dt className="t-mono">Name</dt><dd>Joseph</dd></div>
               <div className="ledger-row"><dt className="t-mono">Based in</dt><dd>Richmond Hill, Ontario, Canada</dd></div>

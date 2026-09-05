@@ -32,8 +32,8 @@ export default function AboutCredentials() {
 
         <dl className="ledger">
           <div className="ledger-row"><dt className="t-mono">Chess</dt><dd>Three-time national team champion. Competed at the national level before retiring from tournament play.</dd></div>
-          <div className="ledger-row"><dt className="t-mono">Training</dt><dd>Calisthenics athlete. Same rule as chess: fundamentals every day, no shortcuts.</dd></div>
-          <div className="ledger-row"><dt className="t-mono">School</dt><dd>Grade 11, York Region District School Board. Working toward Rotman Commerce at the University of Toronto, then startups.</dd></div>
+          <div className="ledger-row"><dt className="t-mono">School</dt><dd>Grade 11, York Region District School Board.</dd></div>
+          <div className="ledger-row"><dt className="t-mono">Ambition</dt><dd>Rotman Commerce at the University of Toronto, then build companies. This newsletter is the first one.</dd></div>
           <div className="ledger-row"><dt className="t-mono">This brief</dt><dd>Written every morning, sent about 7:00 AM Eastern, in English and Simplified Chinese. <a href="/about" style={{ textDecoration: 'none', borderBottom: '1px solid currentColor' }}>More about me</a></dd></div>
         </dl>
       </Reveal>

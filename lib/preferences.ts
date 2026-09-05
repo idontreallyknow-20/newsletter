@@ -7,9 +7,9 @@ export const LANGUAGES: { value: Language; label: string; sub: string }[] = [
 ]
 
 export const FREQUENCIES: { value: SubscriberFrequency; label: string; sub: string }[] = [
-  { value: 'weekly', label: 'Weekly deep-dive', sub: 'One long-form article per week' },
-  { value: 'daily', label: 'Daily updates', sub: 'AI & economy briefing every day' },
-  { value: 'both', label: 'Both', sub: 'Weekly + daily briefings' },
+  { value: 'daily', label: 'Daily', sub: 'Every morning, including the weekly issue' },
+  { value: 'weekly', label: 'Weekly only', sub: 'One issue a week' },
+  { value: 'both', label: 'Daily', sub: 'Legacy value, treated as daily' },
 ]
 
 // Which subscriber frequencies should receive a given send type

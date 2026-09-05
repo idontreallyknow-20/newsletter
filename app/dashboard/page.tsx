@@ -46,7 +46,7 @@ export default async function DashboardPage() {
   const statCards = [
     { label: 'Active Subscribers', value: stats.activeSubscribers, sub: `${stats.totalSubscribers} total`, href: '/subscribers' },
     { label: 'Issues Sent', value: stats.issuesSent, sub: 'all time', href: '/history' },
-    { label: 'Draft in Progress', value: stats.latestDraft ? '1' : '—', sub: stats.latestDraft ? `Last: ${stats.latestDraft.subject || 'Untitled'}` : 'No drafts saved', href: '/compose' },
+    { label: 'Draft in Progress', value: stats.latestDraft ? '1' : '0', sub: stats.latestDraft ? `Last: ${stats.latestDraft.subject || 'Untitled'}` : 'No drafts saved', href: '/compose' },
   ]
 
   return (

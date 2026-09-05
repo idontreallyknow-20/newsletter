@@ -1,6 +1,7 @@
 // Everything search engines need to know about Joseph and the newsletter, in one place.
 export const SITE_URL = 'https://dailybriefhq.com'
 export const SITE_NAME = 'Daily Brief'
+export const SITE_HANDLE = 'dailybriefhq'
 export const AUTHOR_NAME = 'Joseph'
 export const AUTHOR_DESCRIPTION = 'Joseph is a Grade 11 student in Richmond Hill, Ontario, a three-time national team chess champion, and the writer of Daily Brief, a morning newsletter on economics and AI.'
 export const SITE_DESCRIPTION = 'Daily Brief is a morning newsletter on economics and AI, written before school by Joseph, a Grade 11 student and three-time national team chess champion in Richmond Hill, Ontario. Free, in English and Chinese.'
@@ -13,7 +14,7 @@ export const SAME_AS: string[] = [
 
 export const KNOWS_ABOUT = [
   'Economics', 'Artificial intelligence', 'Macroeconomics', 'Monetary policy', 'Canadian economy',
-  'Semiconductors', 'Labour markets', 'Housing markets', 'Chess', 'Calisthenics',
+  'Semiconductors', 'Labour markets', 'Housing markets', 'Chess',
 ]
 
 export function personJsonLd() {
@@ -42,6 +43,7 @@ export function publicationJsonLd() {
     '@type': ['Organization', 'NewsMediaOrganization'],
     '@id': `${SITE_URL}/#publication`,
     name: SITE_NAME,
+    alternateName: [SITE_HANDLE, 'Daily Brief HQ', 'dailybriefhq.com'],
     url: SITE_URL,
     logo: `${SITE_URL}/opengraph-image`,
     founder: { '@id': `${SITE_URL}/#joseph` },
@@ -56,6 +58,7 @@ export function websiteJsonLd() {
     '@type': 'WebSite',
     '@id': `${SITE_URL}/#website`,
     name: `${SITE_NAME} by ${AUTHOR_NAME}`,
+    alternateName: [SITE_HANDLE, 'Daily Brief HQ'],
     url: SITE_URL,
     description: SITE_DESCRIPTION,
     inLanguage: ['en', 'zh'],

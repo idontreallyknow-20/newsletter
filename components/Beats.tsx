@@ -1,7 +1,5 @@
 'use client'
 
-import Reveal from '@/components/Reveal'
-
 /* What the newsletter actually covers, written like a paper's section index. */
 export const BEATS = [
   { key: 'rates', name: 'Rates and the Bank of Canada', tags: ['Economics', 'Markets'], blurb: 'What the Bank did, what the bond market thinks it will do next, and what that does to a mortgage renewal in York Region.' },
@@ -18,7 +16,7 @@ export default function Beats({ counts }: { counts: Record<string, number> }) {
       {BEATS.map((b, i) => {
         const n = b.tags.reduce((s, t) => s + (counts[t] || 0), 0)
         return (
-          <Reveal key={b.key} delay={i * 60} as="div" className="beat-wrap">
+          <div key={b.key} className="beat-wrap">
             <a href={`/?topic=${b.key}#issues`} className="beat">
               <span className="beat-num t-mono">{String(i + 1).padStart(2, '0')}</span>
               <span className="beat-body">
@@ -30,7 +28,7 @@ export default function Beats({ counts }: { counts: Record<string, number> }) {
                 <span className="beat-arrow" aria-hidden="true">→</span>
               </span>
             </a>
-          </Reveal>
+          </div>
         )
       })}
     </div>

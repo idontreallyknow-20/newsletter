@@ -54,9 +54,9 @@ export function isSendDay(frequency: string | undefined, issueDate: string, day:
 
 /**
  * Which subscriber preferences receive today's issue.
- * Daily schedules send to daily readers every send day, and also to weekly
- * readers on the weekly edition day. A weekly schedule sends only on that day,
- * to weekly readers. 'both' readers get everything.
+ * Daily readers get every issue, including the weekly one. Weekly readers get
+ * only the issue sent on the weekly edition day. 'both' is a legacy value that
+ * means daily.
  */
 export function recipientFrequenciesFor(settings: ScheduleSettings, issueDate: string): SubscriberFrequency[] {
   const f = normalizeFrequency(settings.schedule_frequency)

@@ -1,4 +1,4 @@
-// Pure HTML template — no server deps, safe to import from client components.
+// Pure HTML template, no server deps, safe to import from client components.
 
 /** Escape a string for safe interpolation into HTML. */
 export function escapeHtml(value: string): string {

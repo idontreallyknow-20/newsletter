@@ -8,7 +8,7 @@ function getResend() {
 }
 
 // RFC 8058 one-click unsubscribe headers. Gmail/Yahoo require these for bulk
-// senders — they surface the native "Unsubscribe" button and protect sender
+// senders: they surface the native "Unsubscribe" button and protect sender
 // reputation (which keeps emails out of spam).
 function unsubscribeHeaders(unsubscribeUrl?: string): Record<string, string> | undefined {
   if (!unsubscribeUrl) return undefined
@@ -28,7 +28,7 @@ export async function sendToRecipients(opts: {
 }) {
   const { to, subject, html, fromName, fromEmail, unsubscribeUrl } = opts
 
-  // Resend supports up to 50 recipients per call — batch if needed
+  // Resend supports up to 50 recipients per call, batch if needed
   const batchSize = 50
   const results = []
 

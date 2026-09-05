@@ -280,7 +280,7 @@ export default function ComposeEditor({ language }: { language: 'en' | 'zh' }) {
             <div className="flex gap-4 flex-wrap">
               {[
                 { label: 'Words', value: wordCount.toLocaleString() },
-                { label: 'Read time', value: readTime > 0 ? `~${readTime} min` : '—' },
+                { label: 'Read time', value: readTime > 0 ? `~${readTime} min` : '0 min' },
                 { label: 'Audience', value: `${langLabel} · ${frequencies.join('+')}` },
               ].map(({ label, value }) => (
                 <div key={label}>

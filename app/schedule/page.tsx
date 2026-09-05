@@ -138,8 +138,8 @@ export default function SchedulePage() {
                 </div>
                 <p className="font-sans text-xs mt-3" style={{ color: 'var(--muted)' }}>
                   {frequency === 'weekly'
-                    ? 'The issue goes to weekly readers (and readers who chose both) on this day.'
-                    : 'Daily readers get every issue. Weekly readers get the issue sent on this day.'}
+                    ? 'The issue goes to weekly readers on this day.'
+                    : 'Daily readers get every issue. Weekly-only readers get the issue sent on this day.'}
                 </p>
               </div>
             )}

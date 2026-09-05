@@ -25,7 +25,7 @@ function LoginForm() {
         setError('Incorrect password.')
         return
       }
-      // Only follow internal paths — never external URLs (open-redirect guard)
+      // Only follow internal paths, never external URLs (open-redirect guard)
       const from = searchParams.get('from') || '/dashboard'
       router.push(from.startsWith('/') && !from.startsWith('//') ? from : '/dashboard')
     } catch {

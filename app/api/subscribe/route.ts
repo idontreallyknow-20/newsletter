@@ -29,7 +29,7 @@ export async function POST(req: Request) {
 
     const existing = await db.select().from(subscribers).where(eq(subscribers.email, email))
     if (existing.length > 0) {
-      if (existing[0].status === 'unsubscribed') {
+      if (existing[0].status === 'unsubscribed' || existing[0].status === 'archived') {
         await db.update(subscribers).set({ status: 'active', language: lang, frequency: freq }).where(eq(subscribers.email, email))
         try {
           await syncToResendAudience({ email, firstName: name, unsubscribed: false, language: lang })
@@ -43,14 +43,14 @@ export async function POST(req: Request) {
 
     await db.insert(subscribers).values({ name, email, status: 'active', language: lang, frequency: freq })
 
-    // Sync to Resend audience (best-effort — don't fail the subscription if it errors)
+    // Sync to Resend audience (best-effort, don't fail the subscription if it errors)
     try {
       await syncToResendAudience({ email, firstName: name, unsubscribed: false, language: lang })
     } catch (syncErr) {
       console.error('[subscribe] Resend audience sync failed:', syncErr instanceof Error ? syncErr.message : syncErr)
     }
 
-    // Send welcome email (best-effort — don't fail the subscription if it errors)
+    // Send welcome email (best-effort, don't fail the subscription if it errors)
     try {
       const settingRows = await db.select().from(settings)
       const s: Record<string, string> = {}
@@ -98,8 +98,8 @@ export async function POST(req: Request) {
         `
         const welcomeSubject = lang === 'zh' ? `欢迎订阅 ${newsletterName}` : `Welcome to ${newsletterName}`
         const previewText = lang === 'zh'
-          ? '您已成功订阅——这是您需要了解的信息。'
-          : "You're in — here's what to expect and how to tune your delivery."
+          ? '您已成功订阅。这是您需要了解的信息。'
+          : "You're in. Here's what to expect and how to tune your delivery."
         const html = buildEmailHtml({
           newsletterName,
           bodyHtml,

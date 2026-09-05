@@ -143,7 +143,7 @@ export default async function IssuePage({ params }: { params: { slug: string } }
 
   let email: typeof sentEmails.$inferSelect | undefined
   try { [email] = await db.select().from(sentEmails).where(eq(sentEmails.slug, params.slug)).limit(1) } catch { email = undefined }
-  if (!email) notFound()
+  if (!email || email.status === 'archived') notFound()
 
   const bodyHtml = email.bodyMarkdown ? markdownToHtml(email.bodyMarkdown) : (email.bodyHtml ?? '')
   const sentDate = new Date(email.sentAt).toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Toronto' })

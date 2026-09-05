@@ -13,7 +13,7 @@ const tools: { label: string; title: string; action: ToolAction }[] = [
   { label: 'B', title: 'Bold', action: { type: 'wrap', before: '**', after: '**', placeholder: 'bold text' } },
   { label: 'I', title: 'Italic', action: { type: 'wrap', before: '*', after: '*', placeholder: 'italic text' } },
   { label: 'H2', title: 'Heading', action: { type: 'line', prefix: '## ', placeholder: 'Heading' } },
-  { label: '—', title: 'Divider', action: { type: 'line', prefix: '\n---\n', placeholder: '' } },
+  { label: 'HR', title: 'Divider', action: { type: 'line', prefix: '\n---\n', placeholder: '' } },
   { label: '•', title: 'Bullet', action: { type: 'line', prefix: '- ', placeholder: 'list item' } },
   { label: '🔗', title: 'Link', action: { type: 'wrap', before: '[', after: '](https://)', placeholder: 'link text' } },
 ]

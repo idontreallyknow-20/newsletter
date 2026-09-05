@@ -10,9 +10,9 @@ export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Email Preferences | Joseph' }
 
 const LABELS: Record<string, string> = {
-  weekly: 'Weekly digest',
-  daily: 'Daily digest',
-  both: 'Weekly + Daily',
+  weekly: 'Weekly only',
+  daily: 'Daily',
+  both: 'Daily',
   en: 'English',
   zh: '中文',
 }
@@ -90,9 +90,8 @@ export default async function PreferencesPage({ searchParams }: { searchParams: 
                 Your current settings:
               </p>
               <div style={{ display: 'grid', gap: '8px', marginBottom: '28px' }}>
-                <OptionLink href={`${apiBase}&freq=daily`} label="Daily digest" sub="Every morning, a five-minute read" active={subscriber.frequency === 'daily'} />
-                <OptionLink href={`${apiBase}&freq=weekly`} label="Weekly digest" sub="One deeper issue, once a week" active={subscriber.frequency === 'weekly'} />
-                <OptionLink href={`${apiBase}&freq=both`} label="Daily + Weekly" sub="Everything, as it publishes" active={subscriber.frequency === 'both'} />
+                <OptionLink href={`${apiBase}&freq=daily`} label="Daily" sub="Every morning, including the weekly issue" active={subscriber.frequency === 'daily' || subscriber.frequency === 'both'} />
+                <OptionLink href={`${apiBase}&freq=weekly`} label="Weekly only" sub="One deeper issue, once a week" active={subscriber.frequency === 'weekly'} />
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '36px' }}>
                 <OptionLink href={`${apiBase}&lang=en`} label="English" sub="Original edition" active={(subscriber.language ?? 'en') === 'en'} />
@@ -128,9 +127,8 @@ export default async function PreferencesPage({ searchParams }: { searchParams: 
                 Settings for <strong style={{ color: 'var(--ink)', fontWeight: 500 }}>{email}</strong>. One click to change. It applies immediately.
               </p>
               <div style={{ display: 'grid', gap: '8px', marginBottom: '28px' }}>
-                <OptionLink href={`${apiBase}&freq=daily`} label="Daily digest" sub="Every morning, a five-minute read" active={subscriber.frequency === 'daily'} />
-                <OptionLink href={`${apiBase}&freq=weekly`} label="Weekly digest" sub="One deeper issue, once a week" active={subscriber.frequency === 'weekly'} />
-                <OptionLink href={`${apiBase}&freq=both`} label="Daily + Weekly" sub="Everything, as it publishes" active={subscriber.frequency === 'both'} />
+                <OptionLink href={`${apiBase}&freq=daily`} label="Daily" sub="Every morning, including the weekly issue" active={subscriber.frequency === 'daily' || subscriber.frequency === 'both'} />
+                <OptionLink href={`${apiBase}&freq=weekly`} label="Weekly only" sub="One deeper issue, once a week" active={subscriber.frequency === 'weekly'} />
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '36px' }}>
                 <OptionLink href={`${apiBase}&lang=en`} label="English" sub="Original edition" active={(subscriber.language ?? 'en') === 'en'} />
@@ -144,7 +142,7 @@ export default async function PreferencesPage({ searchParams }: { searchParams: 
               <h1 style={headingStyle}>Manage your subscription.</h1>
               <p style={bodyStyle}>
                 Open the <strong style={{ color: 'var(--ink)' }}>Preferences</strong> link in the footer of any issue
-                to change your delivery frequency or language — no password needed.
+                to change your delivery frequency or language. No password needed.
               </p>
             </>
           )}
