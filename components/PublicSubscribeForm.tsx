@@ -3,32 +3,14 @@
 import { useState } from 'react'
 import { isValidEmail } from '@/lib/validate-email'
 
-const selectStyle: React.CSSProperties = {
-  fontFamily: 'var(--font-dm), sans-serif',
-  fontSize: '11px',
-  fontWeight: 500,
-  letterSpacing: '0.06em',
-  color: 'rgba(255,255,255,0.5)',
-  background: '#1a1a1a',
-  colorScheme: 'dark' as const,
-  border: '1px solid rgba(255,255,255,0.18)',
-  borderRadius: '2px',
-  padding: '5px 22px 5px 8px',
-  cursor: 'pointer',
-  outline: 'none',
-  appearance: 'none' as const,
-  WebkitAppearance: 'none' as const,
-  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(255,255,255,0.4)'/%3E%3C/svg%3E")`,
-  backgroundRepeat: 'no-repeat',
-  backgroundPosition: 'right 7px center',
-  backgroundSize: '7px',
-}
+type Lang = 'en' | 'zh'
+type Freq = 'daily' | 'weekly' | 'both'
 
-export default function PublicSubscribeForm() {
+export default function PublicSubscribeForm({ light = false, compact = false }: { light?: boolean; compact?: boolean }) {
   const [email, setEmail] = useState('')
   const [honeypot, setHoneypot] = useState('')
-  const [language, setLanguage] = useState<'en' | 'zh'>('en')
-  const [frequency, setFrequency] = useState<'daily' | 'weekly' | 'both'>('daily')
+  const [language, setLanguage] = useState<Lang>('en')
+  const [frequency, setFrequency] = useState<Freq>('daily')
   const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
   const [errMsg, setErrMsg] = useState('')
   const [inputError, setInputError] = useState(false)
@@ -36,14 +18,9 @@ export default function PublicSubscribeForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!isValidEmail(email)) {
-      setInputError(true)
-      setErrMsg('Please enter a valid email address.')
-      setStatus('error')
-      return
+      setInputError(true); setErrMsg('That email address does not look right.'); setStatus('error'); return
     }
-    setInputError(false)
-    setErrMsg('')
-    setStatus('loading')
+    setInputError(false); setErrMsg(''); setStatus('loading')
     try {
       const res = await fetch('/api/subscribe', {
         method: 'POST',
@@ -52,124 +29,58 @@ export default function PublicSubscribeForm() {
       })
       const data = await res.json()
       if (!res.ok) {
-        setErrMsg(data.error === 'Already subscribed' ? "You're already on the list." : (data.error || 'Something went wrong.'))
-        setStatus('error')
-        return
+        setErrMsg(data.error === 'Already subscribed' ? 'You are already on the list.' : (data.error || 'Something went wrong.'))
+        setStatus('error'); return
       }
       setStatus('done')
     } catch {
-      setErrMsg('Something went wrong. Try again.')
-      setStatus('error')
+      setErrMsg('Something went wrong. Try again.'); setStatus('error')
     }
   }
 
   if (status === 'done') {
     return (
-      <div style={{ textAlign: 'center' }}>
-        <p style={{ color: '#4ade80', fontSize: '16px', fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '12px' }}>
-          <span aria-hidden="true">✓</span>
-          <span>You&apos;re in! Check your inbox.</span>
-        </p>
-        <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginBottom: '10px' }}>
-          Don&apos;t see it? Check your spam or promotions folder.
-        </p>
-        <a href="/#issues" style={{ color: '#a09890', fontSize: '14px', textDecoration: 'underline', textUnderlineOffset: '3px' }}>
-          Browse the archive while you wait →
-        </a>
+      <div className="done" role="status">
+        <strong>You&apos;re in. The next issue lands about 7:00 AM ET.</strong>
+        <span>If it is not in your inbox, check spam or promotions once and drag it out.</span>
+        <a href="/#issues">Read the archive while you wait</a>
       </div>
     )
   }
 
+  const id = light ? 'sub-email-light' : compact ? 'sub-email-hero' : 'sub-email'
+
   return (
-    <div style={{ maxWidth: '480px', margin: '0 auto' }}>
-      {/* Honeypot */}
-      <input
-        type="text" name="website" value={honeypot}
-        onChange={e => setHoneypot(e.target.value)}
-        tabIndex={-1} autoComplete="off" aria-hidden="true"
-        style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, width: 0 }}
-      />
+    <div className={light ? 'on-light' : ''}>
+      <input type="text" name="website" value={honeypot} onChange={e => setHoneypot(e.target.value)} tabIndex={-1} autoComplete="off" aria-hidden="true"
+        style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, width: 0 }} />
 
-      {/* Preferences row */}
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', justifyContent: 'center', alignItems: 'center' }}>
-        <span style={{ fontFamily: 'var(--font-dm)', fontSize: '11px', fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)' }}>
-          Preferences
-        </span>
-        <select
-          value={language}
-          onChange={e => setLanguage(e.target.value as 'en' | 'zh')}
-          aria-label="Language"
-          style={selectStyle}
-        >
-          <option value="en">English</option>
-          <option value="zh">中文 (Simplified)</option>
-        </select>
-        <select
-          value={frequency}
-          onChange={e => setFrequency(e.target.value as 'daily' | 'weekly' | 'both')}
-          aria-label="Delivery frequency"
-          style={selectStyle}
-        >
-          <option value="daily">Daily</option>
-          <option value="weekly">Weekly</option>
-          <option value="both">Daily + Weekly</option>
-        </select>
-      </div>
-
-      <form onSubmit={handleSubmit} style={{ display: 'flex' }} noValidate>
-        <label htmlFor="public-email" style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px', overflow: 'hidden' }}>
-          Email address
-        </label>
-        <input
-          id="public-email"
-          type="email"
-          value={email}
-          onChange={e => { setEmail(e.target.value); if (inputError) { setInputError(false); setErrMsg(''); setStatus('idle') } }}
-          placeholder="your@email.com"
-          autoComplete="email"
-          aria-describedby={inputError ? 'public-email-error' : undefined}
-          aria-invalid={inputError ? 'true' : undefined}
-          style={{
-            flex: 1, padding: '14px 18px',
-            background: 'rgba(255,255,255,0.07)',
-            border: `1px solid ${inputError ? '#fca5a5' : 'rgba(255,255,255,0.15)'}`,
-            borderRight: 'none', color: '#f5f0e8',
-            fontFamily: 'var(--font-dm)', fontSize: '15px', outline: 'none',
-          }}
-          onFocus={e => (e.target.style.borderColor = inputError ? '#fca5a5' : 'rgba(255,255,255,0.35)')}
-          onBlur={e => (e.target.style.borderColor = inputError ? '#fca5a5' : 'rgba(255,255,255,0.15)')}
-        />
-        <button
-          type="submit"
-          disabled={status === 'loading'}
-          aria-label={status === 'loading' ? 'Subscribing, please wait' : 'Subscribe to newsletter'}
-          className="pub-form-subscribe-btn"
-          style={{
-            padding: '14px 24px',
-            background: 'linear-gradient(135deg, #c8402a 0%, #a8341f 100%)',
-            color: '#f5f0e8',
-            fontFamily: 'var(--font-dm)', fontSize: '14px', fontWeight: 500,
-            border: 'none',
-            cursor: 'pointer', whiteSpace: 'nowrap',
-            letterSpacing: '0.02em',
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)',
-            opacity: status === 'loading' ? 0.6 : 1,
-            transition: 'opacity 0.15s',
-          }}
-        >
-          {status === 'loading' ? 'Joining…' : 'Subscribe →'}
-        </button>
-      </form>
-
-      {status === 'error' && (
-        <p id="public-email-error" role="alert" style={{ color: '#fca5a5', fontSize: '13px', textAlign: 'center', marginTop: '10px' }}>
-          {errMsg}
-        </p>
+      {!compact && (
+        <div className="prefs" role="group" aria-label="Preferences">
+          {([['en', 'English'], ['zh', '中文']] as [Lang, string][]).map(([v, l]) => (
+            <button key={v} type="button" className="chip" aria-pressed={language === v} onClick={() => setLanguage(v)}>{l}</button>
+          ))}
+          <span style={{ width: 8 }} />
+          {([['daily', 'Daily'], ['weekly', 'Weekly'], ['both', 'Both']] as [Freq, string][]).map(([v, l]) => (
+            <button key={v} type="button" className="chip" aria-pressed={frequency === v} onClick={() => setFrequency(v)}>{l}</button>
+          ))}
+        </div>
       )}
 
-      <p style={{ fontFamily: 'var(--font-dm)', fontSize: '12px', color: 'rgba(255,255,255,0.35)', textAlign: 'center', marginTop: '12px', letterSpacing: '0.01em' }}>
-        No spam. Unsubscribe anytime.
-      </p>
+      <form onSubmit={handleSubmit} className={`field${light ? ' field--light' : ''}`} noValidate>
+        <label htmlFor={id} style={{ position: 'absolute', left: '-9999px' }}>Email address</label>
+        <input
+          id={id} type="email" value={email} placeholder="you@email.com" autoComplete="email"
+          onChange={e => { setEmail(e.target.value); if (inputError) { setInputError(false); setErrMsg(''); setStatus('idle') } }}
+          aria-invalid={inputError ? 'true' : undefined}
+          aria-describedby={inputError ? `${id}-error` : undefined}
+        />
+        <button type="submit" className="btn btn--signal" disabled={status === 'loading'}>
+          {status === 'loading' ? 'Joining…' : 'Subscribe'}
+        </button>
+      </form>
+      {status === 'error' && <p id={`${id}-error`} role="alert" className="field-error">{errMsg}</p>}
+      <p className="field-note">{compact ? 'Daily, in English. Change it any time from the email.' : 'No spam. One click to leave.'}</p>
     </div>
   )
 }

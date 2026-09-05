@@ -35,15 +35,13 @@ export function buildEmailHtml(opts: {
   <title>${newsletterName}</title>
   <style>
     .body-content h2 {
-      font-family: Georgia, 'Times New Roman', serif;
-      font-size: 13px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 22px;
       font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: #1a1a1a;
-      margin: 36px 0 14px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #e8e2da;
+      letter-spacing: -0.02em;
+      color: #0C0E14;
+      margin: 36px 0 12px;
+      line-height: 1.15;
     }
     .body-content h2:first-child { margin-top: 0; }
     .body-content p {
@@ -51,40 +49,40 @@ export function buildEmailHtml(opts: {
       font-family: Georgia, 'Times New Roman', serif;
       font-size: 17px;
       line-height: 1.85;
-      color: #1a1a1a;
+      color: #0C0E14;
     }
-    .body-content strong { font-weight: 700; color: #1a1a1a; }
+    .body-content strong { font-weight: 700; color: #0C0E14; }
     .body-content em { font-style: italic; }
-    .body-content a { color: #c8402a; text-decoration: underline; }
+    .body-content a { color: #D9440C; text-decoration: underline; }
     .body-content ul, .body-content ol {
       margin: 0 0 18px;
       padding-left: 22px;
       font-family: Georgia, 'Times New Roman', serif;
       font-size: 17px;
       line-height: 1.85;
-      color: #1a1a1a;
+      color: #0C0E14;
     }
     .body-content li { margin-bottom: 6px; }
     .body-content hr {
       border: none;
-      border-top: 1px solid #e8e2da;
+      border-top: 1px solid #DCDFDB;
       margin: 32px 0;
     }
     .body-content blockquote {
       margin: 24px 0;
       padding: 0 0 0 20px;
-      border-left: 3px solid #c8402a;
+      border-left: 3px solid #FF5A1F;
       font-style: italic;
-      color: #5a504a;
+      color: #6E7480;
     }
     @media (max-width: 620px) {
       .card-pad { padding: 32px 24px 28px !important; }
     }
   </style>
 </head>
-<body style="margin:0;padding:0;background:#ede8de;font-family:Georgia,'Times New Roman',serif;">
+<body style="margin:0;padding:0;background:#E7E9E6;font-family:Georgia,'Times New Roman',serif;">
   ${preheader}
-  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ede8de;padding:48px 16px;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#E7E9E6;padding:48px 16px;">
     <tr>
       <td align="center">
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:580px;">
@@ -95,10 +93,10 @@ export function buildEmailHtml(opts: {
               <table width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
                   <td>
-                    <span style="font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:700;color:#1a1a1a;letter-spacing:-0.3px;">${newsletterName}<span style="color:#c8402a;">.</span></span>
+                    <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:20px;font-weight:800;color:#0C0E14;letter-spacing:0.06em;text-transform:uppercase;">${newsletterName}<span style="color:#FF5A1F;">.</span></span>
                   </td>
                   <td align="right">
-                    <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#9a8f85;">Economics &amp; AI</span>
+                    <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#6E7480;">Economics &amp; AI · Before school</span>
                   </td>
                 </tr>
               </table>
@@ -106,7 +104,7 @@ export function buildEmailHtml(opts: {
           </tr>
 
           <!-- Red rule -->
-          <tr><td style="height:2px;background:#c8402a;margin-bottom:0;"></td></tr>
+          <tr><td style="height:3px;background:#0C0E14;margin-bottom:0;"></td></tr>
 
           <!-- Body card -->
           <tr>
@@ -120,10 +118,10 @@ export function buildEmailHtml(opts: {
           <!-- Footer -->
           <tr>
             <td style="padding:24px 0 0;">
-              <p style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#9a8f85;text-align:center;line-height:1.7;letter-spacing:0.03em;">
-                You're subscribed to <strong style="color:#5a504a;">${newsletterName}</strong>
+              <p style="margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;color:#6E7480;text-align:center;line-height:1.7;letter-spacing:0.03em;">
+                You're subscribed to <strong style="color:#0C0E14;">${newsletterName}</strong>
                 &nbsp;·&nbsp;
-                ${preferencesHref ? `<a href="${preferencesHref}" style="color:#9a8f85;text-decoration:underline;">Preferences</a>&nbsp;·&nbsp;` : ''}<a href="${unsubscribeHref}" style="color:#9a8f85;text-decoration:underline;">Unsubscribe</a>
+                ${preferencesHref ? `<a href="${preferencesHref}" style="color:#6E7480;text-decoration:underline;">Preferences</a>&nbsp;·&nbsp;` : ''}<a href="${unsubscribeHref}" style="color:#6E7480;text-decoration:underline;">Unsubscribe</a>
               </p>
             </td>
           </tr>

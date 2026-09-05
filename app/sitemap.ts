@@ -7,7 +7,7 @@ import { ARTICLES } from '@/lib/articles'
 export const dynamic = 'force-dynamic'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000'
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://dailybriefhq.com'
 
   let dbIssues: { slug: string | null; sentAt: Date }[] = []
   try {

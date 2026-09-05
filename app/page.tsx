@@ -1,134 +1,127 @@
+import { Suspense } from 'react'
 import PublicNav from '@/components/PublicNav'
+import SmoothScroll from '@/components/SmoothScroll'
+import MastheadHero from '@/components/hero/MastheadHero'
+import IssueTicker from '@/components/IssueTicker'
+import TodaysIssue from '@/components/TodaysIssue'
+import AboutCredentials from '@/components/AboutCredentials'
+import TopicDeck from '@/components/TopicDeck'
+import ArchiveGrid, { type ArchiveItem } from '@/components/ArchiveGrid'
 import PublicSubscribeForm from '@/components/PublicSubscribeForm'
-import TopicsFilter from '@/components/TopicsFilter'
-import FeatureGrid from '@/components/FeatureGrid'
-import ArticleListClient, { type ArticleItem } from '@/components/ArticleListClient'
 import SiteFooter from '@/components/SiteFooter'
+import Reveal from '@/components/Reveal'
 import { ARTICLES } from '@/lib/articles'
+import { db } from '@/lib/db'
+import { sentEmails } from '@/lib/schema'
+import { desc, isNotNull, and, eq } from 'drizzle-orm'
+
+export const dynamic = 'force-dynamic'
+
+async function latestSent() {
+  try {
+    const rows = await db.select({
+      subject: sentEmails.subject, previewText: sentEmails.previewText, slug: sentEmails.slug, sentAt: sentEmails.sentAt, bodyMarkdown: sentEmails.bodyMarkdown,
+    }).from(sentEmails).where(and(isNotNull(sentEmails.slug), eq(sentEmails.status, 'sent'))).orderBy(desc(sentEmails.sentAt)).limit(12)
+    return rows
+  } catch { return [] }
+}
 
 export default async function HomePage() {
-  const feedItems: ArticleItem[] = ARTICLES.map(a => ({
-    slug: a.slug,
-    title: a.title,
-    displayDate: a.date,
-    tag: a.tag,
-    readTime: a.readTime,
-    intro: a.intro,
+  const sent = await latestSent()
+  const sentItems: ArchiveItem[] = sent.filter(r => r.slug).map((r, i) => ({
+    slug: r.slug!,
+    num: `#${String(ARTICLES.length + sent.length - i).padStart(3, '0')}`,
+    title: r.subject,
+    tag: 'Daily',
+    date: new Date(r.sentAt).toLocaleDateString('en-CA', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/Toronto' }),
+    readTime: `${Math.max(2, Math.round((r.bodyMarkdown || '').split(/\s+/).length / 220))} min read`,
+    intro: r.previewText || '',
   }))
+  const items: ArchiveItem[] = [...sentItems, ...ARTICLES.map(a => ({ slug: a.slug, num: a.num, title: a.title, tag: a.tag, date: a.date, readTime: a.readTime, intro: a.intro }))]
+  const issueCount = items.length
+  const today = items[0]
+  const headlines = items.slice(0, 8).map(a => a.title)
+  const counts: Record<string, number> = {}
+  for (const a of items) counts[a.tag] = (counts[a.tag] || 0) + 1
+  const dateline = new Date().toLocaleDateString('en-CA', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'America/Toronto' })
 
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'Joseph: Economics & AI Newsletter',
+    name: 'Daily Brief by Joseph',
     url: 'https://dailybriefhq.com',
-    description: 'A newsletter breaking down the economic forces and AI breakthroughs shaping our world, without the jargon.',
+    description: 'A short morning newsletter on economics and AI, written by Joseph, a Grade 11 student in Richmond Hill, Ontario.',
     publisher: { '@type': 'Person', name: 'Joseph' },
   }
 
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <SmoothScroll />
       <PublicNav />
-
-      {/* Skip-link target */}
       <span id="main-content" aria-hidden="true" style={{ position: 'absolute', top: 0 }} />
 
-      {/* Hero subscribe */}
-      <section className="pub-hero-dark" id="hero">
-        <div className="pub-hero-dark-inner">
-          <p className="pub-hero-dark-eyebrow">Economics &amp; AI &middot; Newsletter</p>
-          <h1 className="pub-hero-dark-heading">The economy and AI, explained without the jargon.</h1>
-          <p className="pub-hero-dark-sub">
-            A free newsletter decoding what actually moves markets and reshapes work. Choose daily or weekly delivery.
-          </p>
-          <PublicSubscribeForm />
-          <div className="pub-hero-dark-stats">
-            <span>40+ issues</span><span aria-hidden="true">&middot;</span>
-            <span>Free</span><span aria-hidden="true">&middot;</span>
-            <span>Daily &amp; Weekly</span>
-          </div>
+      <MastheadHero headlines={headlines} issueCount={issueCount} dateline={dateline} />
+
+      <IssueTicker items={items.slice(0, 10).map(a => ({ num: a.num, title: a.title }))} />
+
+      {/* Today's issue */}
+      <section className="band band--fog" id="today">
+        <div className="wrap today-grid">
+          <Reveal>
+            <p className="eyebrow">Latest issue</p>
+            <h2 className="t-display" style={{ fontSize: 'clamp(38px, 5.5vw, 80px)', marginBottom: 20 }}>What went out this morning.</h2>
+            <p className="copy">Each issue is one topic, two or three short sections, and a takeaway you can act on. Written and sent before first period.</p>
+          </Reveal>
+          <Reveal delay={150}>
+            <TodaysIssue num={today.num} title={today.title} intro={today.intro} date={today.date} readTime={today.readTime} href={`/issues/${today.slug}`} />
+          </Reveal>
         </div>
       </section>
 
-      <hr className="pub-rule" />
+      <hr className="rule" />
 
-      {/* Feature Grid */}
-      <FeatureGrid />
-
-      <hr className="pub-rule" />
-
-      {/* About — condensed */}
-      <section id="about">
-        <div className="pub-about-condensed">
-          <div className="pub-wrap">
-            <p className="pub-label">About</p>
-            <h2 className="pub-heading" style={{ maxWidth: '640px' }}>
-              I&apos;m 16, and I think the way we talk about AI is broken.
-            </h2>
-            <p className="pub-copy" style={{ maxWidth: '560px' }}>
-              Most coverage is either breathless hype or doom. I started this newsletter to decode
-              the real economics behind AI headlines, without the jargon or insider assumptions.
-            </p>
-            <div className="pub-about-stats-row">
-              {([
-                { n: '40+', l: 'Issues' },
-                { n: 'Daily', l: 'Delivery' },
-                { n: '5 min', l: 'Read' },
-                { n: 'Free', l: 'Always' },
-              ] as const).map(s => (
-                <div key={s.l} className="pub-about-stat-inline">
-                  <span className="pub-stat-n">{s.n}</span>
-                  <span className="pub-stat-l">{s.l}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+      {/* About */}
+      <section className="band band--fog" id="about">
+        <div className="wrap"><AboutCredentials /></div>
       </section>
-
-      <hr className="pub-rule" />
 
       {/* Topics */}
-      <section id="topics">
-        <div className="pub-topics">
-          <div className="pub-wrap">
-            <div style={{ marginBottom: '48px' }}>
-              <p className="pub-label">What you&apos;ll read</p>
-              <h2 className="pub-heading">Six lenses on the same shifting world.</h2>
+      <section className="band band--ink" id="topics">
+        <div className="wrap">
+          <Reveal>
+            <div className="sec-head">
+              <div>
+                <p className="eyebrow">Topics</p>
+                <h2 className="t-display">Six lenses on the same moving world.</h2>
+              </div>
+              <span className="copy" style={{ maxWidth: '32ch' }}>Pick a lens to filter the archive. Most issues sit under two.</span>
             </div>
-            <TopicsFilter />
-          </div>
+          </Reveal>
+          <TopicDeck counts={counts} />
         </div>
       </section>
 
-      <hr className="pub-rule" />
-
-      {/* Archive */}
-      <section id="issues">
-        <div className="pub-issues">
-          <div className="pub-wrap">
-            <div className="pub-issues-head">
-              <div>
-                <p className="pub-label">Archive</p>
-                <h2 className="pub-heading">From the archive.</h2>
-              </div>
-              <a href="#subscribe" className="pub-issues-link">Get all issues in your inbox &rarr;</a>
-            </div>
-            <ArticleListClient items={feedItems} />
-          </div>
+      {/* Issues */}
+      <section className="band band--fog" id="issues">
+        <div className="wrap">
+          <Suspense fallback={null}>
+            <ArchiveGrid items={items} />
+          </Suspense>
         </div>
       </section>
 
       {/* Subscribe */}
-      <section id="subscribe">
-        <div className="pub-sub-section">
-          <div className="pub-sub-inner">
-            <h2 className="pub-sub-heading">Join readers who get a clear take on economics and AI.</h2>
-            <p className="pub-sub-body">
-              Delivered to your inbox. Choose daily or weekly. Unsubscribe anytime.
-            </p>
+      <section className="band band--ink closing" id="subscribe">
+        <div className="wrap closing-grid">
+          <Reveal>
+            <p className="eyebrow">Subscribe</p>
+            <h2 className="t-display">Tomorrow&apos;s issue, <em>7:00 AM.</em></h2>
+          </Reveal>
+          <Reveal delay={120}>
+            <p className="copy" style={{ marginBottom: 20 }}>Free. English or Chinese, daily or weekly. One click to leave, and I never sell the list.</p>
             <PublicSubscribeForm />
-          </div>
+          </Reveal>
         </div>
       </section>
 

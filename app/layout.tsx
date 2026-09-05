@@ -1,48 +1,72 @@
-import type { Metadata } from 'next'
-import { Playfair_Display, DM_Sans } from 'next/font/google'
+import type { Metadata, Viewport } from 'next'
+import { Bricolage_Grotesque, Newsreader } from 'next/font/google'
+import localFont from 'next/font/local'
 import { Toaster } from 'react-hot-toast'
 import DashboardShell from '@/components/DashboardShell'
 import './globals.css'
 
-const playfair = Playfair_Display({
+const display = Bricolage_Grotesque({
   subsets: ['latin'],
-  variable: '--font-playfair',
-  weight: ['400', '700', '900'],
-  style: ['normal', 'italic'],
+  variable: '--font-display',
+  axes: ['wdth', 'opsz'],
+  display: 'swap',
 })
 
-const dmSans = DM_Sans({
+const serif = Newsreader({
   subsets: ['latin'],
-  variable: '--font-dm',
-  weight: ['300', '400', '500'],
+  variable: '--font-serif',
+  style: ['italic', 'normal'],
+  weight: ['400', '500'],
+  display: 'swap',
+})
+
+const geist = localFont({
+  src: './fonts/GeistVF.woff',
+  variable: '--font-geist',
+  weight: '100 900',
+  display: 'swap',
+})
+
+const geistMono = localFont({
+  src: './fonts/GeistMonoVF.woff',
+  variable: '--font-geist-mono',
+  weight: '100 900',
+  display: 'swap',
 })
 
 const BASE_URL = 'https://dailybriefhq.com'
+const DESCRIPTION = 'A short morning newsletter on economics and AI, written by Joseph, a Grade 11 student in Richmond Hill, before school. Free, in English and Chinese.'
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
-  title: 'Joseph: Economics & AI Newsletter',
-  description: 'A weekly newsletter breaking down the economic forces and AI breakthroughs shaping our world, without the jargon.',
+  title: 'Daily Brief by Joseph',
+  description: DESCRIPTION,
   alternates: { canonical: '/' },
   openGraph: {
-    siteName: 'Joseph Newsletter',
-    title: 'Joseph: Economics & AI Newsletter',
-    description: 'A weekly newsletter breaking down the economic forces and AI breakthroughs shaping our world, without the jargon.',
+    siteName: 'Daily Brief',
+    title: 'Daily Brief by Joseph',
+    description: DESCRIPTION,
     type: 'website',
     url: '/',
-    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Joseph: Economics & AI Newsletter' }],
+    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Daily Brief by Joseph' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Joseph: Economics & AI Newsletter',
-    description: 'A weekly newsletter breaking down the economic forces and AI breakthroughs shaping our world, without the jargon.',
+    title: 'Daily Brief by Joseph',
+    description: DESCRIPTION,
     images: ['/opengraph-image'],
   },
 }
 
+export const viewport: Viewport = {
+  themeColor: '#0C0E14',
+  width: 'device-width',
+  initialScale: 1,
+}
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${dmSans.variable}`}>
+    <html lang="en" className={`${display.variable} ${serif.variable} ${geist.variable} ${geistMono.variable}`}>
       <body>
         <a href="#main-content" className="skip-link">Skip to main content</a>
         <DashboardShell>
@@ -52,12 +76,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           position="bottom-right"
           toastOptions={{
             style: {
-              background: '#ffffff',
-              color: '#1a1a1a',
-              border: '1px solid #d6cfc4',
-              fontFamily: 'var(--font-dm)',
+              background: '#141721',
+              color: '#E7E9E6',
+              border: '1px solid rgba(231,233,230,0.12)',
+              fontFamily: 'var(--font-geist)',
               fontSize: '14px',
-              boxShadow: '4px 4px 0 #d6cfc4',
+              borderRadius: 0,
             },
           }}
         />
