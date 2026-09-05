@@ -42,7 +42,7 @@ jobs:
         if: steps.changed.outputs.dates != ''
         env:
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
-          SITE_URL: https://dailybriefhq.com
+          SITE_URL: https://www.dailybriefhq.com
         run: |
           set -uo pipefail
           if [ -z "$CRON_SECRET" ]; then
