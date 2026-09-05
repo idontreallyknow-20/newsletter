@@ -210,7 +210,7 @@
 .masthead-line { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 10px 0 0; margin-top: 12px; border-top: 1px solid var(--rule-2); }
 .masthead-line span { font-family: var(--font-geist-mono), monospace; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
 .masthead-line .t-serif-i { font-family: var(--font-serif), serif; font-style: italic; font-size: 15px; text-transform: none; letter-spacing: 0; color: var(--ink); }
-.front-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: clamp(32px, 5vw, 80px); align-items: center; padding-top: clamp(36px, 5vw, 72px); }
+.front-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: clamp(32px, 5vw, 80px); align-items: start; padding-top: clamp(36px, 5vw, 72px); }
 .front-kicker { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
 .front-kicker .t-mono { color: var(--red); }
 .front-kicker .t-mono + .t-mono { color: var(--muted); }
@@ -231,7 +231,7 @@
 }
 
 /* The stack: today's issues as a 3D pile of front pages */
-.stack-stage { position: relative; height: clamp(420px, 44vw, 620px); perspective: 1600px; perspective-origin: 50% 30%; }
+.stack-stage { position: relative; height: clamp(420px, 44vw, 620px); margin-top: clamp(24px, 4vw, 64px); perspective: 1600px; perspective-origin: 50% 30%; }
 .stack { position: absolute; inset: 0; transform-style: preserve-3d; }
 .page {
   position: absolute; left: 50%; top: 50%; width: min(340px, 78%); aspect-ratio: 0.78;
@@ -401,7 +401,7 @@
 .art-side .author .byline-photo { width: 44px; height: 44px; font-size: 18px; }
 .prose-issue h2, .art-body h2.h { font-family: var(--font-display), serif; font-weight: 700; font-variation-settings: 'opsz' 96; font-size: 30px; letter-spacing: -0.02em; line-height: 1.08; margin: 44px 0 14px; }
 .prose-issue p, .art-body p.p { font-family: var(--font-serif), serif; font-variation-settings: 'opsz' 18; font-size: 19px; line-height: 1.7; margin: 0 0 20px; color: var(--ink); }
-.art-body p.p:first-of-type::first-letter, .prose-issue > p:first-of-type::first-letter { font-family: var(--font-display), serif; font-weight: 900; font-size: 4.2em; float: left; line-height: 0.8; padding: 8px 10px 0 0; color: var(--red); }
+.art-body article > div:first-child p.p:first-of-type::first-letter, .prose-issue > p:first-of-type::first-letter { font-family: var(--font-display), serif; font-weight: 900; font-size: 4.2em; float: left; line-height: 0.8; padding: 8px 10px 0 0; color: var(--red); }
 .prose-issue strong { font-weight: 600; }
 .prose-issue a { color: var(--red-2); }
 .prose-issue ul, .prose-issue ol { font-family: var(--font-serif), serif; font-size: 19px; line-height: 1.7; margin: 0 0 20px; padding-left: 22px; }
