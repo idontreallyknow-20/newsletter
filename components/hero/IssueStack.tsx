@@ -106,7 +106,6 @@ export default function IssueStack({ pages }: { pages: StackPage[] }) {
         })}
       </div>
       </div>
-      <div className="stack-cap"><span className="t-mono">Recent front pages</span><span className="t-mono">Scroll to fan them out</span></div>
     </div>
   )
 }

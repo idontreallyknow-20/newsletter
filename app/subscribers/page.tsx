@@ -95,6 +95,15 @@ export default function SubscribersPage() {
     }
   }
 
+  async function archiveAll() {
+    if (!confirm('Archive every active subscriber? They stop receiving issues until they sign up again. Nothing is deleted.')) return
+    const res = await fetch('/api/subscribers/archive-all', { method: 'POST' })
+    if (!res.ok) { toast.error('Could not archive'); return }
+    const r = await res.json()
+    toast.success(`Archived ${r.archived} subscribers`)
+    load()
+  }
+
   async function handleExport() {
     const res = await fetch('/api/subscribers/export')
     const blob = await res.blob()
@@ -120,6 +129,9 @@ export default function SubscribersPage() {
             {importing ? 'Importing…' : 'Import CSV'}
             <input type="file" accept=".csv" className="hidden" onChange={handleImport} />
           </label>
+          <button onClick={archiveAll} className="px-4 py-2.5 text-xs font-sans tracking-wide transition-colors" style={{ color: 'var(--red)', border: '1px solid var(--border-accent)' }}>
+            Archive all
+          </button>
           <button onClick={handleExport} className="px-4 py-2.5 text-xs font-sans tracking-wide transition-colors" style={{ color: 'var(--muted)', border: '1px solid var(--border)' }}>
             Export CSV
           </button>
@@ -181,7 +193,7 @@ export default function SubscribersPage() {
             <tbody>
               {subscribers.map((s, i) => (
                 <tr key={s.id} className="transition-colors hover:bg-white/[0.02]" style={{ borderBottom: i < subscribers.length - 1 ? '1px solid var(--border)' : 'none' }}>
-                  <td className="px-4 py-3 text-sm" style={{ color: 'var(--cream)' }}>{s.name || <span style={{ color: 'var(--muted)', opacity: 0.4 }}>—</span>}</td>
+                  <td className="px-4 py-3 text-sm" style={{ color: 'var(--cream)' }}>{s.name || <span style={{ color: 'var(--muted)', opacity: 0.4 }}>-</span>}</td>
                   <td className="px-4 py-3 text-sm font-mono" style={{ color: 'var(--muted)', fontSize: '11px' }}>{s.email}</td>
                   <td className="px-4 py-3 hidden lg:table-cell">
                     <span className="font-mono text-[9px] tracking-widest uppercase px-2 py-1" style={{ color: 'var(--accent)', background: 'var(--accent-dim)', border: '1px solid var(--border-accent)' }}>

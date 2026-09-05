@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 import PublicNav from '@/components/PublicNav'
 import SmoothScroll from '@/components/SmoothScroll'
 import FrontPage from '@/components/hero/FrontPage'
-import IssueTicker from '@/components/IssueTicker'
+import PageMotion from '@/components/PageMotion'
 import TodaysIssue from '@/components/TodaysIssue'
 import AboutCredentials from '@/components/AboutCredentials'
 import Beats from '@/components/Beats'
@@ -36,12 +36,11 @@ export default async function HomePage() {
   return (
     <>
       <SmoothScroll />
+      <PageMotion />
       <PublicNav />
       <span id="main-content" aria-hidden="true" style={{ position: 'absolute', top: 0 }} />
 
       <FrontPage pages={pages} issueCount={issueCount} dateline={dateline} volume={`Vol. ${now.getFullYear() - 2025}`} />
-
-      <IssueTicker items={items.slice(0, 10).map(a => ({ num: a.num, title: a.title }))} />
 
       {/* Latest issue */}
       <section className="band band--paper-2" id="today">

@@ -7,7 +7,7 @@ function safeCompare(a: string, b: string): boolean {
   return timingSafeEqual(Buffer.from(a), Buffer.from(b))
 }
 
-// In-memory rate limiter (resets on cold start — good enough for a single-user admin)
+// In-memory rate limiter (resets on cold start, good enough for a single-user admin)
 const attempts = new Map<string, { count: number; resetAt: number }>()
 
 function isRateLimited(ip: string): boolean {

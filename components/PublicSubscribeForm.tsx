@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { isValidEmail } from '@/lib/validate-email'
 
 type Lang = 'en' | 'zh'
-type Freq = 'daily' | 'weekly' | 'both'
+type Freq = 'daily' | 'weekly'
 
 export default function PublicSubscribeForm({ id: idProp }: { id?: string } = {}) {
   const [email, setEmail] = useState('')
@@ -60,7 +60,7 @@ export default function PublicSubscribeForm({ id: idProp }: { id?: string } = {}
           <button key={v} type="button" className="chip" aria-pressed={language === v} onClick={() => setLanguage(v)}>{l}</button>
         ))}
         <span className="sep" aria-hidden="true" />
-        {([['daily', 'Daily'], ['weekly', 'Weekly'], ['both', 'Both']] as [Freq, string][]).map(([v, l]) => (
+        {([['daily', 'Daily'], ['weekly', 'Weekly only']] as [Freq, string][]).map(([v, l]) => (
           <button key={v} type="button" className="chip" aria-pressed={frequency === v} onClick={() => setFrequency(v)}>{l}</button>
         ))}
       </div>

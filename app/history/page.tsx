@@ -35,11 +35,24 @@ export default function HistoryPage() {
 
   const hasMore = emails.length < total
 
+  async function archiveAll() {
+    if (!confirm('Archive every sent issue? They disappear from the site and stay here marked archived. Nothing is deleted.')) return
+    const res = await fetch('/api/history/archive-all', { method: 'POST' })
+    if (!res.ok) return
+    const data = await fetch(`/api/history?limit=${PAGE_SIZE}&offset=0`).then(r => r.json())
+    setEmails(data.emails); setTotal(data.total)
+  }
+
   return (
     <div className="p-8 lg:p-12 max-w-5xl">
-      <div className="mb-10 animate-fade-up">
+      <div className="mb-10 animate-fade-up flex items-end justify-between gap-4">
+        <div>
         <p className="font-mono text-[9px] tracking-[0.25em] uppercase mb-3" style={{ color: 'var(--muted)', opacity: 0.5 }}>Archive</p>
         <h2 className="font-display text-4xl font-bold" style={{ color: 'var(--cream)' }}>History</h2>
+        </div>
+        {emails.length > 0 && (
+          <button onClick={archiveAll} className="px-4 py-2.5 text-xs font-sans tracking-wide" style={{ color: 'var(--red)', border: '1px solid var(--border-accent)' }}>Archive all issues</button>
+        )}
       </div>
 
       {loading ? (

@@ -26,13 +26,13 @@ const geistMono = localFont({ src: './fonts/GeistMonoVF.woff', variable: '--font
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: `Daily Brief by ${AUTHOR_NAME}: economics and AI, before school`, template: '%s | Daily Brief' },
+  title: { default: `Daily Brief (dailybriefhq) by ${AUTHOR_NAME}: economics and AI, before school`, template: '%s | Daily Brief' },
   description: SITE_DESCRIPTION,
   applicationName: 'Daily Brief',
   authors: [{ name: AUTHOR_NAME, url: `${SITE_URL}/about` }],
   creator: AUTHOR_NAME,
   publisher: 'Daily Brief',
-  keywords: ['Joseph', 'Daily Brief', 'economics newsletter', 'AI newsletter', 'Richmond Hill', 'Ontario', 'chess champion', 'Grade 11', 'Canadian economy', 'artificial intelligence'],
+  keywords: ['dailybriefhq', 'Daily Brief HQ', 'Joseph', 'Daily Brief', 'economics newsletter', 'AI newsletter', 'Richmond Hill', 'Ontario', 'chess champion', 'Grade 11', 'Canadian economy', 'artificial intelligence'],
   alternates: { canonical: '/', types: { 'application/rss+xml': [{ url: '/feed.xml', title: 'Daily Brief RSS' }] } },
   openGraph: {
     siteName: 'Daily Brief',

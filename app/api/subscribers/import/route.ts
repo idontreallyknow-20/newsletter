@@ -20,7 +20,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ inserted: 0, skipped: rows.length })
     }
 
-    // Batch upsert — ON CONFLICT DO NOTHING skips existing emails
+    // Batch upsert: ON CONFLICT DO NOTHING skips existing emails
     const result = await db
       .insert(subscribers)
       .values(valid.map(r => ({ name: r.name, email: r.email, status: 'active' as const })))
