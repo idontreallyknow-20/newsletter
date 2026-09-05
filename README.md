@@ -32,9 +32,11 @@ Vercel Hobby crons are UTC only and can fire anywhere inside the hour. If you wa
 
 ## Writing the issue with a Claude Routine (no API key)
 
-A scheduled Claude Code Routine writes tomorrow's issue on a claude.ai subscription and commits it to `queue/YYYY-MM-DD.en.json` (and `.zh.json`) on `main`. The 5 AM cron fetches that file from GitHub, previews it to the owner, and the 7 AM cron sends it. See `queue/README.md` for the file shape.
+A scheduled Claude Code Routine writes tomorrow's issue on a claude.ai subscription and commits it to `queue/YYYY-MM-DD.en.json` (and `.zh.json`) on the **`queue` branch**. The 5 AM cron fetches the file from `raw.githubusercontent.com` (checking `queue`, then `main`), previews it to the owner, and the 7 AM cron sends it. See `queue/README.md` for the file shape.
 
-There is also `POST /api/drafts/queue` (bearer `CRON_SECRET`, same JSON plus `"language"`) for any machine that can reach the site directly.
+The Routine needs the repository attached to it, otherwise its sandbox has no checkout and a token scoped to nothing. Writing the file through the GitHub API rather than `git push` avoids needing a checkout at all. The `queue` branch is deliberate: `vercel.json` deploys `main` only, so nightly commits never trigger a production build.
+
+There is also `POST /api/drafts/queue` (bearer `CRON_SECRET`, same JSON plus `"language"`) for any machine that can reach the site directly. Claude's sandboxes cannot; `dailybriefhq.com` is blocked by their egress policy, which is why the hand-off goes through GitHub.
 
 ## Environment variables (Vercel, Production)
 

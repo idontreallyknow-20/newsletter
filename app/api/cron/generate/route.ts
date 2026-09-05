@@ -18,19 +18,25 @@ import { translateIssue } from '@/lib/translate'
 import { cronAuthorized, loadSettings, senderFrom, logRun, notifyOwner, errorMessage } from '@/lib/cron'
 
 const GENERATE_MODEL = 'claude-opus-5'
-const QUEUE_RAW = 'https://raw.githubusercontent.com/idontreallyknow-20/newsletter/main/queue'
+const QUEUE_REPO = 'https://raw.githubusercontent.com/idontreallyknow-20/newsletter'
+// The nightly Routine commits to the `queue` branch, which does not trigger a
+// Vercel deploy. `main` is checked second so a hand-committed file also works.
+const QUEUE_REFS = ['queue', 'main'] as const
 
 /** A draft committed to the repo's queue folder for this date, if any. */
 async function queuedFromGitHub(issueDate: string, lang: 'en' | 'zh'): Promise<{ subject: string; bodyMarkdown: string; previewText: string } | null> {
-  try {
-    const res = await fetch(`${QUEUE_RAW}/${issueDate}.${lang}.json?t=${Date.now()}`, { cache: 'no-store', signal: AbortSignal.timeout(8_000) })
-    if (!res.ok) return null
-    const j = await res.json() as { subject?: string; bodyMarkdown?: string; previewText?: string }
-    if (!j.subject || !j.bodyMarkdown || j.bodyMarkdown.length < 200) return null
-    const bodyMarkdown = j.bodyMarkdown.replace(/—|–/g, ', ').trim()
-    const previewText = (j.previewText || bodyMarkdown.split('\n').map(l => l.trim()).find(l => l && !l.startsWith('#')) || '').replace(/[*_`]/g, '').slice(0, 140)
-    return { subject: j.subject.trim().slice(0, 200), bodyMarkdown, previewText }
-  } catch { return null }
+  for (const ref of QUEUE_REFS) {
+    try {
+      const res = await fetch(`${QUEUE_REPO}/${ref}/queue/${issueDate}.${lang}.json?t=${Date.now()}`, { cache: 'no-store', signal: AbortSignal.timeout(8_000) })
+      if (!res.ok) continue
+      const j = await res.json() as { subject?: string; bodyMarkdown?: string; previewText?: string }
+      if (!j.subject || !j.bodyMarkdown || j.bodyMarkdown.length < 200) continue
+      const bodyMarkdown = j.bodyMarkdown.replace(/—|–/g, ', ').trim()
+      const previewText = (j.previewText || bodyMarkdown.split('\n').map(l => l.trim()).find(l => l && !l.startsWith('#')) || '').replace(/[*_`]/g, '').slice(0, 140)
+      return { subject: j.subject.trim().slice(0, 200), bodyMarkdown, previewText }
+    } catch { /* try the next ref */ }
+  }
+  return null
 }
 
 // Vercel caps this route at maxDuration. Every network call below takes its
