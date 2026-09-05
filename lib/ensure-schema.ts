@@ -68,6 +68,26 @@ export const DEFAULT_SETTINGS: Array<[string, string]> = [
   ['owner_email', process.env.OWNER_EMAIL ?? ''],
 ]
 
+// One-off data migrations, keyed so each runs exactly once per database.
+// Settings changed later in the dashboard are never overwritten again.
+export const DATA_MIGRATIONS: Array<{ key: string; statement: ReturnType<typeof sql> }> = [
+  {
+    key: 'owner_email_2026_09_05',
+    statement: sql`INSERT INTO settings (key, value) VALUES ('owner_email', 'josephislockedin@gmail.com')
+      ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value`,
+  },
+]
+
+async function runDataMigrations() {
+  for (const m of DATA_MIGRATIONS) {
+    const markerKey = `migration:${m.key}`
+    const { rows } = await db.execute(sql`SELECT 1 FROM settings WHERE key = ${markerKey}`)
+    if (rows.length > 0) continue
+    await db.execute(m.statement)
+    await db.execute(sql`INSERT INTO settings (key, value) VALUES (${markerKey}, ${new Date().toISOString()}) ON CONFLICT (key) DO NOTHING`)
+  }
+}
+
 let done: Promise<void> | null = null
 
 /**
@@ -78,6 +98,7 @@ export function ensureSchema(): Promise<void> {
   if (!done) {
     done = (async () => {
       for (const statement of SCHEMA_STATEMENTS) await db.execute(statement)
+      await runDataMigrations()
     })().catch(err => { done = null; throw err })
   }
   return done
