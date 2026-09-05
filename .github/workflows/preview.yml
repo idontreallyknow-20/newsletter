@@ -52,7 +52,7 @@ jobs:
           status=0
           for d in ${{ steps.changed.outputs.dates }}; do
             echo "Previewing $d"
-            code=$(curl -sS -o /tmp/out.json -w '%{http_code}' --max-time 90 --retry 3 --retry-delay 10 --retry-all-errors \
+            code=$(curl -sSL -o /tmp/out.json -w '%{http_code}' --max-time 90 --retry 3 --retry-delay 10 --retry-all-errors \
               -X POST -H "Authorization: Bearer $CRON_SECRET" "$SITE_URL/api/cron/preview?date=$d") || code=000
             cat /tmp/out.json 2>/dev/null; echo
             if [ "$code" != "200" ]; then echo "::error::Preview for $d returned HTTP $code"; status=1; fi
