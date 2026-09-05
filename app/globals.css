@@ -186,10 +186,12 @@
 .drawer a.big { font-size: clamp(40px, 12vw, 72px); text-decoration: none; padding: 12px 0; border-bottom: 1px solid var(--rule); }
 .drawer .drawer-form { margin-top: 28px; }
 @media (max-width: 900px) {
-  .mast { grid-template-columns: 1fr auto; }
-  .mast-links, .mast-date { display: none; }
-  .mast-toggle { display: inline-flex; align-items: center; }
+  .mast { grid-template-columns: 1fr auto; height: 56px; padding: 0 16px; }
+  .mast > nav, .mast-links, .mast-date { display: none; }
+  .mast-right { gap: 8px; }
+  .mast-toggle { display: inline-flex; align-items: center; height: 34px; padding: 0 12px; }
   .mast .btn.hide-sm { display: none; }
+  .drawer { padding-top: 84px; }
 }
 .mast--light { color: var(--ink); }
 
@@ -225,10 +227,11 @@
 .byline strong { display: block; font-weight: 600; font-size: 15px; }
 .byline span { display: block; font-size: 13px; color: var(--muted); line-height: 1.5; }
 @media (max-width: 960px) {
-  .front { padding-top: 80px; }
-  .front-grid { grid-template-columns: 1fr; }
+  .front { padding-top: 72px; padding-bottom: 40px; }
+  .front-grid { grid-template-columns: 1fr; gap: 8px; padding-top: 28px; }
   .front h1 { font-size: clamp(40px, 11vw, 72px); }
   .masthead-line { flex-wrap: wrap; justify-content: center; gap: 8px 18px; }
+  .byline { margin-top: 28px; }
 }
 
 /* The stack: today's issues as a 3D pile of front pages */
@@ -256,7 +259,8 @@
 .page .fig i { flex: 1; background: var(--ink); opacity: 0.85; }
 .page .fig i:last-child { background: var(--red); opacity: 1; }
 .page-foot { position: absolute; left: 18px; right: 18px; bottom: 12px; display: flex; justify-content: space-between; font-family: var(--font-geist-mono), monospace; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
-@media (max-width: 960px) { .stack-stage { height: clamp(360px, 90vw, 480px); } .page { width: 72%; margin-left: -36%; } }
+@media (max-width: 960px) { .stack-stage { height: clamp(320px, 80vw, 420px); margin-top: 0; perspective: 1200px; } .page { width: 64%; margin-left: -32%; margin-top: -30%; padding: 14px 14px 12px; } .page h3 { font-size: 15px; } }
+@media (max-width: 480px) { .stack-stage { height: 340px; } .page { width: 68%; margin-left: -34%; margin-top: -50%; } }
 
 /* ============================================================
    Headline marquee
@@ -295,7 +299,7 @@
 .portrait-mono { position: absolute; inset: 0; display: grid; place-items: center; color: var(--paper); }
 .portrait-mono span { font-family: var(--font-display), serif; font-weight: 900; font-size: clamp(120px, 18vw, 220px); letter-spacing: -0.06em; line-height: 1; }
 .portrait-mono::before { content: ''; position: absolute; inset: 0; background: radial-gradient(60% 60% at 60% 30%, rgba(179,38,30,0.55), transparent 70%); }
-.portrait-cap { position: absolute; left: 16px; bottom: 14px; right: 16px; display: flex; justify-content: space-between; color: var(--paper); }
+.portrait-cap { position: absolute; left: 16px; bottom: 14px; right: 16px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; color: var(--paper); }
 .portrait-cap .t-mono { color: var(--paper); opacity: 0.85; }
 .about h2 { font-size: clamp(38px, 5.4vw, 80px); margin-bottom: 24px; }
 .about .copy { font-family: var(--font-serif), serif; font-size: 18px; line-height: 1.65; color: var(--ink); }
@@ -388,7 +392,7 @@
 /* ============================================================
    Article page
    ============================================================ */
-.art-head { padding: 120px 0 40px; background: var(--paper); border-bottom: 1px solid var(--ink); }
+.art-head { padding: clamp(96px, 14vw, 120px) 0 40px; background: var(--paper); border-bottom: 1px solid var(--ink); }
 .art-title { font-size: clamp(38px, 5.8vw, 88px); max-width: 18ch; margin: 18px 0 24px; }
 .art-meta { display: flex; flex-wrap: wrap; gap: 8px 28px; }
 .art-meta span { font-family: var(--font-geist-mono), monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
@@ -424,7 +428,7 @@
 .share-qr-url { font-size: 11px; color: var(--muted); text-align: center; margin-top: 8px; font-family: var(--font-geist-mono), monospace; }
 
 /* Simple pages */
-.simple { min-height: 100svh; background: var(--paper); color: var(--ink); padding: 130px 0 96px; }
+.simple { min-height: 100svh; background: var(--paper); color: var(--ink); padding: clamp(104px, 16vw, 130px) 0 96px; }
 .simple h1 { font-size: clamp(40px, 6.5vw, 88px); margin-bottom: 20px; max-width: 16ch; }
 .simple .copy { margin-bottom: 32px; }
 .page-fog { background: var(--paper); color: var(--ink); min-height: 100svh; padding-top: 64px; }
@@ -493,7 +497,7 @@
 .theme-seg { display: inline-flex; border: 1px solid var(--rule-2); padding: 2px; gap: 2px; background: var(--paper-2); }
 .theme-seg-btn { height: 28px; padding: 0 10px; border: 0; background: transparent; color: var(--muted); cursor: pointer; font-size: 10px; transition: background 0.15s, color 0.15s; }
 .theme-seg-btn[aria-checked='true'] { background: var(--ink); color: var(--paper); }
-@media (max-width: 900px) { .theme-seg-btn { padding: 0 8px; } }
+@media (max-width: 900px) { .theme-seg-btn { padding: 0 8px; height: 26px; } }
 
 /* ============================================================
    Night edition. Same tokens, remapped.

@@ -42,8 +42,8 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="p-8 lg:p-12 max-w-xl">
-      <div className="mb-10 animate-fade-up">
+    <div className="p-5 sm:p-8 lg:p-12 max-w-xl">
+      <div className="mb-8 sm:mb-10 animate-fade-up">
         <p className="font-mono text-[9px] tracking-[0.25em] uppercase mb-3" style={{ color: 'var(--muted)', opacity: 0.5 }}>Configure</p>
         <h2 className="font-display text-4xl font-bold" style={{ color: 'var(--cream)' }}>Settings</h2>
       </div>
@@ -53,7 +53,7 @@ export default function SettingsPage() {
           <p className="font-mono text-[10px] tracking-[0.2em] uppercase animate-pulse" style={{ color: 'var(--muted)', opacity: 0.5 }}>Loading…</p>
         </div>
       ) : (
-        <form onSubmit={save} className="animate-fade-up delay-1 p-6 space-y-5" style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}>
+        <form onSubmit={save} className="animate-fade-up delay-1 p-5 sm:p-6 space-y-5" style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}>
           {FIELDS.map(field => (
             <div key={field.key}>
               <label className="font-mono text-[9px] tracking-[0.2em] uppercase block mb-2" style={{ color: 'var(--muted)' }}>

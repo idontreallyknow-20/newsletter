@@ -16,6 +16,7 @@ import {
 } from '@/lib/generation'
 import { translateIssue } from '@/lib/translate'
 import { cronAuthorized, loadSettings, senderFrom, logRun, notifyOwner, errorMessage } from '@/lib/cron'
+import { ensureSchema } from '@/lib/ensure-schema'
 
 const GENERATE_MODEL = 'claude-opus-5'
 const QUEUE_REPO = 'https://raw.githubusercontent.com/idontreallyknow-20/newsletter'
@@ -101,6 +102,8 @@ export async function GET(req: Request) {
   const issueDate = getIssueDate()
   let s: Record<string, string> = {}
   try {
+    // Idempotent. A deploy that adds a column must not be able to break the morning.
+    await ensureSchema()
     s = await loadSettings()
     const { newsletterName, fromName, fromEmail, ownerEmail, baseUrl, emailSecret } = senderFrom(s)
 

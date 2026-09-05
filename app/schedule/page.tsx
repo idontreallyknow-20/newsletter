@@ -61,8 +61,8 @@ export default function SchedulePage() {
   const label = 'font-mono text-[9px] tracking-[0.2em] uppercase block mb-3'
 
   return (
-    <div className="p-8 lg:p-12 max-w-2xl">
-      <div className="mb-10 animate-fade-up">
+    <div className="p-5 sm:p-8 lg:p-12 max-w-2xl">
+      <div className="mb-8 sm:mb-10 animate-fade-up">
         <p className="font-mono text-[9px] tracking-[0.25em] uppercase mb-3" style={{ color: 'var(--muted)', opacity: 0.5 }}>Automation</p>
         <h2 className="font-display text-4xl font-bold" style={{ color: 'var(--cream)' }}>Schedule</h2>
       </div>
@@ -78,7 +78,7 @@ export default function SchedulePage() {
       ) : (
         <div className="animate-fade-up delay-2 space-y-6">
           {/* Kill switch */}
-          <div className="p-6 flex items-center justify-between gap-6" style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}>
+          <div className="p-5 sm:p-6 flex items-center justify-between gap-6" style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}>
             <div>
               <p className="font-sans text-sm font-medium" style={{ color: 'var(--cream)' }}>Automatic sending</p>
               <p className="font-sans text-xs mt-1" style={{ color: 'var(--muted)' }}>{nextSend}</p>
@@ -97,7 +97,7 @@ export default function SchedulePage() {
           </div>
 
           {/* Frequency */}
-          <div className="p-6" style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}>
+          <div className="p-5 sm:p-6" style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}>
             <label className={label} style={{ color: 'var(--muted)' }}>Which mornings</label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {FREQ.map(f => (
@@ -159,12 +159,14 @@ export default function SchedulePage() {
         ) : (
           <div style={{ border: '1px solid var(--border)' }}>
             {log.map((r, i) => (
-              <div key={r.id} className="px-5 py-3 flex items-start gap-4" style={{ borderBottom: i < log.length - 1 ? '1px solid var(--border)' : 'none', background: 'var(--surface)' }}>
-                <span className="font-mono text-[9px] tracking-widest uppercase w-16 flex-shrink-0 pt-0.5" style={{ color: r.status === 'error' ? '#f87171' : r.status === 'ok' ? '#6ee7b7' : 'var(--muted)' }}>{r.job} · {r.status}</span>
-                <span className="font-sans text-xs flex-1" style={{ color: 'var(--cream)' }}>{r.message}</span>
-                <span className="font-mono text-[10px] flex-shrink-0" style={{ color: 'var(--muted)' }}>
-                  {new Date(r.createdAt).toLocaleString('en-CA', { timeZone: 'America/Toronto', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
-                </span>
+              <div key={r.id} className="px-4 sm:px-5 py-3 flex flex-col sm:flex-row sm:items-start gap-1.5 sm:gap-4" style={{ borderBottom: i < log.length - 1 ? '1px solid var(--border)' : 'none', background: 'var(--surface)' }}>
+                <div className="flex items-center justify-between sm:contents">
+                  <span className="font-mono text-[9px] tracking-widest uppercase sm:w-24 flex-shrink-0 sm:pt-0.5 sm:order-1" style={{ color: r.status === 'error' ? '#f87171' : r.status === 'ok' ? '#6ee7b7' : 'var(--muted)' }}>{r.job} · {r.status}</span>
+                  <span className="font-mono text-[10px] flex-shrink-0 sm:order-3" style={{ color: 'var(--muted)' }}>
+                    {new Date(r.createdAt).toLocaleString('en-CA', { timeZone: 'America/Toronto', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                  </span>
+                </div>
+                <span className="font-sans text-xs flex-1 break-words sm:order-2" style={{ color: 'var(--cream)' }}>{r.message}</span>
               </div>
             ))}
           </div>

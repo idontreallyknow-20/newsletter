@@ -4,10 +4,12 @@ import Link from 'next/link'
 import { db } from '@/lib/db'
 import { subscribers, sentEmails, drafts, sendLog, settings } from '@/lib/schema'
 import { eq, count, desc } from 'drizzle-orm'
-import { nextSendLabel, SEND_REASON_TEXT, type SendBlockReason } from '@/lib/schedule'
+import { nextSendLabel, SEND_REASON_TEXT, NEWSLETTER_TZ, type SendBlockReason } from '@/lib/schedule'
+import { ensureSchema } from '@/lib/ensure-schema'
 
 async function getStats() {
   try {
+    await ensureSchema()
     const [[activeRow], [totalSubRow], [sentRow], recentEmails, [latestDraft], runs, settingRows] = await Promise.all([
       db.select({ count: count() }).from(subscribers).where(eq(subscribers.status, 'active')),
       db.select({ count: count() }).from(subscribers),
@@ -50,13 +52,13 @@ export default async function DashboardPage() {
   ]
 
   return (
-    <div className="p-8 lg:p-12 max-w-5xl">
+    <div className="p-5 sm:p-8 lg:p-12 max-w-5xl">
       {/* Header */}
-      <div className="mb-12 animate-fade-up">
+      <div className="mb-8 sm:mb-12 animate-fade-up">
         <p className="font-mono text-[9px] tracking-[0.25em] uppercase mb-3" style={{ color: 'var(--muted)', opacity: 0.5 }}>Overview</p>
         <h2 className="font-display text-4xl font-bold mb-1" style={{ color: 'var(--cream)' }}>Dashboard</h2>
         <p className="font-mono text-[10px] tracking-widest" style={{ color: 'var(--muted)', opacity: 0.6 }}>
-          {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+          {new Date().toLocaleDateString('en-CA', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: NEWSLETTER_TZ })}
         </p>
       </div>
 
@@ -124,7 +126,7 @@ export default async function DashboardPage() {
                 <span className="font-mono text-[9px] w-3 flex-shrink-0 tabular-nums" style={{ color: 'var(--muted)', opacity: 0.4 }}>{i + 1}</span>
                 <span className="font-sans text-sm flex-1 truncate" style={{ color: 'var(--cream)' }}>{email.subject}</span>
                 <span className="font-mono text-[10px] hidden sm:block flex-shrink-0" style={{ color: 'var(--muted)' }}>
-                  {new Date(email.sentAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  {new Date(email.sentAt).toLocaleDateString('en-CA', { month: 'short', day: 'numeric', timeZone: NEWSLETTER_TZ })}
                 </span>
                 <span className="font-mono text-[9px] tracking-widest uppercase px-2 py-0.5 flex-shrink-0" style={{
                   color: email.status === 'sent' ? '#6ee7b7' : '#fcd34d',

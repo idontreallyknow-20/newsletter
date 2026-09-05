@@ -15,7 +15,7 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className={`dashboard-shell theme-${theme} flex min-h-screen`}>
       <Sidebar />
-      <main id="main-content" className="flex-1 lg:ml-56 min-h-screen flex flex-col overflow-y-auto">
+      <main id="main-content" className="flex-1 min-w-0 lg:ml-56 min-h-screen flex flex-col pt-14 lg:pt-0">
         {children}
       </main>
     </div>

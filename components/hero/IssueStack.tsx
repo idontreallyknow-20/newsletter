@@ -51,17 +51,20 @@ export default function IssueStack({ pages }: { pages: StackPage[] }) {
       const depth = n - 1 - i
       gsap.set(c, { z: -depth * 26, y: depth * 10, rotateZ: (i % 2 ? 1 : -1) * (depth * 1.4), x: 0, opacity: 1 })
     })
-    gsap.set(el, { rotateX: 52, rotateZ: -8, y: 30 })
+    gsap.set(el, { rotateX: 52, rotateZ: -8, y: st.clientWidth < 640 ? 0 : 30 })
     if (reduced) return
 
     gsap.registerPlugin(ScrollTrigger)
+    // Fan the pages out by a fraction of the stage width, so on a phone the
+    // outer pages stay inside the screen instead of running off the right edge.
+    const step = Math.min(120, st.clientWidth * 0.15)
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ scrollTrigger: { trigger: st, start: 'top 60%', end: 'bottom 5%', scrub: 0.6 } })
       tl.to(el, { rotateX: 24, rotateZ: 0, y: -30, ease: 'none' }, 0)
       cards.forEach((c, i) => {
         const depth = n - 1 - i
         const spread = i - (n - 1) / 2
-        tl.to(c, { x: spread * 120, y: -depth * 18 + Math.abs(spread) * 22, z: -depth * 8, rotateZ: spread * 9, ease: 'none' }, 0)
+        tl.to(c, { x: spread * step, y: -depth * 18 + Math.abs(spread) * 22, z: -depth * 8, rotateZ: spread * 9, ease: 'none' }, 0)
       })
       if (breathe.current) gsap.to(breathe.current, { y: 10, duration: 3.2, yoyo: true, repeat: -1, ease: 'sine.inOut' })
     }, st)
@@ -77,8 +80,9 @@ export default function IssueStack({ pages }: { pages: StackPage[] }) {
       gsap.to(el, { rotateY: 0, x: 0, duration: 1, ease: 'power2.out' })
       cards.forEach(c => gsap.to(c, { xPercent: 0, yPercent: 0, duration: 1, ease: 'power2.out' }))
     }
-    st.addEventListener('pointermove', onMove)
-    st.addEventListener('pointerleave', onLeave)
+    // Pointer parallax is a mouse effect. On touch it fights with scrolling.
+    const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+    if (fine) { st.addEventListener('pointermove', onMove); st.addEventListener('pointerleave', onLeave) }
     return () => { ctx.revert(); st.removeEventListener('pointermove', onMove); st.removeEventListener('pointerleave', onLeave) }
   }, [pages])
 

@@ -54,7 +54,7 @@ There is also `POST /api/drafts/queue` (bearer `CRON_SECRET`, same JSON plus `"l
 
 ## First run after deploying
 
-1. Log in to the dashboard and open `/api/setup` once. It creates any missing tables, columns, and the unique index. Safe to repeat.
+1. Log in to the dashboard and open `/api/setup` once. It creates any missing tables, columns, and the unique index, and seeds default settings. Safe to repeat. The two cron routes and the dashboard also run the same idempotent migration on their first request after a deploy, so a schema change can never break the morning send on its own.
 2. Set your email and the from address on **Settings**.
 3. On **Schedule**, pick every day, weekdays, or weekly, choose the weekly edition day, and turn on automatic sending. Daily readers get every issue; weekly readers get the one sent on the weekly edition day.
 4. Optional dry run from a terminal:

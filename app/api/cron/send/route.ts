@@ -13,6 +13,7 @@ import { signEmailToken } from '@/lib/token'
 import { markdownToHtml } from '@/lib/markdown'
 import { slugify } from '@/lib/slug'
 import { cronAuthorized, loadSettings, senderFrom, logRun, notifyOwner, errorMessage } from '@/lib/cron'
+import { ensureSchema } from '@/lib/ensure-schema'
 
 export async function GET(req: Request) {
   if (!cronAuthorized(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -20,6 +21,8 @@ export async function GET(req: Request) {
   const issueDate = getIssueDate()
   let s: Record<string, string> = {}
   try {
+    // Idempotent. A deploy that adds a column must not be able to break the morning.
+    await ensureSchema()
     s = await loadSettings()
 
     const [[enDraft], [zhDraft], [sentRow]] = await Promise.all([
