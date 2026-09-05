@@ -38,6 +38,7 @@ const STORIES: { lead: string; deck: string; items: { icon: IconName; text: stri
 export default function IssueStack({ pages }: { pages: StackPage[] }) {
   const stage = useRef<HTMLDivElement>(null)
   const stack = useRef<HTMLDivElement>(null)
+  const breathe = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const el = stack.current, st = stage.current
@@ -60,16 +61,16 @@ export default function IssueStack({ pages }: { pages: StackPage[] }) {
       cards.forEach((c, i) => {
         const depth = n - 1 - i
         const spread = i - (n - 1) / 2
-        tl.to(c, { x: spread * 120, y: -depth * 18 + Math.abs(spread) * 22, z: depth * 10, rotateZ: spread * 9, ease: 'none' }, 0)
+        tl.to(c, { x: spread * 120, y: -depth * 18 + Math.abs(spread) * 22, z: -depth * 8, rotateZ: spread * 9, ease: 'none' }, 0)
       })
-      gsap.to(el, { y: '+=10', duration: 3.2, yoyo: true, repeat: -1, ease: 'sine.inOut' })
+      if (breathe.current) gsap.to(breathe.current, { y: 10, duration: 3.2, yoyo: true, repeat: -1, ease: 'sine.inOut' })
     }, st)
 
     const onMove = (e: PointerEvent) => {
       const r = st.getBoundingClientRect()
       const px = (e.clientX - r.left) / r.width - 0.5
       const py = (e.clientY - r.top) / r.height - 0.5
-      gsap.to(el, { rotateY: px * 14, x: px * 18, duration: 0.8, ease: 'power2.out', overwrite: 'auto' })
+      gsap.to(el, { rotateY: px * 14, x: px * 18, duration: 0.8, ease: 'power2.out' })
       cards.forEach((c, i) => gsap.to(c, { xPercent: px * (i + 1) * 1.6, yPercent: py * (i + 1) * 1.2, duration: 0.8, ease: 'power2.out' }))
     }
     const onLeave = () => {
@@ -83,6 +84,7 @@ export default function IssueStack({ pages }: { pages: StackPage[] }) {
 
   return (
     <div className="stack-stage" ref={stage} aria-hidden="true">
+      <div className="stack-breathe" ref={breathe}>
       <div className="stack" ref={stack}>
         {pages.map((p, i) => {
           const story = STORIES[i % STORIES.length]
@@ -102,6 +104,7 @@ export default function IssueStack({ pages }: { pages: StackPage[] }) {
             </div>
           )
         })}
+      </div>
       </div>
       <div className="stack-cap"><span className="t-mono">Recent front pages</span><span className="t-mono">Scroll to fan them out</span></div>
     </div>

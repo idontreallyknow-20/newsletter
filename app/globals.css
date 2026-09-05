@@ -232,6 +232,7 @@
 
 /* The stack: today's issues as a 3D pile of front pages */
 .stack-stage { position: relative; height: clamp(420px, 44vw, 620px); margin-top: clamp(24px, 4vw, 64px); perspective: 1600px; perspective-origin: 50% 30%; }
+.stack-breathe { position: absolute; inset: 0; transform-style: preserve-3d; }
 .stack { position: absolute; inset: 0; transform-style: preserve-3d; }
 .page {
   position: absolute; left: 50%; top: 50%; width: min(340px, 78%); aspect-ratio: 0.78;
