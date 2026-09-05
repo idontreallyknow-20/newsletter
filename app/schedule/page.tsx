@@ -8,12 +8,15 @@ type LogRow = { id: number; job: string; issueDate: string | null; status: strin
 const FREQ = [
   { value: 'daily', label: 'Every day', sub: 'Seven mornings a week' },
   { value: 'weekdays', label: 'Weekdays', sub: 'Monday to Friday' },
+  { value: 'weekly', label: 'Weekly', sub: 'One issue a week' },
   { value: 'manual', label: 'Off', sub: 'Only what you send by hand' },
 ]
+const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
 export default function SchedulePage() {
   const [frequency, setFrequency] = useState('daily')
   const [autosend, setAutosend] = useState(false)
+  const [day, setDay] = useState('1')
   const [nextSend, setNextSend] = useState('')
   const [issueDate, setIssueDate] = useState('')
   const [log, setLog] = useState<LogRow[]>([])
@@ -24,6 +27,7 @@ export default function SchedulePage() {
     const data = await fetch('/api/schedule').then(r => r.json())
     setFrequency(data.schedule_frequency || 'daily')
     setAutosend(data.autosend_enabled === 'true')
+    setDay(data.schedule_day || '1')
     setNextSend(data.nextSend || '')
     setIssueDate(data.issueDate || '')
     setLog(data.log || [])
@@ -32,18 +36,19 @@ export default function SchedulePage() {
 
   useEffect(() => { load() }, [load])
 
-  async function save(next: { frequency?: string; autosend?: boolean }) {
+  async function save(next: { frequency?: string; autosend?: boolean; day?: string }) {
     setSaving(true)
     const f = next.frequency ?? frequency
     const a = next.autosend ?? autosend
+    const d = next.day ?? day
     try {
       const res = await fetch('/api/schedule', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ schedule_frequency: f, autosend_enabled: a }),
+        body: JSON.stringify({ schedule_frequency: f, autosend_enabled: a, schedule_day: d }),
       })
       if (!res.ok) throw new Error('Failed')
-      setFrequency(f); setAutosend(a)
+      setFrequency(f); setAutosend(a); setDay(d)
       await load()
       toast.success(a ? 'Automatic sending is on' : 'Saved')
     } catch {
@@ -93,7 +98,7 @@ export default function SchedulePage() {
           {/* Frequency */}
           <div className="p-6" style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}>
             <label className={label} style={{ color: 'var(--muted)' }}>Which mornings</label>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {FREQ.map(f => (
                 <button
                   key={f.value}
@@ -111,6 +116,33 @@ export default function SchedulePage() {
                 </button>
               ))}
             </div>
+            {frequency !== 'manual' && (
+              <div className="mt-6">
+                <label className={label} style={{ color: 'var(--muted)' }}>
+                  {frequency === 'weekly' ? 'Which day' : 'Weekly edition day'}
+                </label>
+                <div className="grid grid-cols-7 gap-1">
+                  {DAYS.map((d, i) => (
+                    <button
+                      key={d}
+                      disabled={saving}
+                      onClick={() => save({ day: String(i) })}
+                      className="py-2 text-xs font-sans transition-all duration-150 disabled:opacity-40"
+                      style={{
+                        background: day === String(i) ? 'var(--accent-dim)' : 'transparent',
+                        color: day === String(i) ? 'var(--accent)' : 'var(--muted)',
+                        border: `1px solid ${day === String(i) ? 'var(--border-accent)' : 'var(--border)'}`,
+                      }}
+                    >{d}</button>
+                  ))}
+                </div>
+                <p className="font-sans text-xs mt-3" style={{ color: 'var(--muted)' }}>
+                  {frequency === 'weekly'
+                    ? 'The issue goes to weekly readers (and readers who chose both) on this day.'
+                    : 'Daily readers get every issue. Weekly readers get the issue sent on this day.'}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}

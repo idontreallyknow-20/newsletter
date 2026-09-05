@@ -32,7 +32,7 @@ export default function ResubscribeButton({ email }: { email: string }) {
         fontFamily: 'var(--font-dm), sans-serif', fontSize: '14px', fontWeight: 500,
         color: 'var(--ink)', border: '2px solid transparent',
       }}>
-        ✓ Welcome back — you&apos;re resubscribed.
+        Welcome back. You are resubscribed.
       </span>
     )
   }

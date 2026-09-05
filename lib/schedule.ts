@@ -7,11 +7,19 @@
 
 export const NEWSLETTER_TZ = 'America/Toronto'
 
-export type ScheduleFrequency = 'daily' | 'weekdays' | 'manual'
+export type ScheduleFrequency = 'daily' | 'weekdays' | 'weekly' | 'manual'
+export type SubscriberFrequency = 'weekly' | 'daily' | 'both'
 
 export interface ScheduleSettings {
   schedule_frequency?: string
+  schedule_day?: string     // '0'-'6', Sunday = 0. The weekly edition day.
   autosend_enabled?: string // 'true' | 'false'
+}
+
+/** The weekday the weekly edition goes out (and weekly readers get an issue). Default Monday. */
+export function weeklyDay(settings: ScheduleSettings): number {
+  const n = parseInt(settings.schedule_day ?? '1', 10)
+  return Number.isInteger(n) && n >= 0 && n <= 6 ? n : 1
 }
 
 /** Calendar date (YYYY-MM-DD) for `now` in the newsletter's timezone. */
@@ -31,16 +39,31 @@ export function weekdayOf(issueDate: string): number {
 }
 
 export function normalizeFrequency(value: string | undefined): ScheduleFrequency {
-  if (value === 'daily' || value === 'weekdays') return value
+  if (value === 'daily' || value === 'weekdays' || value === 'weekly') return value
   return 'manual'
 }
 
-export function isSendDay(frequency: string | undefined, issueDate: string): boolean {
+export function isSendDay(frequency: string | undefined, issueDate: string, day: number = 1): boolean {
   const f = normalizeFrequency(frequency)
   if (f === 'manual') return false
   if (f === 'daily') return true
-  const day = weekdayOf(issueDate)
-  return day >= 1 && day <= 5
+  const wd = weekdayOf(issueDate)
+  if (f === 'weekly') return wd === day
+  return wd >= 1 && wd <= 5
+}
+
+/**
+ * Which subscriber preferences receive today's issue.
+ * Daily schedules send to daily readers every send day, and also to weekly
+ * readers on the weekly edition day. A weekly schedule sends only on that day,
+ * to weekly readers. 'both' readers get everything.
+ */
+export function recipientFrequenciesFor(settings: ScheduleSettings, issueDate: string): SubscriberFrequency[] {
+  const f = normalizeFrequency(settings.schedule_frequency)
+  const isWeeklyDay = weekdayOf(issueDate) === weeklyDay(settings)
+  if (f === 'weekly') return ['weekly', 'both']
+  if (f === 'manual') return ['daily', 'weekly', 'both']
+  return isWeeklyDay ? ['daily', 'weekly', 'both'] : ['daily', 'both']
 }
 
 export type SendBlockReason =
@@ -75,7 +98,7 @@ export function evaluateSend(input: {
   if (settings.autosend_enabled !== 'true') return { ok: false, reason: 'autosend_off' }
   const f = normalizeFrequency(settings.schedule_frequency)
   if (f === 'manual') return { ok: false, reason: 'manual' }
-  if (!isSendDay(f, issueDate)) return { ok: false, reason: 'not_send_day' }
+  if (!isSendDay(f, issueDate, weeklyDay(settings))) return { ok: false, reason: 'not_send_day' }
   if (alreadySent) return { ok: false, reason: 'already_sent' }
   if (!draft || !draft.bodyMarkdown) return { ok: false, reason: 'no_draft' }
   if (draft.skippedAt) return { ok: false, reason: 'skipped' }
@@ -86,7 +109,7 @@ export function evaluateSend(input: {
 export const SEND_REASON_TEXT: Record<SendBlockReason, string> = {
   autosend_off: 'Automatic sending is switched off.',
   manual: 'Frequency is set to off. Nothing sends on its own.',
-  not_send_day: 'Not a send day (weekdays only).',
+  not_send_day: 'Not a send day for the current frequency.',
   no_draft: "No draft exists for today's issue yet.",
   no_preview: 'The preview copy never reached you, so the send was held.',
   skipped: "You skipped today's issue.",
@@ -104,7 +127,7 @@ export function nextSendLabel(settings: ScheduleSettings, now: Date = new Date()
   for (let i = 0; i < 8; i++) {
     const candidate = new Date(Date.UTC(y, m - 1, d + i, 12))
     const iso = candidate.toISOString().slice(0, 10)
-    if (!isSendDay(f, iso)) continue
+    if (!isSendDay(f, iso, weeklyDay(settings))) continue
     // Today's slot counts only if it's still before ~7 AM Toronto.
     if (i === 0) {
       const hour = Number(new Intl.DateTimeFormat('en-CA', { timeZone: NEWSLETTER_TZ, hour: '2-digit', hour12: false }).format(now))

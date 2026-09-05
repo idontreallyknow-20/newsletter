@@ -12,15 +12,24 @@ import { markdownToHtml } from '@/lib/markdown'
 import { signActionToken } from '@/lib/token'
 import {
   extractText, parseIssue, usedWebSearch, topicFor,
-  issueSystemPrompt, issueUserPrompt, translationPrompt,
+  issueSystemPrompt, issueUserPrompt,
 } from '@/lib/generation'
+import { translateIssue } from '@/lib/translate'
 import { cronAuthorized, loadSettings, senderFrom, logRun, notifyOwner, errorMessage } from '@/lib/cron'
 
 const GENERATE_MODEL = 'claude-opus-5'
-const TRANSLATE_MODEL = 'claude-haiku-4-5'
 
-async function writeIssue(client: Anthropic, opts: { newsletterName: string; dateLabel: string; topic: string }) {
-  const { newsletterName, dateLabel, topic } = opts
+// Vercel caps this route at maxDuration. Every network call below takes its
+// timeout from the time left, so a slow search can never starve the preview.
+const BUDGET_MS = 55_000
+const SEARCH_MS = 28_000
+const FALLBACK_MS = 15_000
+const TRANSLATE_MIN_MS = 12_000
+
+function remaining(started: number) { return BUDGET_MS - (Date.now() - started) }
+
+async function writeIssue(client: Anthropic, opts: { newsletterName: string; dateLabel: string; topic: string; started: number }) {
+  const { newsletterName, dateLabel, topic, started } = opts
   const system = issueSystemPrompt(newsletterName)
 
   // First attempt: grounded in that morning's news via server-side web search.
@@ -38,7 +47,7 @@ async function writeIssue(client: Anthropic, opts: { newsletterName: string; dat
         user_location: { type: 'approximate', city: 'Toronto', country: 'CA', timezone: NEWSLETTER_TZ },
       }],
       messages: [{ role: 'user', content: issueUserPrompt({ dateLabel, topic, withSearch: true }) }],
-    }, { timeout: 45_000 })
+    }, { timeout: Math.min(SEARCH_MS, Math.max(5_000, remaining(started) - FALLBACK_MS - 5_000)), maxRetries: 0 })
 
     const text = extractText(res.content)
     const okStop = res.stop_reason === 'end_turn' || res.stop_reason === 'stop_sequence'
@@ -58,25 +67,17 @@ async function writeIssue(client: Anthropic, opts: { newsletterName: string; dat
     thinking: { type: 'adaptive' },
     output_config: { effort: 'low' },
     messages: [{ role: 'user', content: issueUserPrompt({ dateLabel, topic, withSearch: false }) }],
-  }, { timeout: 40_000 })
+  }, { timeout: Math.min(FALLBACK_MS, Math.max(5_000, remaining(started) - 5_000)), maxRetries: 0 })
   if (res.stop_reason === 'refusal') throw new Error('Model refused to write the issue')
   const text = extractText(res.content)
   if (text.length < 200) throw new Error(`Generated issue too short (${text.length} chars)`)
   return { text, searched: false, model: GENERATE_MODEL }
 }
 
-async function translate(client: Anthropic, subject: string, markdown: string) {
-  const res = await client.messages.create({
-    model: TRANSLATE_MODEL,
-    max_tokens: 3000,
-    messages: [{ role: 'user', content: translationPrompt(subject, markdown) }],
-  }, { timeout: 30_000 })
-  return parseIssue(extractText(res.content), subject)
-}
-
 export async function GET(req: Request) {
   if (!cronAuthorized(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+  const started = Date.now()
   const issueDate = getIssueDate()
   let s: Record<string, string> = {}
   try {
@@ -105,7 +106,7 @@ export async function GET(req: Request) {
 
     if (!en) {
       const topic = topicFor(issueDate)
-      const written = await writeIssue(client, { newsletterName, dateLabel, topic })
+      const written = await writeIssue(client, { newsletterName, dateLabel, topic, started })
       searched = written.searched
       en = parseIssue(written.text, `${newsletterName}, ${dateLabel}`)
       await db.insert(drafts).values({
@@ -113,15 +114,18 @@ export async function GET(req: Request) {
         language: 'en', issueDate,
       })
 
-      // Chinese edition, written ahead of time so the send step is fast.
-      try {
-        const zh = await translate(client, en.subject, en.bodyMarkdown)
-        await db.insert(drafts).values({
-          subject: zh.subject, previewText: zh.previewText, bodyMarkdown: zh.bodyMarkdown,
-          language: 'zh', issueDate,
-        })
-      } catch (err) {
-        console.error('[generate] zh translation failed (send will fall back to English):', errorMessage(err))
+      // Chinese edition, written now if there is time. Otherwise the send
+      // route translates on the fly for Chinese readers.
+      if (remaining(started) > TRANSLATE_MIN_MS + 5_000) {
+        try {
+          const zh = await translateIssue(client, en.subject, en.bodyMarkdown, Math.min(20_000, remaining(started) - 5_000))
+          await db.insert(drafts).values({
+            subject: zh.subject, previewText: zh.previewText, bodyMarkdown: zh.bodyMarkdown,
+            language: 'zh', issueDate,
+          })
+        } catch (err) {
+          console.error('[generate] zh translation deferred to send time:', errorMessage(err))
+        }
       }
     }
 
@@ -155,7 +159,7 @@ export async function GET(req: Request) {
     await logRun({
       job: 'generate', issueDate, status: 'ok',
       message: `Draft ready, preview sent to ${ownerEmail}`,
-      detail: { subject: en.subject, searched, model: GENERATE_MODEL },
+      detail: { subject: en.subject, searched, model: GENERATE_MODEL, elapsedMs: Date.now() - started },
     })
     return NextResponse.json({ ok: true, issueDate, subject: en.subject, searched, previewSentTo: ownerEmail })
   } catch (err) {

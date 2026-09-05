@@ -48,7 +48,7 @@ Vercel Hobby crons are UTC only and can fire anywhere inside the hour. If you wa
 
 1. Log in to the dashboard and open `/api/setup` once. It creates any missing tables, columns, and the unique index. Safe to repeat.
 2. Set your email and the from address on **Settings**.
-3. On **Schedule**, pick every day or weekdays and turn on automatic sending.
+3. On **Schedule**, pick every day, weekdays, or weekly, choose the weekly edition day, and turn on automatic sending. Daily readers get every issue; weekly readers get the one sent on the weekly edition day.
 4. Optional dry run from a terminal:
 
 ```bash

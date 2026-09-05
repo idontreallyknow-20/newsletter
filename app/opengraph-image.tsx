@@ -8,25 +8,16 @@ export const contentType = 'image/png'
 export default async function Image() {
   return new ImageResponse(
     (
-      <div style={{
-        background: 'linear-gradient(135deg, #0C0E14 0%, #141721 100%)', width: '100%', height: '100%',
-        display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '64px 80px', position: 'relative', color: '#E7E9E6',
-      }}>
-        <div style={{ position: 'absolute', top: -120, right: -80, width: 520, height: 520, borderRadius: 999, background: 'radial-gradient(circle, rgba(255,90,31,0.45) 0%, rgba(255,90,31,0) 70%)', display: 'flex' }} />
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 22, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
-          <span style={{ fontWeight: 800 }}>DAILY<span style={{ color: '#FF5A1F' }}>.</span>BRIEF</span>
-          <span style={{ color: '#9AA0AB', fontSize: 18 }}>dailybriefhq.com</span>
+      <div style={{ background: '#F4F2ED', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '56px 72px', color: '#121212', fontFamily: 'Georgia, serif' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', borderTop: '6px solid #121212', borderBottom: '2px solid #121212', padding: '18px 0 14px' }}>
+          <span style={{ fontSize: 120, fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1 }}>Daily<span style={{ color: '#B3261E' }}>.</span>Brief</span>
+          <span style={{ fontSize: 18, color: '#5F5E59', fontFamily: 'monospace', letterSpacing: '0.16em', textTransform: 'uppercase', marginTop: 12 }}>Richmond Hill, Ontario · Free · English and Chinese</span>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <div style={{ fontSize: 104, fontWeight: 800, lineHeight: 0.95, letterSpacing: '-0.04em', display: 'flex', flexDirection: 'column' }}>
-            <span>The economy and AI,</span>
-            <span>read <span style={{ color: '#FF5A1F' }}>before school.</span></span>
-          </div>
-          <div style={{ marginTop: 28, fontSize: 26, color: '#9AA0AB', display: 'flex' }}>
-            By Joseph. Grade 11, Richmond Hill. Free, in English and Chinese.
-          </div>
+        <div style={{ fontSize: 64, fontWeight: 700, lineHeight: 1.02, letterSpacing: '-0.03em', display: 'flex', maxWidth: 1000 }}>The economy and AI, explained before school.</div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 20, color: '#5F5E59' }}>
+          <span>By Joseph · Grade 11 · Three-time national team chess champion</span>
+          <span>dailybriefhq.com</span>
         </div>
-        <div style={{ height: 6, background: '#FF5A1F', width: 160, display: 'flex' }} />
       </div>
     ),
     { ...size }

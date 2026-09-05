@@ -5,12 +5,13 @@ import { NextResponse } from 'next/server'
 import { and, eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { subscribers, sentEmails, drafts } from '@/lib/schema'
-import { getIssueDate, evaluateSend } from '@/lib/schedule'
+import Anthropic from '@anthropic-ai/sdk'
+import { getIssueDate, evaluateSend, recipientFrequenciesFor } from '@/lib/schedule'
+import { translateIssue } from '@/lib/translate'
 import { buildEmailHtml, sendBatch } from '@/lib/email'
 import { signEmailToken } from '@/lib/token'
 import { markdownToHtml } from '@/lib/markdown'
 import { slugify } from '@/lib/slug'
-import { subscriberFrequenciesFor, scheduleToSendType } from '@/lib/preferences'
 import { cronAuthorized, loadSettings, senderFrom, logRun, notifyOwner, errorMessage } from '@/lib/cron'
 
 export async function GET(req: Request) {
@@ -59,14 +60,30 @@ export async function GET(req: Request) {
 
     try {
       const allActive = await db.select().from(subscribers).where(eq(subscribers.status, 'active'))
-      const sendType = scheduleToSendType(s.schedule_frequency || 'manual')
-      const wants = (sub: typeof allActive[number]) =>
-        sendType ? subscriberFrequenciesFor(sendType).includes(sub.frequency as 'weekly' | 'daily' | 'both') : true
+      const audiences = recipientFrequenciesFor(s, issueDate)
+      const wants = (sub: typeof allActive[number]) => audiences.includes((sub.frequency || 'weekly') as 'weekly' | 'daily' | 'both')
       const enTargets = allActive.filter(sub => (sub.language || 'en') === 'en' && wants(sub))
       const zhTargets = allActive.filter(sub => sub.language === 'zh' && wants(sub))
 
-      const zhSubject = zhDraft?.bodyMarkdown ? (zhDraft.subject || enSubject) : enSubject
-      const zhBodyHtml = zhDraft?.bodyMarkdown ? markdownToHtml(zhDraft.bodyMarkdown) : enBodyHtml
+      // Chinese edition: use the pre-written draft, translate now if the
+      // generate step ran out of time, and fall back to English as a last resort.
+      let zhSubject = enSubject
+      let zhBodyHtml = enBodyHtml
+      if (zhTargets.length > 0) {
+        if (zhDraft?.bodyMarkdown) {
+          zhSubject = zhDraft.subject || enSubject
+          zhBodyHtml = markdownToHtml(zhDraft.bodyMarkdown)
+        } else if (process.env.ANTHROPIC_API_KEY) {
+          try {
+            const zh = await translateIssue(new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }), enSubject, enDraft.bodyMarkdown!, 25_000)
+            zhSubject = zh.subject
+            zhBodyHtml = markdownToHtml(zh.bodyMarkdown)
+            await db.insert(drafts).values({ subject: zh.subject, previewText: zh.previewText, bodyMarkdown: zh.bodyMarkdown, language: 'zh', issueDate })
+          } catch (err) {
+            console.error('[send] zh translation failed, sending English to Chinese readers:', errorMessage(err))
+          }
+        }
+      }
 
       const buildRecipients = (subs: typeof allActive, bodyHtml: string) =>
         subs.map(sub => {
@@ -97,7 +114,7 @@ export async function GET(req: Request) {
       await db.update(sentEmails).set({ recipientCount: total, status, sentAt: new Date() }).where(eq(sentEmails.id, sentId))
       await logRun({
         job: 'send', issueDate, status: errorCount === 0 ? 'ok' : 'error',
-        message: `Sent "${enSubject}" to ${total} subscribers (${enTargets.length} en, ${zhTargets.length} zh)${errorCount ? `, ${errorCount} batch errors` : ''}`,
+        message: `Sent "${enSubject}" to ${total} subscribers (${enTargets.length} en, ${zhTargets.length} zh; ${audiences.join('/')} readers)${errorCount ? `, ${errorCount} batch errors` : ''}`,
         detail: errorCount ? allResults.filter(r => r.error).map(r => r.error) : undefined,
       })
       if (errorCount > 0) {
