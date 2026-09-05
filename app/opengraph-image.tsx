@@ -43,9 +43,9 @@ export default async function Image() {
             // eslint-disable-next-line @next/next/no-img-element
             ? <img src={photo} alt="" width={200} height={200} style={{ width: 200, height: 200, borderRadius: 999, objectFit: 'cover', border: '6px solid #121212', flexShrink: 0 }} />
             : <div style={{ width: 200, height: 200, borderRadius: 999, background: '#121212', color: '#F4F2ED', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 96, fontWeight: 900, flexShrink: 0 }}>J</div>}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-            <div style={{ fontSize: 60, fontWeight: 900, lineHeight: 1.02, letterSpacing: '-0.03em', display: 'flex', flexWrap: 'wrap' }}>The economy and AI, explained before school.</div>
-            <div style={{ fontSize: 24, color: '#5F5E59', fontFamily: 'Georgia, serif', fontStyle: 'italic', display: 'flex' }}>By Joseph, Grade 11, three-time national team chess champion. Free, in English and Chinese.</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 18, width: 800 }}>
+            <div style={{ fontSize: 56, fontWeight: 900, lineHeight: 1.02, letterSpacing: '-0.03em', display: 'block', width: 800 }}>The economy and AI, explained before school.</div>
+            <div style={{ fontSize: 23, color: '#5F5E59', fontFamily: 'Georgia, serif', fontStyle: 'italic', display: 'block', width: 800, lineHeight: 1.35 }}>By Joseph, Grade 11, three-time national team chess champion. Free, in English and Chinese.</div>
           </div>
         </div>
       </div>
