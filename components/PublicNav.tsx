@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import PublicSubscribeForm from '@/components/PublicSubscribeForm'
+import ThemeToggle from '@/components/ThemeToggle'
 
 const LINKS = [
   { href: '/#about', label: 'About' },
@@ -45,6 +46,7 @@ export default function PublicNav({ theme = 'dark' }: { theme?: 'dark' | 'light'
           </ul>
         </nav>
         <div className="mast-right">
+          <ThemeToggle />
           <button className="btn btn--red hide-sm" onClick={() => setShowModal(true)}>Subscribe</button>
           <button className="mast-toggle" onClick={() => setOpen(o => !o)} aria-expanded={open} aria-controls="drawer">{open ? 'Close' : 'Menu'}</button>
         </div>

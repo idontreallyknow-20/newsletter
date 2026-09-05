@@ -31,8 +31,12 @@ const PUBLIC_PREFIXES = [
   '/_next',
 ]
 
+// Files served from /public (images, fonts, text). Never gate these behind login.
+const STATIC_FILE = /\.(jpe?g|png|webp|gif|svg|ico|avif|mp3|mp4|pdf|txt|xml|json|woff2?)$/i
+
 function isPublicPath(pathname: string): boolean {
   if (PUBLIC_EXACT.includes(pathname)) return true
+  if (STATIC_FILE.test(pathname)) return true
   return PUBLIC_PREFIXES.some(p => pathname === p || pathname.startsWith(p + '/'))
 }
 

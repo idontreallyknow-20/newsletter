@@ -5,7 +5,7 @@ import FrontPage from '@/components/hero/FrontPage'
 import IssueTicker from '@/components/IssueTicker'
 import TodaysIssue from '@/components/TodaysIssue'
 import AboutCredentials from '@/components/AboutCredentials'
-import TopicDeck from '@/components/TopicDeck'
+import Beats from '@/components/Beats'
 import ArchiveGrid, { type ArchiveItem } from '@/components/ArchiveGrid'
 import PublicSubscribeForm from '@/components/PublicSubscribeForm'
 import SiteFooter from '@/components/SiteFooter'
@@ -73,12 +73,12 @@ export default async function HomePage() {
             <div className="sec-head">
               <div>
                 <p className="eyebrow">Topics</p>
-                <h2 className="t-display">Six lenses on the same moving world.</h2>
+                <h2 className="t-display">What I cover.</h2>
               </div>
-              <span className="copy" style={{ maxWidth: '32ch' }}>Pick a lens to filter the archive. Most issues sit under two.</span>
+              <span className="copy" style={{ maxWidth: '34ch' }}>The same handful of beats, followed closely enough to notice when something actually changes. Pick one to filter the archive.</span>
             </div>
           </Reveal>
-          <TopicDeck counts={counts} />
+          <Beats counts={counts} />
         </div>
       </section>
 
