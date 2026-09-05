@@ -32,16 +32,9 @@ Vercel Hobby crons are UTC only and can fire anywhere inside the hour. If you wa
 
 ## Writing the issue with a Claude Routine (no API key)
 
-A scheduled Claude Code Routine can write tomorrow's issue on a claude.ai subscription and queue it:
+A scheduled Claude Code Routine writes tomorrow's issue on a claude.ai subscription and commits it to `queue/YYYY-MM-DD.en.json` (and `.zh.json`) on `main`. The 5 AM cron fetches that file from GitHub, previews it to the owner, and the 7 AM cron sends it. See `queue/README.md` for the file shape.
 
-```
-POST https://dailybriefhq.com/api/drafts/queue
-Authorization: Bearer <CRON_SECRET>
-Content-Type: application/json
-{ "subject": "...", "bodyMarkdown": "...", "language": "en" }
-```
-
-The 5 AM cron then previews it to the owner and the 7 AM cron sends it. Queue a second body with `"language": "zh"` for the Chinese edition.
+There is also `POST /api/drafts/queue` (bearer `CRON_SECRET`, same JSON plus `"language"`) for any machine that can reach the site directly.
 
 ## Environment variables (Vercel, Production)
 
