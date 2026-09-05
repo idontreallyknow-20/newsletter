@@ -22,7 +22,7 @@ export default function FrontPage({ pages, issueCount, dateline, volume }: { pag
             <div className="front-kicker"><span className="t-mono">Economics and AI</span><span className="t-mono">Daily and weekly</span></div>
             <h1 className="t-display">The economy and AI, explained <em>before school.</em></h1>
             <p className="lede">
-              One topic a morning. What actually moved, why it matters to someone who is not a fund manager, and what to watch next. Five minutes, no jargon, one clear take. Sent about 7:00 AM Eastern in English or Chinese.
+              One topic a morning. What actually moved, why it matters to someone who is not a fund manager, and what to watch next. Sent about 7:00 AM Eastern in English or Chinese.
             </p>
             <PublicSubscribeForm id="sub-front" />
             <div className="byline">

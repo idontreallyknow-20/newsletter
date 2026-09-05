@@ -1,6 +1,6 @@
 import type { Figure as FigureSpec } from '@/lib/articles'
 
-const INK = '#121212', RED = '#B3261E', RULE = '#CFCBC2', MUTED = '#5F5E59'
+const INK = 'var(--ink)', RED = 'var(--red)', RULE = 'var(--rule)', MUTED = 'var(--muted)'
 
 function fmt(v: number, unit?: string) {
   const s = Math.abs(v) >= 1000 ? v.toLocaleString('en-CA') : Number.isInteger(v) ? String(v) : v.toFixed(1)

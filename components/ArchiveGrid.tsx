@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { TOPICS } from '@/components/TopicDeck'
+import { BEATS } from '@/components/Beats'
 import Figure from '@/components/Figure'
 import type { Figure as FigureSpec } from '@/lib/articles'
 import Reveal from '@/components/Reveal'
@@ -14,7 +14,7 @@ export default function ArchiveGrid({ items }: { items: ArchiveItem[] }) {
   const [topic, setTopic] = useState<string | null>(null)
   useEffect(() => { setTopic(params.get('topic')) }, [params])
 
-  const active = TOPICS.find(t => t.key === topic)
+  const active = BEATS.find(t => t.key === topic)
   const list = useMemo(() => active ? items.filter(a => active.tags.includes(a.tag)) : items, [items, active])
   const [feature, ...rest] = list
   const cards = rest.slice(0, 3)
@@ -25,7 +25,7 @@ export default function ArchiveGrid({ items }: { items: ArchiveItem[] }) {
       <div className="sec-head">
         <div>
           <p className="eyebrow">Issues</p>
-          <h2 className="t-display">{active ? active.title : 'Every issue so far.'}</h2>
+          <h2 className="t-display">{active ? active.name : 'Every issue so far.'}</h2>
         </div>
         {active
           ? <a href="/#issues" className="sec-link" onClick={() => setTopic(null)}>Show all {items.length}</a>
