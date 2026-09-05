@@ -18,7 +18,7 @@ Everything is keyed by the **issue date**, the calendar day in `America/Toronto`
 
 | UTC | Toronto (summer / winter) | Route | What happens |
 |---|---|---|---|
-| 09:00 | 5:00 / 4:00 AM | `/api/cron/generate` | Writes today's issue (Claude Opus 5 with web search, no-search fallback that forbids invented citations), writes the Chinese edition, emails a **preview to you** with a one-tap *Skip today's send* link. |
+| 09:00 | 5:00 / 4:00 AM | `/api/cron/generate` | With `ANTHROPIC_API_KEY` set: writes today's issue (Claude Opus 5 with web search, no-search fallback that forbids invented citations) and the Chinese edition. Without it: takes the newest draft saved in Compose. Either way it emails a **preview to you** with a one-tap *Skip today's send* link. |
 | 11:00 | 7:00 / 6:00 AM | `/api/cron/send` | Sends to subscribers, unless autosend is off, today is skipped, no preview was delivered, or it already went out. |
 
 Safety rails:
@@ -38,7 +38,7 @@ Vercel Hobby crons are UTC only and can fire anywhere inside the hour. If you wa
 | `RESEND_API_KEY` | Resend API key |
 | `FROM_EMAIL` | Sender address on a domain verified in Resend (the Settings page value overrides this) |
 | `OWNER_EMAIL` | Where previews, test sends, and failure alerts go (Settings page overrides) |
-| `ANTHROPIC_API_KEY` | Morning draft generation and translation |
+| `ANTHROPIC_API_KEY` | Optional. Morning draft generation and translation. Needs pay-as-you-go API credit, a claude.ai subscription does not cover it. Without the key, you write the issue in Compose the evening before. |
 | `CRON_SECRET` | Bearer token the cron routes require |
 | `EMAIL_TOKEN_SECRET` | Signs unsubscribe, preferences, and skip links |
 | `DASHBOARD_PASSWORD` | Admin login |
