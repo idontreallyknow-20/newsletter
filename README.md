@@ -30,6 +30,19 @@ Safety rails:
 
 Vercel Hobby crons are UTC only and can fire anywhere inside the hour. If you want the send at exactly 7:00 AM Toronto year-round, add a free [cron-job.org](https://cron-job.org) job for `GET https://dailybriefhq.com/api/cron/send` at 07:00 `America/Toronto` with the header `Authorization: Bearer <CRON_SECRET>`. The idempotency above makes the extra trigger harmless.
 
+## Writing the issue with a Claude Routine (no API key)
+
+A scheduled Claude Code Routine can write tomorrow's issue on a claude.ai subscription and queue it:
+
+```
+POST https://dailybriefhq.com/api/drafts/queue
+Authorization: Bearer <CRON_SECRET>
+Content-Type: application/json
+{ "subject": "...", "bodyMarkdown": "...", "language": "en" }
+```
+
+The 5 AM cron then previews it to the owner and the 7 AM cron sends it. Queue a second body with `"language": "zh"` for the Chinese edition.
+
 ## Environment variables (Vercel, Production)
 
 | Name | Purpose |
