@@ -78,8 +78,8 @@ export default async function PreferencesPage({ searchParams }: { searchParams: 
 
   return (
     <>
-      <PublicNav />
-      <div style={{ minHeight: '70vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '100px 24px 80px' }}>
+      <PublicNav theme="light" />
+      <div className="page-fog" style={{ minHeight: '70vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '100px 24px 80px' }}>
         <div className="fade-up" style={{ maxWidth: '460px', width: '100%', textAlign: 'center' }}>
           {updated && subscriber ? (
             <>
@@ -90,7 +90,7 @@ export default async function PreferencesPage({ searchParams }: { searchParams: 
                 Your current settings:
               </p>
               <div style={{ display: 'grid', gap: '8px', marginBottom: '28px' }}>
-                <OptionLink href={`${apiBase}&freq=daily`} label="Daily digest" sub="Every morning — a five-minute read" active={subscriber.frequency === 'daily'} />
+                <OptionLink href={`${apiBase}&freq=daily`} label="Daily digest" sub="Every morning, a five-minute read" active={subscriber.frequency === 'daily'} />
                 <OptionLink href={`${apiBase}&freq=weekly`} label="Weekly digest" sub="One deeper issue, once a week" active={subscriber.frequency === 'weekly'} />
                 <OptionLink href={`${apiBase}&freq=both`} label="Daily + Weekly" sub="Everything, as it publishes" active={subscriber.frequency === 'both'} />
               </div>
@@ -125,10 +125,10 @@ export default async function PreferencesPage({ searchParams }: { searchParams: 
               <p className="pub-label" style={{ textAlign: 'center' }}>Preferences</p>
               <h1 style={headingStyle}>How should we deliver?</h1>
               <p style={{ ...bodyStyle, marginBottom: '32px' }}>
-                Settings for <strong style={{ color: 'var(--ink)', fontWeight: 500 }}>{email}</strong>. One click to change — it applies immediately.
+                Settings for <strong style={{ color: 'var(--ink)', fontWeight: 500 }}>{email}</strong>. One click to change. It applies immediately.
               </p>
               <div style={{ display: 'grid', gap: '8px', marginBottom: '28px' }}>
-                <OptionLink href={`${apiBase}&freq=daily`} label="Daily digest" sub="Every morning — a five-minute read" active={subscriber.frequency === 'daily'} />
+                <OptionLink href={`${apiBase}&freq=daily`} label="Daily digest" sub="Every morning, a five-minute read" active={subscriber.frequency === 'daily'} />
                 <OptionLink href={`${apiBase}&freq=weekly`} label="Weekly digest" sub="One deeper issue, once a week" active={subscriber.frequency === 'weekly'} />
                 <OptionLink href={`${apiBase}&freq=both`} label="Daily + Weekly" sub="Everything, as it publishes" active={subscriber.frequency === 'both'} />
               </div>

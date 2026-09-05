@@ -2,12 +2,13 @@ export const dynamic = 'force-dynamic'
 
 import Link from 'next/link'
 import { db } from '@/lib/db'
-import { subscribers, sentEmails, drafts } from '@/lib/schema'
+import { subscribers, sentEmails, drafts, sendLog, settings } from '@/lib/schema'
 import { eq, count, desc } from 'drizzle-orm'
+import { nextSendLabel, SEND_REASON_TEXT, type SendBlockReason } from '@/lib/schedule'
 
 async function getStats() {
   try {
-    const [[activeRow], [totalSubRow], [sentRow], recentEmails, [latestDraft]] = await Promise.all([
+    const [[activeRow], [totalSubRow], [sentRow], recentEmails, [latestDraft], runs, settingRows] = await Promise.all([
       db.select({ count: count() }).from(subscribers).where(eq(subscribers.status, 'active')),
       db.select({ count: count() }).from(subscribers),
       db.select({ count: count() }).from(sentEmails),
@@ -19,16 +20,23 @@ async function getStats() {
         .from(drafts)
         .orderBy(desc(drafts.updatedAt))
         .limit(1),
+      db.select().from(sendLog).orderBy(desc(sendLog.createdAt)).limit(4).catch(() => []),
+      db.select().from(settings),
     ])
+    const s: Record<string, string> = {}
+    for (const row of settingRows) if (row.value) s[row.key] = row.value
     return {
       activeSubscribers: activeRow.count,
       totalSubscribers: totalSubRow.count,
       issuesSent: sentRow.count,
       recentEmails,
       latestDraft: latestDraft ?? null,
+      runs,
+      nextSend: nextSendLabel(s),
+      autosend: s.autosend_enabled === 'true',
     }
   } catch {
-    return { activeSubscribers: 0, totalSubscribers: 0, issuesSent: 0, recentEmails: [], latestDraft: null }
+    return { activeSubscribers: 0, totalSubscribers: 0, issuesSent: 0, recentEmails: [], latestDraft: null, runs: [], nextSend: 'Unknown', autosend: false }
   }
 }
 
@@ -66,8 +74,24 @@ export default async function DashboardPage() {
         ))}
       </div>
 
+      {/* Automation status */}
+      <div className="mt-8 px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-3 animate-fade-up delay-1" style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}>
+        <div className="flex-1">
+          <p className="font-mono text-[9px] tracking-[0.2em] uppercase mb-1" style={{ color: 'var(--muted)' }}>Next automatic send</p>
+          <p className="font-sans text-sm" style={{ color: 'var(--cream)' }}>{stats.nextSend}</p>
+          {stats.runs[0] && (
+            <p className="font-sans text-xs mt-1" style={{ color: stats.runs[0].status === 'error' ? '#f87171' : 'var(--muted)' }}>
+              Last run: {stats.runs[0].job} {stats.runs[0].status}. {stats.runs[0].status === 'skipped' && stats.runs[0].message && stats.runs[0].message in SEND_REASON_TEXT ? SEND_REASON_TEXT[stats.runs[0].message as SendBlockReason] : stats.runs[0].message}
+            </p>
+          )}
+        </div>
+        <Link href="/schedule" className="font-mono text-[10px] tracking-widest uppercase px-3 py-2 flex-shrink-0" style={{ color: stats.autosend ? '#6ee7b7' : 'var(--accent)', border: '1px solid var(--border)' }}>
+          {stats.autosend ? 'Autosend on' : 'Autosend off'} →
+        </Link>
+      </div>
+
       {/* Quick actions */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-8 mb-10 animate-fade-up delay-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 mb-10 animate-fade-up delay-2">
         <Link href="/compose" className="dash-action flex items-center gap-4 px-5 py-4">
           <div className="w-px h-6 flex-shrink-0" style={{ background: 'var(--accent)' }} />
           <div>

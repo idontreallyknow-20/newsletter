@@ -8,7 +8,7 @@ const FIELDS = [
   { key: 'newsletter_description', label: 'Description', placeholder: 'Daily AI & economy updates' },
   { key: 'from_name', label: 'From Name', placeholder: 'Joseph' },
   { key: 'from_email', label: 'From Email', placeholder: 'newsletter@yourdomain.com', type: 'email' },
-  { key: 'owner_email', label: 'Your Email (for test sends)', placeholder: 'you@gmail.com', type: 'email' },
+  { key: 'owner_email', label: 'Your email (previews, test sends, failure alerts)', placeholder: 'you@gmail.com', type: 'email' },
 ]
 
 export default function SettingsPage() {
@@ -73,6 +73,19 @@ export default function SettingsPage() {
           ))}
 
           <div className="pt-2 space-y-4">
+            <label className="flex items-center justify-between gap-4 px-4 py-3" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
+              <span>
+                <span className="block font-sans text-sm font-medium" style={{ color: 'var(--cream)' }}>Automatic morning send</span>
+                <span className="block font-sans text-xs mt-0.5" style={{ color: 'var(--muted)' }}>Kill switch. Off means nothing goes out on its own. Timing lives on the Schedule page.</span>
+              </span>
+              <input
+                type="checkbox"
+                className="w-5 h-5 flex-shrink-0"
+                style={{ accentColor: 'var(--accent)' }}
+                checked={values.autosend_enabled === 'true'}
+                onChange={e => setValues(v => ({ ...v, autosend_enabled: e.target.checked ? 'true' : 'false' }))}
+              />
+            </label>
             <div className="px-4 py-3 text-xs font-sans leading-relaxed" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
               <span style={{ color: 'var(--cream)', fontWeight: 500 }}>Resend API Key</span>
               <span style={{ color: 'var(--muted)' }}>, set as </span>

@@ -1,95 +1,169 @@
+export const dynamic = 'force-dynamic'
+export const maxDuration = 60
+
 import { NextResponse } from 'next/server'
-import { db } from '@/lib/db'
-import { settings, drafts } from '@/lib/schema'
-import { desc } from 'drizzle-orm'
 import Anthropic from '@anthropic-ai/sdk'
+import { and, eq } from 'drizzle-orm'
+import { db } from '@/lib/db'
+import { drafts } from '@/lib/schema'
+import { getIssueDate, NEWSLETTER_TZ } from '@/lib/schedule'
+import { buildEmailHtml, sendToRecipients } from '@/lib/email'
+import { markdownToHtml } from '@/lib/markdown'
+import { signActionToken } from '@/lib/token'
+import {
+  extractText, parseIssue, usedWebSearch, topicFor,
+  issueSystemPrompt, issueUserPrompt, translationPrompt,
+} from '@/lib/generation'
+import { cronAuthorized, loadSettings, senderFrom, logRun, notifyOwner, errorMessage } from '@/lib/cron'
 
-// Rotates through topics by day of year so each issue covers different ground
-const TOPICS = [
-  'how AI is reshaping labor markets and what it means for wages',
-  'central bank policy in an era of AI-driven productivity gains',
-  'the geopolitics of AI chips and semiconductor supply chains',
-  'AI in finance: what algorithmic trading and robo-advisors actually do',
-  'the real economics of the clean energy transition',
-  'how AI is changing healthcare costs and who benefits',
-  'inflation, interest rates, and what the data actually shows right now',
-  'the economics of attention: why big tech keeps getting bigger',
-  'trade policy and tariffs: what the numbers say vs. what politicians claim',
-  'AI and intellectual property: who owns the output of a machine',
-  'the global housing crisis and what economics says about fixing it',
-  'deglobalisation: is the world actually fracturing into blocs',
-  'venture capital, startup funding cycles, and what they signal',
-  'the economics of open-source AI vs. closed models',
-]
+const GENERATE_MODEL = 'claude-opus-5'
+const TRANSLATE_MODEL = 'claude-haiku-4-5'
 
-function getTopic(): string {
-  const dayOfYear = Math.floor(
-    (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86_400_000
-  )
-  return TOPICS[dayOfYear % TOPICS.length]
+async function writeIssue(client: Anthropic, opts: { newsletterName: string; dateLabel: string; topic: string }) {
+  const { newsletterName, dateLabel, topic } = opts
+  const system = issueSystemPrompt(newsletterName)
+
+  // First attempt: grounded in that morning's news via server-side web search.
+  try {
+    const res = await client.messages.create({
+      model: GENERATE_MODEL,
+      max_tokens: 4000,
+      system,
+      thinking: { type: 'adaptive' },
+      output_config: { effort: 'low' },
+      tools: [{
+        type: 'web_search_20260209',
+        name: 'web_search',
+        max_uses: 3,
+        user_location: { type: 'approximate', city: 'Toronto', country: 'CA', timezone: NEWSLETTER_TZ },
+      }],
+      messages: [{ role: 'user', content: issueUserPrompt({ dateLabel, topic, withSearch: true }) }],
+    }, { timeout: 45_000 })
+
+    const text = extractText(res.content)
+    const okStop = res.stop_reason === 'end_turn' || res.stop_reason === 'stop_sequence'
+    if (okStop && text.length > 400) {
+      return { text, searched: usedWebSearch(res.content), model: GENERATE_MODEL }
+    }
+    console.warn('[generate] search attempt unusable, stop_reason=', res.stop_reason, 'len=', text.length)
+  } catch (err) {
+    console.warn('[generate] search attempt failed:', errorMessage(err))
+  }
+
+  // Fallback: no tools, and the prompt forbids invented citations.
+  const res = await client.messages.create({
+    model: GENERATE_MODEL,
+    max_tokens: 3000,
+    system,
+    thinking: { type: 'adaptive' },
+    output_config: { effort: 'low' },
+    messages: [{ role: 'user', content: issueUserPrompt({ dateLabel, topic, withSearch: false }) }],
+  }, { timeout: 40_000 })
+  if (res.stop_reason === 'refusal') throw new Error('Model refused to write the issue')
+  const text = extractText(res.content)
+  if (text.length < 200) throw new Error(`Generated issue too short (${text.length} chars)`)
+  return { text, searched: false, model: GENERATE_MODEL }
+}
+
+async function translate(client: Anthropic, subject: string, markdown: string) {
+  const res = await client.messages.create({
+    model: TRANSLATE_MODEL,
+    max_tokens: 3000,
+    messages: [{ role: 'user', content: translationPrompt(subject, markdown) }],
+  }, { timeout: 30_000 })
+  return parseIssue(extractText(res.content), subject)
 }
 
 export async function GET(req: Request) {
-  const authHeader = req.headers.get('authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  if (!cronAuthorized(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  // Skip if a draft was already generated in the last 20 hours
-  const [latest] = await db.select().from(drafts).orderBy(desc(drafts.updatedAt)).limit(1)
-  if (latest) {
-    const age = Date.now() - new Date(latest.updatedAt).getTime()
-    if (age < 20 * 60 * 60 * 1000) {
-      return NextResponse.json({ skipped: true, reason: 'Recent draft already exists' })
+  const issueDate = getIssueDate()
+  let s: Record<string, string> = {}
+  try {
+    s = await loadSettings()
+    const { newsletterName, fromName, fromEmail, ownerEmail, baseUrl, emailSecret } = senderFrom(s)
+
+    const [existing] = await db.select().from(drafts)
+      .where(and(eq(drafts.issueDate, issueDate), eq(drafts.language, 'en'))).limit(1)
+
+    if (existing?.bodyMarkdown && existing.previewSentAt) {
+      await logRun({ job: 'generate', issueDate, status: 'skipped', message: 'Draft and preview already exist for today' })
+      return NextResponse.json({ skipped: true, reason: 'already_generated', issueDate })
     }
+
+    if (!process.env.ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY is not set')
+    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+
+    const dateLabel = new Date().toLocaleDateString('en-CA', {
+      weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: NEWSLETTER_TZ,
+    })
+
+    let en = existing?.bodyMarkdown
+      ? { subject: existing.subject || newsletterName, bodyMarkdown: existing.bodyMarkdown, previewText: existing.previewText || '' }
+      : null
+    let searched = false
+
+    if (!en) {
+      const topic = topicFor(issueDate)
+      const written = await writeIssue(client, { newsletterName, dateLabel, topic })
+      searched = written.searched
+      en = parseIssue(written.text, `${newsletterName}, ${dateLabel}`)
+      await db.insert(drafts).values({
+        subject: en.subject, previewText: en.previewText, bodyMarkdown: en.bodyMarkdown,
+        language: 'en', issueDate,
+      })
+
+      // Chinese edition, written ahead of time so the send step is fast.
+      try {
+        const zh = await translate(client, en.subject, en.bodyMarkdown)
+        await db.insert(drafts).values({
+          subject: zh.subject, previewText: zh.previewText, bodyMarkdown: zh.bodyMarkdown,
+          language: 'zh', issueDate,
+        })
+      } catch (err) {
+        console.error('[generate] zh translation failed (send will fall back to English):', errorMessage(err))
+      }
+    }
+
+    // Preview to the owner. Sending is refused until this succeeds.
+    if (!ownerEmail) throw new Error('No owner email configured (Settings or OWNER_EMAIL)')
+    if (!fromEmail) throw new Error('No from email configured (Settings or FROM_EMAIL)')
+
+    const skipToken = signActionToken(`skip:${issueDate}`, emailSecret)
+    const skipUrl = `${baseUrl}/api/skip?date=${issueDate}&token=${skipToken}`
+    const composeUrl = `${baseUrl}/compose/en`
+    const banner = `
+      <div style="margin:0 0 24px;padding:16px 18px;background:#0C0E14;color:#E7E9E6;font:14px/1.5 -apple-system,Segoe UI,sans-serif">
+        <p style="margin:0 0 10px"><strong>Preview for ${issueDate}.</strong> This goes to subscribers at about 7:00 AM Toronto unless you stop it.</p>
+        <p style="margin:0">
+          <a href="${skipUrl}" style="display:inline-block;padding:10px 14px;background:#FF5A1F;color:#0C0E14;text-decoration:none;font-weight:600">Skip today's send</a>
+          &nbsp;&nbsp;<a href="${composeUrl}" style="color:#E7E9E6">Edit in compose</a>
+        </p>
+      </div>`
+    const html = buildEmailHtml({
+      newsletterName,
+      bodyHtml: banner + markdownToHtml(en.bodyMarkdown),
+      unsubscribeUrl: `${baseUrl}/preferences`,
+      previewText: en.previewText || undefined,
+    })
+    await sendToRecipients({
+      to: [ownerEmail], subject: `[Preview ${issueDate}] ${en.subject}`, html, fromName, fromEmail,
+    })
+    await db.update(drafts).set({ previewSentAt: new Date() })
+      .where(and(eq(drafts.issueDate, issueDate), eq(drafts.language, 'en')))
+
+    await logRun({
+      job: 'generate', issueDate, status: 'ok',
+      message: `Draft ready, preview sent to ${ownerEmail}`,
+      detail: { subject: en.subject, searched, model: GENERATE_MODEL },
+    })
+    return NextResponse.json({ ok: true, issueDate, subject: en.subject, searched, previewSentTo: ownerEmail })
+  } catch (err) {
+    const message = errorMessage(err)
+    console.error('[generate] failed:', message)
+    await logRun({ job: 'generate', issueDate, status: 'error', message })
+    await notifyOwner(s, `[Daily Brief] Generation failed for ${issueDate}`,
+      `This morning's issue was not generated.\n\nError: ${message}\n\nNothing will be sent today unless you write and send an issue from the dashboard.`)
+    return NextResponse.json({ error: 'Generation failed', message, issueDate }, { status: 500 })
   }
-
-  const settingRows = await db.select().from(settings)
-  const s: Record<string, string> = {}
-  for (const row of settingRows) { if (row.value) s[row.key] = row.value }
-  const newsletterName = s.newsletter_name || 'Daily Brief HQ'
-
-  const today = new Date().toLocaleDateString('en-US', {
-    weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
-    timeZone: 'America/New_York',
-  })
-  const topic = getTopic()
-
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
-
-  const message = await client.messages.create({
-    model: 'claude-sonnet-4-5',
-    max_tokens: 1800,
-    system: `You are Joseph, the author of ${newsletterName}, a newsletter that breaks down economics and AI for curious non-experts. You write in first person with a clear, analytical, slightly wry voice. You explain complex things simply and always tell readers why something matters to their real lives. You never use buzzwords, jargon, or make breathless predictions. You never use em dashes.`,
-    messages: [{
-      role: 'user',
-      content: `Write today's newsletter issue for ${today}. The topic is: ${topic}.
-
-Structure:
-1. First line: SUBJECT: [a short, specific, non-clickbait subject line]
-2. Blank line
-3. A one-sentence hook (no heading) that immediately tells the reader why this topic matters today
-4. Two or three ## sections that build the analysis, each 100-150 words
-5. A final ## The Takeaway section (3-4 sentences summarising what to do with this information)
-
-Style rules:
-- First person throughout ("I've been watching...", "What strikes me is...", "Here's my read on this...")
-- Cite at least 2 real publications by name inline: "The FT reported...", "According to a recent IMF working paper...", "Bloomberg noted last week..."
-- Use **bold** for the first use of any technical term, then explain it in plain English immediately after
-- No em dashes. Use commas or restructure the sentence.
-- Aim for 500-650 words in the body
-
-Write only the SUBJECT line and the body. Nothing else.`,
-    }],
-  })
-
-  const raw = (message.content[0] as { type: 'text'; text: string }).text.trim()
-  const subjectMatch = raw.match(/^SUBJECT:\s*(.+)/m)
-  const subject = subjectMatch ? subjectMatch[1].trim() : `${newsletterName} — ${today}`
-  const bodyMarkdown = raw.replace(/^SUBJECT:[^\n]+\n+/, '').trim()
-  const previewText = bodyMarkdown.split('\n').find(l => l.trim() && !l.startsWith('#'))?.slice(0, 140) ?? ''
-
-  await db.insert(drafts).values({ subject, previewText, bodyMarkdown })
-
-  return NextResponse.json({ success: true, subject })
 }

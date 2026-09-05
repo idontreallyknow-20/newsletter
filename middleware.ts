@@ -25,6 +25,7 @@ const PUBLIC_PREFIXES = [
   '/api/logout',
   '/api/setup', // performs its own session check
   '/api/preferences',
+  '/api/skip', // signed, date-scoped token
   '/_next',
 ]
 

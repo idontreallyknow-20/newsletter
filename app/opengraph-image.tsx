@@ -1,68 +1,32 @@
 import { ImageResponse } from 'next/og'
 
 export const runtime = 'edge'
-export const alt = 'Joseph: Economics & AI Newsletter'
+export const alt = 'Daily Brief by Joseph'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
 export default async function Image() {
   return new ImageResponse(
     (
-      <div
-        style={{
-          background: '#f5f0e8',
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          padding: '80px 96px',
-          position: 'relative',
-        }}
-      >
-        {/* Red accent bar */}
-        <div style={{ width: 40, height: 4, background: '#c8402a', marginBottom: 28, display: 'flex' }} />
-
-        {/* Eyebrow */}
-        <div style={{
-          color: '#c8402a', fontSize: 14, fontWeight: 500,
-          letterSpacing: '0.2em', textTransform: 'uppercase',
-          marginBottom: 20, display: 'flex',
-        }}>
-          Economics · AI · Weekly
+      <div style={{
+        background: 'linear-gradient(135deg, #0C0E14 0%, #141721 100%)', width: '100%', height: '100%',
+        display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '64px 80px', position: 'relative', color: '#E7E9E6',
+      }}>
+        <div style={{ position: 'absolute', top: -120, right: -80, width: 520, height: 520, borderRadius: 999, background: 'radial-gradient(circle, rgba(255,90,31,0.45) 0%, rgba(255,90,31,0) 70%)', display: 'flex' }} />
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 22, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+          <span style={{ fontWeight: 800 }}>DAILY<span style={{ color: '#FF5A1F' }}>.</span>BRIEF</span>
+          <span style={{ color: '#9AA0AB', fontSize: 18 }}>dailybriefhq.com</span>
         </div>
-
-        {/* Headline */}
-        <div style={{
-          color: '#1a1a1a', fontSize: 80, fontWeight: 900,
-          lineHeight: 1.0, letterSpacing: '-0.02em',
-          marginBottom: 28, display: 'flex', flexDirection: 'column',
-        }}>
-          Joseph
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div style={{ fontSize: 104, fontWeight: 800, lineHeight: 0.95, letterSpacing: '-0.04em', display: 'flex', flexDirection: 'column' }}>
+            <span>The economy and AI,</span>
+            <span>read <span style={{ color: '#FF5A1F' }}>before school.</span></span>
+          </div>
+          <div style={{ marginTop: 28, fontSize: 26, color: '#9AA0AB', display: 'flex' }}>
+            By Joseph. Grade 11, Richmond Hill. Free, in English and Chinese.
+          </div>
         </div>
-
-        {/* Subtitle */}
-        <div style={{
-          color: '#6b6459', fontSize: 26, fontWeight: 300,
-          lineHeight: 1.5, maxWidth: 640, display: 'flex',
-        }}>
-          A weekly newsletter breaking down economic forces and AI breakthroughs shaping our world.
-        </div>
-
-        {/* URL stamp */}
-        <div style={{
-          position: 'absolute', bottom: 72, right: 96,
-          color: '#c8402a', fontSize: 14, letterSpacing: '0.08em',
-          display: 'flex',
-        }}>
-          dailybriefhq.com
-        </div>
-
-        {/* Border accent */}
-        <div style={{
-          position: 'absolute', top: 0, right: 0, bottom: 0,
-          width: 8, background: '#c8402a', display: 'flex',
-        }} />
+        <div style={{ height: 6, background: '#FF5A1F', width: 160, display: 'flex' }} />
       </div>
     ),
     { ...size }
