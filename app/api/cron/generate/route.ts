@@ -18,6 +18,20 @@ import { translateIssue } from '@/lib/translate'
 import { cronAuthorized, loadSettings, senderFrom, logRun, notifyOwner, errorMessage } from '@/lib/cron'
 
 const GENERATE_MODEL = 'claude-opus-5'
+const QUEUE_RAW = 'https://raw.githubusercontent.com/idontreallyknow-20/newsletter/main/queue'
+
+/** A draft committed to the repo's queue folder for this date, if any. */
+async function queuedFromGitHub(issueDate: string, lang: 'en' | 'zh'): Promise<{ subject: string; bodyMarkdown: string; previewText: string } | null> {
+  try {
+    const res = await fetch(`${QUEUE_RAW}/${issueDate}.${lang}.json?t=${Date.now()}`, { cache: 'no-store', signal: AbortSignal.timeout(8_000) })
+    if (!res.ok) return null
+    const j = await res.json() as { subject?: string; bodyMarkdown?: string; previewText?: string }
+    if (!j.subject || !j.bodyMarkdown || j.bodyMarkdown.length < 200) return null
+    const bodyMarkdown = j.bodyMarkdown.replace(/—|–/g, ', ').trim()
+    const previewText = (j.previewText || bodyMarkdown.split('\n').map(l => l.trim()).find(l => l && !l.startsWith('#')) || '').replace(/[*_`]/g, '').slice(0, 140)
+    return { subject: j.subject.trim().slice(0, 200), bodyMarkdown, previewText }
+  } catch { return null }
+}
 
 // Vercel caps this route at maxDuration. Every network call below takes its
 // timeout from the time left, so a slow search can never starve the preview.
@@ -92,16 +106,30 @@ export async function GET(req: Request) {
       return NextResponse.json({ skipped: true, reason: 'already_generated', issueDate })
     }
 
-    // No API key: hand-written mode. Take the newest draft written in Compose that
-    // has not been assigned to a day yet, stamp it with today's date, and preview it.
-    if (!existing?.bodyMarkdown && !process.env.ANTHROPIC_API_KEY) {
+    // A file committed to the repo's queue folder for today wins over everything.
+    if (!existing?.bodyMarkdown) {
+      const gh = await queuedFromGitHub(issueDate, 'en')
+      if (gh) {
+        await db.insert(drafts).values({ ...gh, language: 'en', issueDate })
+        const ghZh = await queuedFromGitHub(issueDate, 'zh')
+        if (ghZh) await db.insert(drafts).values({ ...ghZh, language: 'zh', issueDate })
+        await logRun({ job: 'generate', issueDate, status: 'ok', message: `Picked up queue/${issueDate}.en.json from GitHub${ghZh ? ' plus the Chinese edition' : ''}` })
+      }
+    }
+
+    const [fromGitHub] = existing?.bodyMarkdown ? [existing] : await db.select().from(drafts)
+      .where(and(eq(drafts.issueDate, issueDate), eq(drafts.language, 'en'))).limit(1)
+
+    // No API key and nothing queued on GitHub: take the newest draft written in
+    // Compose that has not been assigned to a day yet, stamp it, and preview it.
+    if (!fromGitHub?.bodyMarkdown && !process.env.ANTHROPIC_API_KEY) {
       const [queued] = await db.select().from(drafts)
         .where(and(eq(drafts.language, 'en'), isNull(drafts.issueDate)))
         .orderBy(desc(drafts.updatedAt)).limit(1)
       if (!queued?.bodyMarkdown) {
         await logRun({ job: 'generate', issueDate, status: 'skipped', message: 'No draft queued and no API key to write one' })
         await notifyOwner(s, `[Daily Brief] Nothing queued for ${issueDate}`,
-          `No issue is queued for today, so nothing will be sent.\n\nWrite tomorrow's issue in Compose (dailybriefhq.com/compose/en) any time before 5:00 AM and it will be previewed to you and sent automatically.`)
+          `No issue is queued for today, so nothing will be sent.\n\nEither the nightly Routine did not commit queue/${issueDate}.en.json to GitHub, or nothing was written in Compose (dailybriefhq.com/compose/en). Fix one of those before 5:00 AM tomorrow.`)
         return NextResponse.json({ skipped: true, reason: 'no_draft', issueDate })
       }
       await db.update(drafts).set({ issueDate }).where(eq(drafts.id, queued.id))
@@ -111,7 +139,7 @@ export async function GET(req: Request) {
       if (queuedZh?.bodyMarkdown) await db.update(drafts).set({ issueDate }).where(eq(drafts.id, queuedZh.id))
     }
 
-    const [today] = existing?.bodyMarkdown ? [existing] : await db.select().from(drafts)
+    const [today] = fromGitHub?.bodyMarkdown ? [fromGitHub] : await db.select().from(drafts)
       .where(and(eq(drafts.issueDate, issueDate), eq(drafts.language, 'en'))).limit(1)
 
     const client = process.env.ANTHROPIC_API_KEY ? new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }) : null
