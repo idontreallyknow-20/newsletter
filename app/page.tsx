@@ -11,33 +11,14 @@ import PublicSubscribeForm from '@/components/PublicSubscribeForm'
 import SiteFooter from '@/components/SiteFooter'
 import Reveal from '@/components/Reveal'
 import { ARTICLES } from '@/lib/articles'
-import { db } from '@/lib/db'
-import { sentEmails } from '@/lib/schema'
-import { desc, isNotNull, and, eq } from 'drizzle-orm'
 
 export const dynamic = 'force-dynamic'
 
-async function latestSent() {
-  try {
-    return await db.select({
-      subject: sentEmails.subject, previewText: sentEmails.previewText, slug: sentEmails.slug, sentAt: sentEmails.sentAt, bodyMarkdown: sentEmails.bodyMarkdown,
-    }).from(sentEmails).where(and(isNotNull(sentEmails.slug), eq(sentEmails.status, 'sent'))).orderBy(desc(sentEmails.sentAt)).limit(12)
-  } catch { return [] }
-}
-
+// The public archive is the fixed set of weekly issues in lib/articles.ts.
+// Daily emails sent from the dashboard stay readable at their /issues/<slug>
+// links but do not appear here, so test sends can never change the front page.
 export default async function HomePage() {
-  const sent = await latestSent()
-  const sentItems: ArchiveItem[] = sent.filter(r => r.slug).map((r, i) => ({
-    slug: r.slug!,
-    num: `#${String(ARTICLES.length + sent.length - i).padStart(3, '0')}`,
-    title: r.subject,
-    tag: 'Daily',
-    date: new Date(r.sentAt).toLocaleDateString('en-CA', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/Toronto' }),
-    readTime: `${Math.max(2, Math.round((r.bodyMarkdown || '').split(/\s+/).length / 220))} min read`,
-    intro: r.previewText || '',
-  }))
-  const weekly: ArchiveItem[] = ARTICLES.map(a => ({ slug: a.slug, num: a.num, title: a.title, tag: a.tag, date: a.date, readTime: a.readTime, intro: a.intro, figure: a.figure }))
-  const items: ArchiveItem[] = [...sentItems, ...weekly]
+  const items: ArchiveItem[] = ARTICLES.map(a => ({ slug: a.slug, num: a.num, title: a.title, tag: a.tag, date: a.date, readTime: a.readTime, intro: a.intro, figure: a.figure }))
   const issueCount = items.length
   const today = items[0]
   const counts: Record<string, number> = {}
@@ -66,9 +47,9 @@ export default async function HomePage() {
       <section className="band band--paper-2" id="today">
         <div className="wrap today-grid">
           <Reveal>
-            <p className="eyebrow">Latest issue</p>
-            <h2 className="t-display" style={{ fontSize: 'clamp(36px, 5vw, 72px)', marginBottom: 20 }}>What went out this morning.</h2>
-            <p className="lede">Each issue is one topic, two or three short sections, and a takeaway you can act on. Written and sent before first period.</p>
+            <p className="eyebrow">Latest weekly issue</p>
+            <h2 className="t-display" style={{ fontSize: 'clamp(36px, 5vw, 72px)', marginBottom: 20 }}>The long read.</h2>
+            <p className="lede">Once a week, one topic gets the full treatment: four sections, a chart, and a position I am willing to defend. The daily brief lands in your inbox; the weekly issues live here.</p>
           </Reveal>
           <Reveal delay={150}>
             <TodaysIssue num={today.num} title={today.title} intro={today.intro} date={today.date} readTime={today.readTime} href={`/issues/${today.slug}`} />
