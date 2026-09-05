@@ -1,15 +1,14 @@
 import type { MetadataRoute } from 'next'
+import { SITE_URL } from '@/lib/seo'
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://dailybriefhq.com'
   return {
-    rules: [
-      {
-        userAgent: '*',
-        allow: ['/', '/issues/'],
-        disallow: ['/api/', '/compose', '/subscribers', '/schedule', '/settings', '/history', '/login'],
-      },
-    ],
-    sitemap: `${baseUrl}/sitemap.xml`,
+    rules: [{
+      userAgent: '*',
+      allow: ['/', '/about', '/issues/', '/subscribe', '/feed.xml'],
+      disallow: ['/api/', '/compose', '/subscribers', '/schedule', '/settings', '/history', '/login', '/dashboard', '/preferences', '/unsubscribed'],
+    }],
+    sitemap: `${SITE_URL}/sitemap.xml`,
+    host: SITE_URL,
   }
 }

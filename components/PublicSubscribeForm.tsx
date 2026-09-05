@@ -6,7 +6,7 @@ import { isValidEmail } from '@/lib/validate-email'
 type Lang = 'en' | 'zh'
 type Freq = 'daily' | 'weekly' | 'both'
 
-export default function PublicSubscribeForm({ light = false, compact = false }: { light?: boolean; compact?: boolean }) {
+export default function PublicSubscribeForm({ id: idProp }: { id?: string } = {}) {
   const [email, setEmail] = useState('')
   const [honeypot, setHoneypot] = useState('')
   const [language, setLanguage] = useState<Lang>('en')
@@ -48,26 +48,24 @@ export default function PublicSubscribeForm({ light = false, compact = false }: 
     )
   }
 
-  const id = light ? 'sub-email-light' : compact ? 'sub-email-hero' : 'sub-email'
+  const id = idProp || 'sub-email'
 
   return (
-    <div className={light ? 'on-light' : ''}>
+    <div>
       <input type="text" name="website" value={honeypot} onChange={e => setHoneypot(e.target.value)} tabIndex={-1} autoComplete="off" aria-hidden="true"
         style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, width: 0 }} />
 
-      {!compact && (
-        <div className="prefs" role="group" aria-label="Preferences">
-          {([['en', 'English'], ['zh', '中文']] as [Lang, string][]).map(([v, l]) => (
-            <button key={v} type="button" className="chip" aria-pressed={language === v} onClick={() => setLanguage(v)}>{l}</button>
-          ))}
-          <span style={{ width: 8 }} />
-          {([['daily', 'Daily'], ['weekly', 'Weekly'], ['both', 'Both']] as [Freq, string][]).map(([v, l]) => (
-            <button key={v} type="button" className="chip" aria-pressed={frequency === v} onClick={() => setFrequency(v)}>{l}</button>
-          ))}
-        </div>
-      )}
+      <div className="prefs" role="group" aria-label="Language and frequency">
+        {([['en', 'English'], ['zh', '中文']] as [Lang, string][]).map(([v, l]) => (
+          <button key={v} type="button" className="chip" aria-pressed={language === v} onClick={() => setLanguage(v)}>{l}</button>
+        ))}
+        <span className="sep" aria-hidden="true" />
+        {([['daily', 'Daily'], ['weekly', 'Weekly'], ['both', 'Both']] as [Freq, string][]).map(([v, l]) => (
+          <button key={v} type="button" className="chip" aria-pressed={frequency === v} onClick={() => setFrequency(v)}>{l}</button>
+        ))}
+      </div>
 
-      <form onSubmit={handleSubmit} className={`field${light ? ' field--light' : ''}`} noValidate>
+      <form onSubmit={handleSubmit} className="field" noValidate>
         <label htmlFor={id} style={{ position: 'absolute', left: '-9999px' }}>Email address</label>
         <input
           id={id} type="email" value={email} placeholder="you@email.com" autoComplete="email"
@@ -75,12 +73,12 @@ export default function PublicSubscribeForm({ light = false, compact = false }: 
           aria-invalid={inputError ? 'true' : undefined}
           aria-describedby={inputError ? `${id}-error` : undefined}
         />
-        <button type="submit" className="btn btn--signal" disabled={status === 'loading'}>
+        <button type="submit" className="btn btn--red" disabled={status === 'loading'}>
           {status === 'loading' ? 'Joining…' : 'Subscribe'}
         </button>
       </form>
       {status === 'error' && <p id={`${id}-error`} role="alert" className="field-error">{errMsg}</p>}
-      <p className="field-note">{compact ? 'Daily, in English. Change it any time from the email.' : 'No spam. One click to leave.'}</p>
+      <p className="field-note">Free. No spam. One click to leave, and you can change language or frequency from any email.</p>
     </div>
   )
 }

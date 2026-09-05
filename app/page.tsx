@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import PublicNav from '@/components/PublicNav'
 import SmoothScroll from '@/components/SmoothScroll'
-import MastheadHero from '@/components/hero/MastheadHero'
+import FrontPage from '@/components/hero/FrontPage'
 import IssueTicker from '@/components/IssueTicker'
 import TodaysIssue from '@/components/TodaysIssue'
 import AboutCredentials from '@/components/AboutCredentials'
@@ -19,10 +19,9 @@ export const dynamic = 'force-dynamic'
 
 async function latestSent() {
   try {
-    const rows = await db.select({
+    return await db.select({
       subject: sentEmails.subject, previewText: sentEmails.previewText, slug: sentEmails.slug, sentAt: sentEmails.sentAt, bodyMarkdown: sentEmails.bodyMarkdown,
     }).from(sentEmails).where(and(isNotNull(sentEmails.slug), eq(sentEmails.status, 'sent'))).orderBy(desc(sentEmails.sentAt)).limit(12)
-    return rows
   } catch { return [] }
 }
 
@@ -37,41 +36,39 @@ export default async function HomePage() {
     readTime: `${Math.max(2, Math.round((r.bodyMarkdown || '').split(/\s+/).length / 220))} min read`,
     intro: r.previewText || '',
   }))
-  const items: ArchiveItem[] = [...sentItems, ...ARTICLES.map(a => ({ slug: a.slug, num: a.num, title: a.title, tag: a.tag, date: a.date, readTime: a.readTime, intro: a.intro }))]
+  const weekly: ArchiveItem[] = ARTICLES.map(a => ({ slug: a.slug, num: a.num, title: a.title, tag: a.tag, date: a.date, readTime: a.readTime, intro: a.intro, figure: a.figure }))
+  const items: ArchiveItem[] = [...sentItems, ...weekly]
   const issueCount = items.length
   const today = items[0]
-  const headlines = items.slice(0, 8).map(a => a.title)
   const counts: Record<string, number> = {}
   for (const a of items) counts[a.tag] = (counts[a.tag] || 0) + 1
-  const dateline = new Date().toLocaleDateString('en-CA', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'America/Toronto' })
-
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'WebSite',
-    name: 'Daily Brief by Joseph',
-    url: 'https://dailybriefhq.com',
-    description: 'A short morning newsletter on economics and AI, written by Joseph, a Grade 11 student in Richmond Hill, Ontario.',
-    publisher: { '@type': 'Person', name: 'Joseph' },
-  }
+  const now = new Date()
+  const dateline = now.toLocaleDateString('en-CA', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/Toronto' })
+  const pages = items.slice(0, 5).reverse().map(a => ({
+    num: a.num, title: a.title, tag: a.tag,
+    date: a.date.replace(/, \d{4}$/, ''),
+    bars: (a.figure?.data ?? [{ value: 40 }, { value: 55 }, { value: 35 }, { value: 70 }, { value: 60 }, { value: 85 }]).slice(0, 7).map(d => d.value),
+  }))
+  // Scale bars to percentages of the max so every mini chart fills its box.
+  for (const p of pages) { const m = Math.max(...p.bars.map(Math.abs), 1); p.bars = p.bars.map(b => Math.round(Math.abs(b) / m * 100)) }
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <SmoothScroll />
       <PublicNav />
       <span id="main-content" aria-hidden="true" style={{ position: 'absolute', top: 0 }} />
 
-      <MastheadHero headlines={headlines} issueCount={issueCount} dateline={dateline} />
+      <FrontPage pages={pages} issueCount={issueCount} dateline={dateline} volume={`Vol. ${now.getFullYear() - 2025}`} />
 
       <IssueTicker items={items.slice(0, 10).map(a => ({ num: a.num, title: a.title }))} />
 
-      {/* Today's issue */}
-      <section className="band band--fog" id="today">
+      {/* Latest issue */}
+      <section className="band band--paper-2" id="today">
         <div className="wrap today-grid">
           <Reveal>
             <p className="eyebrow">Latest issue</p>
-            <h2 className="t-display" style={{ fontSize: 'clamp(38px, 5.5vw, 80px)', marginBottom: 20 }}>What went out this morning.</h2>
-            <p className="copy">Each issue is one topic, two or three short sections, and a takeaway you can act on. Written and sent before first period.</p>
+            <h2 className="t-display" style={{ fontSize: 'clamp(36px, 5vw, 72px)', marginBottom: 20 }}>What went out this morning.</h2>
+            <p className="lede">Each issue is one topic, two or three short sections, and a takeaway you can act on. Written and sent before first period.</p>
           </Reveal>
           <Reveal delay={150}>
             <TodaysIssue num={today.num} title={today.title} intro={today.intro} date={today.date} readTime={today.readTime} href={`/issues/${today.slug}`} />
@@ -79,15 +76,17 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <hr className="rule" />
-
       {/* About */}
-      <section className="band band--fog" id="about">
+      <section className="band band--paper" id="about">
+        <div className="sec-num" aria-hidden="true">01</div>
         <div className="wrap"><AboutCredentials /></div>
       </section>
 
+      <hr className="rule" />
+
       {/* Topics */}
-      <section className="band band--ink" id="topics">
+      <section className="band band--paper" id="topics">
+        <div className="sec-num" aria-hidden="true">02</div>
         <div className="wrap">
           <Reveal>
             <div className="sec-head">
@@ -102,8 +101,11 @@ export default async function HomePage() {
         </div>
       </section>
 
+      <hr className="rule" />
+
       {/* Issues */}
-      <section className="band band--fog" id="issues">
+      <section className="band band--paper" id="issues">
+        <div className="sec-num" aria-hidden="true">03</div>
         <div className="wrap">
           <Suspense fallback={null}>
             <ArchiveGrid items={items} />
@@ -115,12 +117,12 @@ export default async function HomePage() {
       <section className="band band--ink closing" id="subscribe">
         <div className="wrap closing-grid">
           <Reveal>
-            <p className="eyebrow">Subscribe</p>
+            <p className="eyebrow" style={{ color: '#E3453A' }}>Subscribe</p>
             <h2 className="t-display">Tomorrow&apos;s issue, <em>7:00 AM.</em></h2>
           </Reveal>
           <Reveal delay={120}>
             <p className="copy" style={{ marginBottom: 20 }}>Free. English or Chinese, daily or weekly. One click to leave, and I never sell the list.</p>
-            <PublicSubscribeForm />
+            <PublicSubscribeForm id="sub-closing" />
           </Reveal>
         </div>
       </section>

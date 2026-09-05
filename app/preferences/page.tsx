@@ -78,7 +78,7 @@ export default async function PreferencesPage({ searchParams }: { searchParams: 
 
   return (
     <>
-      <PublicNav theme="light" />
+      <PublicNav />
       <div className="page-fog" style={{ minHeight: '70vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '100px 24px 80px' }}>
         <div className="fade-up" style={{ maxWidth: '460px', width: '100%', textAlign: 'center' }}>
           {updated && subscriber ? (

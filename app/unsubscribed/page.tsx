@@ -9,7 +9,7 @@ export default function UnsubscribedPage({ searchParams }: { searchParams: { ema
 
   return (
     <>
-      <PublicNav theme="light" />
+      <PublicNav />
       <div className="page-fog" style={{ minHeight: '70vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '80px 24px' }}>
         <div className="fade-up" style={{ maxWidth: '460px', width: '100%', textAlign: 'center' }}>
           <p className="pub-label" style={{ textAlign: 'center' }}>Unsubscribed</p>

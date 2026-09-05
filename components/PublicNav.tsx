@@ -7,6 +7,7 @@ const LINKS = [
   { href: '/#about', label: 'About' },
   { href: '/#topics', label: 'Topics' },
   { href: '/#issues', label: 'Issues' },
+  { href: '/#subscribe', label: 'Subscribe' },
 ]
 
 export default function PublicNav({ theme = 'dark' }: { theme?: 'dark' | 'light' }) {
@@ -44,7 +45,7 @@ export default function PublicNav({ theme = 'dark' }: { theme?: 'dark' | 'light'
           </ul>
         </nav>
         <div className="mast-right">
-          <button className="btn btn--signal hide-sm" onClick={() => setShowModal(true)}>Subscribe</button>
+          <button className="btn btn--red hide-sm" onClick={() => setShowModal(true)}>Subscribe</button>
           <button className="mast-toggle" onClick={() => setOpen(o => !o)} aria-expanded={open} aria-controls="drawer">{open ? 'Close' : 'Menu'}</button>
         </div>
       </header>
@@ -52,8 +53,11 @@ export default function PublicNav({ theme = 'dark' }: { theme?: 'dark' | 'light'
       {open && (
         <div className="drawer" id="drawer">
           {LINKS.map(l => <a key={l.href} href={l.href} className="big t-display" onClick={() => setOpen(false)}>{l.label}</a>)}
-          <a href="/#subscribe" className="big t-display" onClick={() => setOpen(false)} style={{ color: 'var(--signal)' }}>Subscribe</a>
-          <p className="copy" style={{ marginTop: 'auto' }}>Economics and AI, explained before school. Free, in English and Chinese.</p>
+          <a href="/about" className="big t-display" onClick={() => setOpen(false)}>Joseph</a>
+          <div className="drawer-form">
+            <p className="eyebrow">Subscribe</p>
+            <PublicSubscribeForm />
+          </div>
         </div>
       )}
 
@@ -64,7 +68,7 @@ export default function PublicNav({ theme = 'dark' }: { theme?: 'dark' | 'light'
             <p className="eyebrow">Subscribe</p>
             <h2 className="t-display">Tomorrow&apos;s issue, in your inbox.</h2>
             <p className="copy" style={{ marginBottom: 24 }}>Pick a language and how often. Unsubscribe with one click, any time.</p>
-            <PublicSubscribeForm light />
+            <PublicSubscribeForm />
           </div>
         </div>
       )}

@@ -4,6 +4,8 @@ import type { NextRequest } from 'next/server'
 // Exact public paths (no auth needed)
 const PUBLIC_EXACT = [
   '/',
+  '/about',
+  '/feed.xml',
   '/favicon.ico',
   '/icon.svg',
   '/robots.txt',

@@ -3,10 +3,11 @@
 import { useMemo, useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { TOPICS } from '@/components/TopicDeck'
-import { ARTICLE_ILLUSTRATIONS } from '@/components/ArticleIllustrations'
+import Figure from '@/components/Figure'
+import type { Figure as FigureSpec } from '@/lib/articles'
 import Reveal from '@/components/Reveal'
 
-export interface ArchiveItem { slug: string; num: string; title: string; tag: string; date: string; readTime: string; intro: string }
+export interface ArchiveItem { slug: string; num: string; title: string; tag: string; date: string; readTime: string; intro: string; figure?: FigureSpec }
 
 export default function ArchiveGrid({ items }: { items: ArchiveItem[] }) {
   const params = useSearchParams()
@@ -35,12 +36,12 @@ export default function ArchiveGrid({ items }: { items: ArchiveItem[] }) {
         <Reveal>
           <a href={`/issues/${feature.slug}`} className="arch-feature">
             <div>
-              <div className="meta"><span className="t-mono" style={{ color: 'var(--signal)' }}>{feature.num}</span><span className="t-mono" style={{ color: 'var(--slate-2)' }}>{feature.tag} · {feature.date}</span></div>
+              <div className="meta"><span className="t-mono" style={{ color: 'var(--red)' }}>{feature.num}</span><span className="t-mono" style={{ color: 'var(--muted)' }}>{feature.tag} · {feature.date}</span></div>
               <h3 className="t-display">{feature.title}</h3>
               <p>{feature.intro}</p>
-              <p style={{ marginTop: 22 }}><span className="btn btn--ghost" style={{ height: 40 }}>Read · {feature.readTime}</span></p>
+              <p style={{ marginTop: 22 }}><span className="btn btn--ink" style={{ height: 40 }}>Read the issue · {feature.readTime}</span></p>
             </div>
-            <div className="art" aria-hidden="true">{ARTICLE_ILLUSTRATIONS[feature.slug]?.svg ?? ARTICLE_ILLUSTRATIONS['gpt5-arms-race']?.svg}</div>
+            {feature.figure && <div className="art"><Figure figure={feature.figure} id={`f-${feature.slug}`} /></div>}
           </a>
         </Reveal>
       )}
@@ -49,10 +50,11 @@ export default function ArchiveGrid({ items }: { items: ArchiveItem[] }) {
         {cards.map((a, i) => (
           <Reveal key={a.slug} delay={i * 80}>
             <a href={`/issues/${a.slug}`} className="arch-card">
-              <div className="meta"><span className="t-mono" style={{ color: 'var(--signal-deep)' }}>{a.num}</span><span className="t-mono" style={{ color: 'var(--slate)' }}>{a.tag}</span></div>
+              <div className="meta"><span className="t-mono" style={{ color: 'var(--red)' }}>{a.num}</span><span className="t-mono" style={{ color: 'var(--muted)' }}>{a.tag}</span></div>
               <h3 className="t-display">{a.title}</h3>
               <p>{a.intro.length > 150 ? a.intro.slice(0, 147).trimEnd() + '…' : a.intro}</p>
-              <div className="meta" style={{ marginTop: 18 }}><span className="t-mono" style={{ color: 'var(--slate)' }}>{a.date}</span><span className="t-mono" style={{ color: 'var(--slate)' }}>{a.readTime}</span></div>
+              {a.figure && <div className="thumb"><Figure figure={a.figure} mini id={`m-${a.slug}`} /></div>}
+              <div className="meta" style={{ marginTop: 14 }}><span className="t-mono" style={{ color: 'var(--muted)' }}>{a.date}</span><span className="t-mono" style={{ color: 'var(--muted)' }}>{a.readTime}</span></div>
             </a>
           </Reveal>
         ))}
