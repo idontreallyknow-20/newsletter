@@ -49,8 +49,26 @@ const statements = [
   sql`ALTER TABLE subscribers ADD COLUMN IF NOT EXISTS frequency text NOT NULL DEFAULT 'weekly'`,
   sql`ALTER TABLE sent_emails ADD COLUMN IF NOT EXISTS slug text`,
   sql`ALTER TABLE drafts ADD COLUMN IF NOT EXISTS language text NOT NULL DEFAULT 'en'`,
+  // Daily automation: issue-date keyed drafts/sends, preview + skip state, run log
+  sql`ALTER TABLE drafts ADD COLUMN IF NOT EXISTS issue_date text`,
+  sql`ALTER TABLE drafts ADD COLUMN IF NOT EXISTS preview_sent_at timestamp`,
+  sql`ALTER TABLE drafts ADD COLUMN IF NOT EXISTS skipped_at timestamp`,
+  sql`CREATE INDEX IF NOT EXISTS drafts_issue_date_idx ON drafts (issue_date, language)`,
+  sql`ALTER TABLE sent_emails ADD COLUMN IF NOT EXISTS issue_date text`,
+  sql`CREATE UNIQUE INDEX IF NOT EXISTS sent_emails_issue_date_uq ON sent_emails (issue_date) WHERE issue_date IS NOT NULL`,
+  sql`CREATE TABLE IF NOT EXISTS send_log (
+    id serial PRIMARY KEY,
+    job text NOT NULL,
+    issue_date text,
+    status text NOT NULL,
+    message text,
+    detail text,
+    created_at timestamp DEFAULT now() NOT NULL
+  )`,
+  sql`INSERT INTO settings (key, value) VALUES ('autosend_enabled', 'false') ON CONFLICT (key) DO NOTHING`,
+  sql`INSERT INTO settings (key, value) VALUES ('schedule_frequency', 'daily') ON CONFLICT (key) DO NOTHING`,
   // Pre-load default settings (won't overwrite values you've already set)
-  sql`INSERT INTO settings (key, value) VALUES ('newsletter_name', 'AI & Economy') ON CONFLICT (key) DO NOTHING`,
+  sql`INSERT INTO settings (key, value) VALUES ('newsletter_name', 'Daily Brief') ON CONFLICT (key) DO NOTHING`,
   sql`INSERT INTO settings (key, value) VALUES ('from_name', 'Joseph') ON CONFLICT (key) DO NOTHING`,
   sql`INSERT INTO settings (key, value) VALUES ('from_email', 'onboarding@resend.dev') ON CONFLICT (key) DO NOTHING`,
   sql`INSERT INTO settings (key, value) VALUES ('owner_email', ${process.env.OWNER_EMAIL ?? ''}) ON CONFLICT (key) DO NOTHING`,

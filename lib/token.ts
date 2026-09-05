@@ -21,3 +21,22 @@ export function verifyEmailToken(email: string, token: string, secret: string): 
     return false
   }
 }
+
+/**
+ * Sign a one-off action such as "skip:2026-09-05". The action string carries
+ * the date, so a leaked link only ever works for that one day.
+ */
+export function signActionToken(action: string, secret: string): string {
+  return createHmac('sha256', secret).update(`action:${action}`).digest('hex')
+}
+
+export function verifyActionToken(action: string, token: string, secret: string): boolean {
+  try {
+    const expected = Buffer.from(signActionToken(action, secret), 'hex')
+    const actual = Buffer.from(token, 'hex')
+    if (actual.length !== expected.length) return false
+    return timingSafeEqual(actual, expected)
+  } catch {
+    return false
+  }
+}
