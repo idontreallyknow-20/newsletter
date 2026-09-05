@@ -3,7 +3,7 @@ export const maxDuration = 60
 
 import { NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
-import { and, eq } from 'drizzle-orm'
+import { and, eq, isNull, desc } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { drafts } from '@/lib/schema'
 import { getIssueDate, NEWSLETTER_TZ } from '@/lib/schedule'
@@ -92,19 +92,41 @@ export async function GET(req: Request) {
       return NextResponse.json({ skipped: true, reason: 'already_generated', issueDate })
     }
 
-    if (!process.env.ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY is not set')
-    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+    // No API key: hand-written mode. Take the newest draft written in Compose that
+    // has not been assigned to a day yet, stamp it with today's date, and preview it.
+    if (!existing?.bodyMarkdown && !process.env.ANTHROPIC_API_KEY) {
+      const [queued] = await db.select().from(drafts)
+        .where(and(eq(drafts.language, 'en'), isNull(drafts.issueDate)))
+        .orderBy(desc(drafts.updatedAt)).limit(1)
+      if (!queued?.bodyMarkdown) {
+        await logRun({ job: 'generate', issueDate, status: 'skipped', message: 'No draft queued and no API key to write one' })
+        await notifyOwner(s, `[Daily Brief] Nothing queued for ${issueDate}`,
+          `No issue is queued for today, so nothing will be sent.\n\nWrite tomorrow's issue in Compose (dailybriefhq.com/compose/en) any time before 5:00 AM and it will be previewed to you and sent automatically.`)
+        return NextResponse.json({ skipped: true, reason: 'no_draft', issueDate })
+      }
+      await db.update(drafts).set({ issueDate }).where(eq(drafts.id, queued.id))
+      const [queuedZh] = await db.select().from(drafts)
+        .where(and(eq(drafts.language, 'zh'), isNull(drafts.issueDate)))
+        .orderBy(desc(drafts.updatedAt)).limit(1)
+      if (queuedZh?.bodyMarkdown) await db.update(drafts).set({ issueDate }).where(eq(drafts.id, queuedZh.id))
+    }
+
+    const [today] = existing?.bodyMarkdown ? [existing] : await db.select().from(drafts)
+      .where(and(eq(drafts.issueDate, issueDate), eq(drafts.language, 'en'))).limit(1)
+
+    const client = process.env.ANTHROPIC_API_KEY ? new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }) : null
 
     const dateLabel = new Date().toLocaleDateString('en-CA', {
       weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: NEWSLETTER_TZ,
     })
 
-    let en = existing?.bodyMarkdown
-      ? { subject: existing.subject || newsletterName, bodyMarkdown: existing.bodyMarkdown, previewText: existing.previewText || '' }
+    let en = today?.bodyMarkdown
+      ? { subject: today.subject || newsletterName, bodyMarkdown: today.bodyMarkdown, previewText: today.previewText || '' }
       : null
     let searched = false
 
     if (!en) {
+      if (!client) throw new Error('No draft for today and ANTHROPIC_API_KEY is not set')
       const topic = topicFor(issueDate)
       const written = await writeIssue(client, { newsletterName, dateLabel, topic, started })
       searched = written.searched
@@ -116,7 +138,7 @@ export async function GET(req: Request) {
 
       // Chinese edition, written now if there is time. Otherwise the send
       // route translates on the fly for Chinese readers.
-      if (remaining(started) > TRANSLATE_MIN_MS + 5_000) {
+      if (client && remaining(started) > TRANSLATE_MIN_MS + 5_000) {
         try {
           const zh = await translateIssue(client, en.subject, en.bodyMarkdown, Math.min(20_000, remaining(started) - 5_000))
           await db.insert(drafts).values({
@@ -159,7 +181,7 @@ export async function GET(req: Request) {
     await logRun({
       job: 'generate', issueDate, status: 'ok',
       message: `Draft ready, preview sent to ${ownerEmail}`,
-      detail: { subject: en.subject, searched, model: GENERATE_MODEL, elapsedMs: Date.now() - started },
+      detail: { subject: en.subject, searched, model: client ? GENERATE_MODEL : 'hand-written', elapsedMs: Date.now() - started },
     })
     return NextResponse.json({ ok: true, issueDate, subject: en.subject, searched, previewSentTo: ownerEmail })
   } catch (err) {

@@ -68,7 +68,8 @@ export default function SchedulePage() {
       </div>
 
       <div className="px-5 py-4 mb-8 text-xs font-sans leading-relaxed animate-fade-up delay-1" style={{ background: 'var(--accent-dim)', border: '1px solid var(--border-accent)', color: 'var(--cream)' }}>
-        <p className="mb-1"><strong>How a morning works.</strong> About 5:00 AM Toronto the issue is written and a preview lands in your inbox with a Skip link. About 7:00 AM it goes to subscribers unless you skipped it.</p>
+        <p className="mb-1"><strong>How a morning works.</strong> About 5:00 AM Toronto the issue is picked up and a preview lands in your inbox with a Skip link. About 7:00 AM it goes to subscribers unless you skipped it.</p>
+        <p className="mb-1">With an Anthropic API key set in Vercel, the issue is written for you with web search. Without one, the newest draft you saved in Compose is used, so write tomorrow&apos;s issue before 5:00 AM and it goes out on its own.</p>
         <p style={{ color: 'var(--muted)' }}>Runs on Vercel cron, no computer needed. In winter the clock shifts an hour earlier (cron is UTC). Today&apos;s issue date: {issueDate || '…'}.</p>
       </div>
 
