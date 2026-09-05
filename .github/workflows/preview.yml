@@ -7,6 +7,11 @@ on:
   push:
     branches: [queue]
     paths: ['queue/*.en.json']
+  workflow_dispatch:
+    inputs:
+      date:
+        description: Issue date to preview (YYYY-MM-DD)
+        required: true
 
 jobs:
   preview:
@@ -19,6 +24,11 @@ jobs:
         id: changed
         run: |
           set -euo pipefail
+          if [ -n "${{ github.event.inputs.date }}" ]; then
+            echo "dates=${{ github.event.inputs.date }}" >> "$GITHUB_OUTPUT"
+            echo "Manual run for ${{ github.event.inputs.date }}"
+            exit 0
+          fi
           BEFORE="${{ github.event.before }}"
           if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ] || ! git cat-file -e "$BEFORE" 2>/dev/null; then
             FILES=$(git show --pretty= --name-only HEAD -- queue/)
