@@ -14,6 +14,19 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
   }
 
+  // Browsers always send Origin on cross-site POSTs. Reject any that is not this
+  // site, so the form cannot be driven from someone else's page. Requests with no
+  // Origin (curl, server-to-server) are still subject to the honeypot and rate limit.
+  const origin = req.headers.get('origin')
+  if (origin) {
+    const host = req.headers.get('x-forwarded-host') ?? req.headers.get('host') ?? ''
+    let originHost = ''
+    try { originHost = new URL(origin).host } catch { /* malformed */ }
+    if (!host || originHost !== host) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+  }
+
   try {
     const body = await req.json()
     const { language, frequency, website } = body

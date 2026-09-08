@@ -10,8 +10,10 @@ export default function SiteFooter() {
           <a href="/#subscribe">Subscribe</a>
           <a href="/preferences">Preferences</a>
           <a href="/feed.xml">RSS</a>
+          <a href="/privacy">Privacy</a>
+          <a href="/terms">Terms</a>
         </nav>
-        <small>&copy; {new Date().getFullYear()} Joseph Leung · Daily Brief (dailybriefhq.com) · Richmond Hill, Ontario · No tracking, no spam.</small>
+        <small>&copy; {new Date().getFullYear()} Joseph Leung · Daily Brief (dailybriefhq.com) · Richmond Hill, Ontario · No cookies, no ads, no spam.</small>
       </div>
     </footer>
   )

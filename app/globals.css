@@ -17,7 +17,7 @@
     --red: #B3261E;
     --red-2: #8F1C16;
     --muted: #5F5E59;
-    --muted-2: #8B8A84;
+    --muted-2: #6F6D67;
     --line-ink: rgba(244, 242, 237, 0.16);
 
     --font-dm: var(--font-geist);         /* legacy alias */
@@ -122,7 +122,7 @@
 .field input[aria-invalid='true'] { border-color: var(--red); }
 .field button { height: 52px; padding: 0 22px; }
 .band--ink .field input { background: rgba(244,242,237,0.06); border-color: var(--line-ink); color: var(--paper); }
-.band--ink .field input::placeholder { color: rgba(244,242,237,0.45); }
+.band--ink .field input::placeholder { color: rgba(244,242,237,0.6); }
 .band--ink .field input:focus { border-color: rgba(244,242,237,0.6); }
 .field-note { font-size: 12px; color: var(--muted); margin-top: 12px; }
 .band--ink .field-note { color: rgba(244,242,237,0.55); }
@@ -431,6 +431,10 @@
 .simple { min-height: 100svh; background: var(--paper); color: var(--ink); padding: clamp(104px, 16vw, 130px) 0 96px; }
 .simple h1 { font-size: clamp(40px, 6.5vw, 88px); margin-bottom: 20px; max-width: 16ch; }
 .simple .copy { margin-bottom: 32px; }
+.legal { max-width: 720px; }
+.legal h2 { font-family: var(--font-display), Georgia, serif; font-weight: 700; font-size: 24px; letter-spacing: -0.01em; margin: 40px 0 12px; }
+.legal p { font-size: 16px; line-height: 1.7; color: var(--ink-2); margin-bottom: 14px; max-width: 62ch; }
+.legal p a { color: var(--red); text-decoration: none; border-bottom: 1px solid currentColor; }
 .page-fog { background: var(--paper); color: var(--ink); min-height: 100svh; padding-top: 64px; }
 
 /* ============================================================
@@ -514,7 +518,7 @@
   --red: #E3453A;
   --red-2: #FF6A5C;
   --muted: #A8A59D;
-  --muted-2: #7C7A74;
+  --muted-2: #8E8C86;
   --card: #1A1A1A;
   --card-2: #202020;
   --line-ink: rgba(241, 239, 233, 0.16);

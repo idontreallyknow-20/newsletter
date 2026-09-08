@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Fraunces, Newsreader } from 'next/font/google'
 import localFont from 'next/font/local'
 import { Toaster } from 'react-hot-toast'
+import { Analytics } from '@vercel/analytics/next'
 import DashboardShell from '@/components/DashboardShell'
 import { SITE_URL, SITE_DESCRIPTION, AUTHOR_NAME, personJsonLd, publicationJsonLd, websiteJsonLd } from '@/lib/seo'
 import './globals.css'
@@ -59,6 +60,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
         <a href="#main-content" className="skip-link">Skip to main content</a>
         <DashboardShell>{children}</DashboardShell>
+        {/* Vercel Web Analytics: aggregate page counts, no cookies, no fingerprinting. */}
+        <Analytics />
         <Toaster position="bottom-right" toastOptions={{ style: { background: '#121212', color: '#F4F2ED', border: '1px solid rgba(244,242,237,0.15)', fontFamily: 'var(--font-geist)', fontSize: '14px', borderRadius: 0 } }} />
       </body>
     </html>

@@ -11,6 +11,10 @@ const PUBLIC_EXACT = [
   '/robots.txt',
   '/sitemap.xml',
   '/opengraph-image',
+  '/apple-icon',
+  '/manifest.webmanifest',
+  '/privacy',
+  '/terms',
 ]
 
 // Public path prefixes. Matched with a path-segment boundary so that e.g.
@@ -30,7 +34,11 @@ const PUBLIC_PREFIXES = [
   '/api/skip', // signed, date-scoped token
   '/api/drafts/queue', // bearer CRON_SECRET, checked in the route
   '/_next',
+  '/_vercel', // Vercel Web Analytics beacon
 ]
+
+// Dashboard pages. These, plus everything under /api/, require the session cookie.
+const ADMIN_PREFIXES = ['/dashboard', '/preview', '/compose', '/subscribers', '/schedule', '/history', '/settings']
 
 // Files served from /public (images, fonts, text). Never gate these behind login.
 const STATIC_FILE = /\.(jpe?g|png|webp|gif|svg|ico|avif|mp3|mp4|pdf|txt|xml|json|woff2?)$/i
@@ -66,6 +74,16 @@ function hexEqual(a: string, b: string): boolean {
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
 
+  // Force HTTPS. Vercel already redirects, but this keeps the guarantee when the
+  // app runs anywhere else (and HSTS in next.config.mjs pins it afterwards).
+  // Skipped for localhost so `next start` on a laptop still works over plain http.
+  const host = req.headers.get('x-forwarded-host') ?? req.headers.get('host') ?? ''
+  const hostname = host.replace(/:\d+$/, '')
+  const isLocal = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '[::1]'
+  if (process.env.NODE_ENV === 'production' && !isLocal && req.headers.get('x-forwarded-proto') === 'http') {
+    return NextResponse.redirect(`https://${host}${pathname}${req.nextUrl.search}`, 308)
+  }
+
   if (isPublicPath(pathname)) {
     return NextResponse.next()
   }
@@ -74,6 +92,11 @@ export async function middleware(req: NextRequest) {
   if (pathname === '/api/cron' || pathname.startsWith('/api/cron/')) {
     return NextResponse.next()
   }
+
+  // Anything that is neither public nor an admin page or API is a typo or a dead
+  // link. Let Next render the custom 404 instead of bouncing visitors to /login.
+  const isGated = pathname.startsWith('/api/') || ADMIN_PREFIXES.some(p => pathname === p || pathname.startsWith(p + '/'))
+  if (!isGated) return NextResponse.next()
 
   // Block all access if no password is configured (fail closed)
   const stored = process.env.DASHBOARD_PASSWORD
