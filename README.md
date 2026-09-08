@@ -71,6 +71,24 @@ curl -H "Authorization: Bearer $CRON_SECRET" https://dailybriefhq.com/api/cron/s
 
 The first call returns `{ ok, issueDate, subject, searched, previewSentTo }` and the preview lands in your inbox. The second returns `{ ok, sent }` the first time and `{ skipped, reason: "already_sent" }` if you run it again.
 
+## Sender profile picture
+
+Gmail shows the Google profile photo of whoever owns the from address; Yahoo, Apple Mail and Fastmail read a BIMI DNS record that points at `public/bimi.svg`. Both are set up outside the code. Steps are in `docs/sender-avatar.md`.
+
+## Pre-launch checklist
+
+Already in the codebase, so you do not have to re-check them:
+
+- `/privacy` and `/terms`, linked from the footer.
+- HTTPS is forced in `middleware.ts` (308 on `x-forwarded-proto: http`) and pinned with HSTS in `next.config.mjs`, together with a CSP, `X-Frame-Options`, `Referrer-Policy` and `Permissions-Policy`.
+- No cookie banner on purpose: the public site sets no cookies, the theme choice is `localStorage`, and Vercel Web Analytics is cookieless. The privacy page says so.
+- Titles and descriptions on every public page (`app/layout.tsx` template), `noindex` on login, preferences, unsubscribed and 404.
+- Open Graph image at `/opengraph-image` and per issue at `/issues/<slug>/opengraph-image`; favicon (`app/favicon.ico`, `app/icon.svg`), `app/apple-icon.tsx`, `app/manifest.ts`.
+- `app/robots.ts`, `app/sitemap.ts`, `app/feed.xml`.
+- Subscribe form: client and server validation, honeypot field, per-IP rate limit, same-origin check on `POST /api/subscribe`.
+- Custom 404 in `app/not-found.tsx`.
+- Colour tokens pass WCAG AA (4.5:1) on both themes.
+
 ## Local development
 
 ```bash

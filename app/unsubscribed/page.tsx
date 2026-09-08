@@ -2,7 +2,7 @@ import PublicNav from '@/components/PublicNav'
 import SiteFooter from '@/components/SiteFooter'
 import ResubscribeButton from '@/components/ResubscribeButton'
 
-export const metadata = { title: 'Unsubscribed | Joseph' }
+export const metadata = { title: 'Unsubscribed', description: 'You have been removed from the Daily Brief mailing list.', robots: { index: false, follow: false } }
 
 export default function UnsubscribedPage({ searchParams }: { searchParams: { email?: string } }) {
   const email = searchParams.email ?? ''

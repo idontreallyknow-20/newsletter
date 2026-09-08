@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.2" baseProfile="tiny-ps" viewBox="0 0 512 512">
+  <title>Daily Brief</title>
+  <rect width="512" height="512" fill="#121212"/>
+  <path d="M132 118h96c86 0 140 52 140 138s-54 138-140 138h-96V118zm60 50v176h36c50 0 78-32 78-88s-28-88-78-88h-36z" fill="#F4F2ED"/>
+  <circle cx="400" cy="366" r="30" fill="#E3453A"/>
+</svg>

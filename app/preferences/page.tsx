@@ -7,7 +7,7 @@ import { verifyEmailToken } from '@/lib/token'
 import { normalizeEmail } from '@/lib/validate-email'
 
 export const dynamic = 'force-dynamic'
-export const metadata = { title: 'Email Preferences | Joseph' }
+export const metadata = { title: 'Email preferences', description: 'Change the language or frequency of your Daily Brief subscription.', robots: { index: false, follow: false } }
 
 const LABELS: Record<string, string> = {
   weekly: 'Weekly only',

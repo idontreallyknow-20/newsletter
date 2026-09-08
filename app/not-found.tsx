@@ -2,11 +2,13 @@ import { ARTICLES } from '@/lib/articles'
 import PublicNav from '@/components/PublicNav'
 import SiteFooter from '@/components/SiteFooter'
 
+export const metadata = { title: 'Page not found', robots: { index: false, follow: false } }
+
 export default function NotFound() {
   return (
     <>
       <PublicNav />
-      <main className="simple">
+      <main className="simple" id="main-content">
         <div className="wrap">
           <p className="eyebrow">404</p>
           <h1 className="t-display">Nothing filed here.</h1>
