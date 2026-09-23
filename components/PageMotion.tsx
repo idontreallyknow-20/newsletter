@@ -17,7 +17,7 @@ export default function PageMotion() {
       // Entrance: masthead word rises, rules draw, then the front page fills in.
       const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
       tl.from('.masthead-word', { y: 40, opacity: 0, duration: 0.9 })
-        .from('.masthead', { '--rule-scale': 0, duration: 0.7 }, 0.1)
+        .fromTo('.masthead', { '--rule-scale': 0 }, { '--rule-scale': 1, duration: 0.7 }, 0.1)
         .from('.masthead-line > *', { y: 10, opacity: 0, duration: 0.5, stagger: 0.08 }, 0.35)
         .from('.front-kicker, .front h1, .front .lede, .front .field, .front .prefs, .front .field-note, .front .byline', { y: 24, opacity: 0, duration: 0.7, stagger: 0.07 }, 0.45)
         .from('.stack-stage', { y: 60, opacity: 0, duration: 1, ease: 'power2.out' }, 0.6)
@@ -47,7 +47,7 @@ export default function PageMotion() {
 
       // Section headings slide their underline in.
       document.querySelectorAll<HTMLElement>('.sec-head').forEach(el => {
-        gsap.from(el, { '--head-scale': 0, duration: 0.9, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 85%' } })
+        gsap.fromTo(el, { '--head-scale': 0 }, { '--head-scale': 1, duration: 0.9, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 85%' } })
       })
     })
     return () => ctx.revert()
