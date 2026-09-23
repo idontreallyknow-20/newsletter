@@ -27,7 +27,7 @@ function LoginForm() {
       }
       // Only follow internal paths, never external URLs (open-redirect guard)
       const from = searchParams.get('from') || '/dashboard'
-      router.push(from.startsWith('/') && !from.startsWith('//') ? from : '/dashboard')
+      router.push(/^\/(?![\/\\])/.test(from) ? from : '/dashboard')
     } catch {
       setError('Something went wrong.')
     } finally {

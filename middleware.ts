@@ -1,26 +1,10 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { isAdminPath } from '@/lib/admin-paths'
 
-// Exact public paths (no auth needed)
-const PUBLIC_EXACT = [
-  '/',
-  '/about',
-  '/feed.xml',
-  '/favicon.ico',
-  '/icon.svg',
-  '/robots.txt',
-  '/sitemap.xml',
-  '/opengraph-image',
-]
-
-// Public path prefixes. Matched with a path-segment boundary so that e.g.
-// '/api/subscribe' does NOT expose '/api/subscribers' (admin-only PII).
-const PUBLIC_PREFIXES = [
-  '/login',
-  '/subscribe',
-  '/preferences',
-  '/issues',
-  '/unsubscribed',
+// API routes that need no dashboard session. Matched with a path-segment boundary
+// so that e.g. '/api/subscribe' does NOT expose '/api/subscribers' (admin-only PII).
+const PUBLIC_API_PREFIXES = [
   '/api/login',
   '/api/subscribe',
   '/api/unsubscribe',
@@ -29,16 +13,16 @@ const PUBLIC_PREFIXES = [
   '/api/preferences',
   '/api/skip', // signed, date-scoped token
   '/api/drafts/queue', // bearer CRON_SECRET, checked in the route
-  '/_next',
+  '/api/cron', // bearer CRON_SECRET, checked in the route
 ]
 
-// Files served from /public (images, fonts, text). Never gate these behind login.
-const STATIC_FILE = /\.(jpe?g|png|webp|gif|svg|ico|avif|mp3|mp4|pdf|txt|xml|json|woff2?)$/i
-
+// Pages are public unless they belong to the dashboard; API routes are private
+// unless listed above.
 function isPublicPath(pathname: string): boolean {
-  if (PUBLIC_EXACT.includes(pathname)) return true
-  if (STATIC_FILE.test(pathname)) return true
-  return PUBLIC_PREFIXES.some(p => pathname === p || pathname.startsWith(p + '/'))
+  if (pathname.startsWith('/api/') || pathname === '/api') {
+    return PUBLIC_API_PREFIXES.some(p => pathname === p || pathname.startsWith(p + '/'))
+  }
+  return !isAdminPath(pathname)
 }
 
 // Derive a session token from the admin password using Web Crypto (Edge-compatible).
@@ -67,11 +51,6 @@ export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
 
   if (isPublicPath(pathname)) {
-    return NextResponse.next()
-  }
-
-  // Allow cron routes (secured by CRON_SECRET header, not cookie)
-  if (pathname === '/api/cron' || pathname.startsWith('/api/cron/')) {
     return NextResponse.next()
   }
 

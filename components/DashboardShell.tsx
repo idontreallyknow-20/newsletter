@@ -3,12 +3,7 @@
 import { usePathname } from 'next/navigation'
 import Sidebar from './Sidebar'
 import { ThemeProvider, useTheme } from './ThemeContext'
-
-const ADMIN_PATHS = ['/dashboard', '/preview', '/compose', '/subscribers', '/schedule', '/history', '/settings']
-
-function isAdminPath(pathname: string): boolean {
-  return ADMIN_PATHS.some(p => pathname === p || pathname.startsWith(p + '/'))
-}
+import { isAdminPath } from '@/lib/admin-paths'
 
 function AdminLayout({ children }: { children: React.ReactNode }) {
   const { theme } = useTheme()
