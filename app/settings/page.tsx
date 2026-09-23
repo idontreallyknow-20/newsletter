@@ -14,13 +14,19 @@ const FIELDS = [
 export default function SettingsPage() {
   const [values, setValues] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
-    fetch('/api/settings').then(r => r.json()).then(data => {
-      setValues(data)
-      setLoading(false)
-    })
+    // On a failed load, show an error rather than an empty form that would save blanks over real settings.
+    fetch('/api/settings')
+      .then(async r => {
+        const data = await r.json().catch(() => null)
+        if (!r.ok || !data || typeof data !== 'object' || 'error' in data) throw new Error('Could not load settings')
+        setValues(data)
+      })
+      .catch(err => setLoadError(err.message))
+      .finally(() => setLoading(false))
   }, [])
 
   async function save(e: React.FormEvent) {
@@ -48,7 +54,9 @@ export default function SettingsPage() {
         <h2 className="font-display text-4xl font-bold" style={{ color: 'var(--cream)' }}>Settings</h2>
       </div>
 
-      {loading ? (
+      {loadError ? (
+        <p className="font-mono text-[10px] tracking-[0.2em] uppercase py-16 text-center" style={{ color: 'var(--accent)' }}>{loadError}. Reload to try again.</p>
+      ) : loading ? (
         <div className="py-16 text-center">
           <p className="font-mono text-[10px] tracking-[0.2em] uppercase animate-pulse" style={{ color: 'var(--muted)', opacity: 0.5 }}>Loading…</p>
         </div>

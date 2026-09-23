@@ -1,9 +1,17 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import type { SentEmail } from '@/lib/schema'
 
 const PAGE_SIZE = 50
+
+async function fetchPage(offset: number): Promise<{ emails: SentEmail[]; total: number }> {
+  const res = await fetch(`/api/history?limit=${PAGE_SIZE}&offset=${offset}`)
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok || !Array.isArray(data.emails)) throw new Error(data.error || 'Could not load sent issues')
+  return { emails: data.emails, total: Number(data.total) || 0 }
+}
 
 export default function HistoryPage() {
   const [emails, setEmails] = useState<SentEmail[]>([])
@@ -13,24 +21,18 @@ export default function HistoryPage() {
   const [preview, setPreview] = useState<SentEmail | null>(null)
 
   useEffect(() => {
-    fetch(`/api/history?limit=${PAGE_SIZE}&offset=0`)
-      .then(r => r.json())
-      .then(data => {
-        setEmails(data.emails)
-        setTotal(data.total)
-        setLoading(false)
-      })
+    fetchPage(0)
+      .then(data => { setEmails(data.emails); setTotal(data.total) })
+      .catch(err => toast.error(err.message))
+      .finally(() => setLoading(false))
   }, [])
 
   function loadMore() {
     setLoadingMore(true)
-    fetch(`/api/history?limit=${PAGE_SIZE}&offset=${emails.length}`)
-      .then(r => r.json())
-      .then(data => {
-        setEmails(prev => [...prev, ...data.emails])
-        setTotal(data.total)
-        setLoadingMore(false)
-      })
+    fetchPage(emails.length)
+      .then(data => { setEmails(prev => [...prev, ...data.emails]); setTotal(data.total) })
+      .catch(err => toast.error(err.message))
+      .finally(() => setLoadingMore(false))
   }
 
   const hasMore = emails.length < total
@@ -38,9 +40,11 @@ export default function HistoryPage() {
   async function archiveAll() {
     if (!confirm('Archive every sent issue? They disappear from the site and stay here marked archived. Nothing is deleted.')) return
     const res = await fetch('/api/history/archive-all', { method: 'POST' })
-    if (!res.ok) return
-    const data = await fetch(`/api/history?limit=${PAGE_SIZE}&offset=0`).then(r => r.json())
-    setEmails(data.emails); setTotal(data.total)
+    if (!res.ok) { toast.error('Could not archive the sent issues'); return }
+    try {
+      const data = await fetchPage(0)
+      setEmails(data.emails); setTotal(data.total)
+    } catch (err) { toast.error((err as Error).message) }
   }
 
   return (

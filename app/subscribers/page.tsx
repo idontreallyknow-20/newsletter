@@ -16,10 +16,17 @@ export default function SubscribersPage() {
 
   async function load() {
     setLoading(true)
-    const res = await fetch('/api/subscribers')
-    const data = await res.json()
-    setSubscribers(data.subscribers ?? data)
-    setLoading(false)
+    try {
+      const res = await fetch('/api/subscribers')
+      const data = await res.json().catch(() => ({}))
+      const list = data.subscribers ?? data
+      if (!res.ok || !Array.isArray(list)) throw new Error(data.error || 'Could not load subscribers')
+      setSubscribers(list)
+    } catch (err) {
+      toast.error((err as Error).message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => { load() }, [])
@@ -106,6 +113,7 @@ export default function SubscribersPage() {
 
   async function handleExport() {
     const res = await fetch('/api/subscribers/export')
+    if (!res.ok) { toast.error('Could not export subscribers'); return }
     const blob = await res.blob()
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')

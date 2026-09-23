@@ -58,7 +58,7 @@ export async function POST(req: Request) {
 
       const fromName = s.from_name || 'Joseph'
       const fromEmail = s.from_email || process.env.FROM_EMAIL || ''
-      const newsletterName = s.newsletter_name || 'AI & Economy'
+      const newsletterName = s.newsletter_name || 'Daily Brief'
       const safeName = escapeHtml(newsletterName)
       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://dailybriefhq.com'
 
