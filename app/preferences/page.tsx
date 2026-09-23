@@ -52,7 +52,8 @@ function OptionLink({ href, label, sub, active }: { href: string; label: string;
   )
 }
 
-export default async function PreferencesPage({ searchParams }: { searchParams: { updated?: string; freq?: string; lang?: string; error?: string; email?: string; token?: string } }) {
+export default async function PreferencesPage(props: { searchParams: Promise<{ updated?: string; freq?: string; lang?: string; error?: string; email?: string; token?: string }> }) {
+  const searchParams = await props.searchParams
   const updated = searchParams.updated === '1'
   const error = searchParams.error === '1'
   const change = searchParams.freq ? LABELS[searchParams.freq] : searchParams.lang ? LABELS[searchParams.lang] : null

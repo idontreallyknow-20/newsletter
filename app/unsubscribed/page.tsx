@@ -4,8 +4,8 @@ import ResubscribeButton from '@/components/ResubscribeButton'
 
 export const metadata = { title: 'Unsubscribed | Joseph' }
 
-export default function UnsubscribedPage({ searchParams }: { searchParams: { email?: string } }) {
-  const email = searchParams.email ?? ''
+export default async function UnsubscribedPage(props: { searchParams: Promise<{ email?: string }> }) {
+  const email = (await props.searchParams).email ?? ''
 
   return (
     <>
