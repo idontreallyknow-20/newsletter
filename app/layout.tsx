@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Fraunces, Newsreader, Geist, Geist_Mono } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
 import DashboardShell from '@/components/DashboardShell'
-import { SITE_URL, SITE_DESCRIPTION, AUTHOR_NAME, personJsonLd, publicationJsonLd, websiteJsonLd } from '@/lib/seo'
+import { SITE_URL, HUB_URL, SITE_DESCRIPTION, AUTHOR_NAME, personJsonLd, publicationJsonLd, websiteJsonLd } from '@/lib/seo'
 import './globals.css'
 
 const display = Fraunces({
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   title: { default: `Daily Brief (dailybriefhq) by ${AUTHOR_NAME}: economics and AI, before school`, template: '%s | Daily Brief by Joseph Leung' },
   description: SITE_DESCRIPTION,
   applicationName: 'Daily Brief',
-  authors: [{ name: AUTHOR_NAME, url: `${SITE_URL}/about` }],
+  authors: [{ name: AUTHOR_NAME, url: HUB_URL }],
   creator: AUTHOR_NAME,
   publisher: 'Daily Brief',
   keywords: ['dailybriefhq', 'dailybriefhq.com', 'Daily Brief HQ', 'Daily Brief', 'Joseph Leung', 'Joseph Leung newsletter', 'Joseph Leung chess', 'Joseph Leung Richmond Hill', 'economics newsletter', 'AI newsletter', 'Canadian economics newsletter', 'Richmond Hill', 'Ontario', 'chess champion', 'Grade 11', 'Canadian economy', 'artificial intelligence', 'Bank of Canada'],

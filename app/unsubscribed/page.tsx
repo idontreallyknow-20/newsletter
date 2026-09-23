@@ -1,8 +1,9 @@
+import type { Metadata } from 'next'
 import PublicNav from '@/components/PublicNav'
 import SiteFooter from '@/components/SiteFooter'
 import ResubscribeButton from '@/components/ResubscribeButton'
 
-export const metadata = { title: 'Unsubscribed | Joseph' }
+export const metadata: Metadata = { title: 'Unsubscribed', robots: { index: false, follow: true } }
 
 export default async function UnsubscribedPage(props: { searchParams: Promise<{ email?: string }> }) {
   const email = (await props.searchParams).email ?? ''
@@ -10,7 +11,7 @@ export default async function UnsubscribedPage(props: { searchParams: Promise<{ 
   return (
     <>
       <PublicNav />
-      <div className="page-fog" style={{ minHeight: '70vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '80px 24px' }}>
+      <main id="main-content" className="page-fog" style={{ minHeight: '70vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '80px 24px' }}>
         <div className="fade-up" style={{ maxWidth: '460px', width: '100%', textAlign: 'center' }}>
           <p className="pub-label" style={{ textAlign: 'center' }}>Unsubscribed</p>
           <h1 style={{ fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '32px', fontWeight: 900, color: 'var(--ink)', marginBottom: '14px', lineHeight: 1.15 }}>
@@ -27,7 +28,7 @@ export default async function UnsubscribedPage(props: { searchParams: Promise<{ 
             <a href="/#issues" className="pub-btn-ghost">Browse the archive</a>
           </div>
         </div>
-      </div>
+      </main>
       <SiteFooter />
     </>
   )

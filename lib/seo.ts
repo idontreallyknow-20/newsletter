@@ -1,10 +1,17 @@
 // Everything search engines need to know about Joseph and the newsletter, in one place.
-export const SITE_URL = 'https://dailybriefhq.com'
+// The apex domain 308-redirects to www on Vercel, so www is the canonical host.
+export const SITE_URL = 'https://www.dailybriefhq.com'
 export const SITE_NAME = 'Daily Brief'
 export const SITE_HANDLE = 'dailybriefhq'
 export const AUTHOR_NAME = 'Joseph Leung'
 export const AUTHOR_FIRST_NAME = 'Joseph'
-export const AUTHOR_DESCRIPTION = 'Joseph Leung is a Grade 11 student in Richmond Hill, Ontario, a three-time Canadian national team chess champion with FIDE and CFC ratings, and the writer of Daily Brief (dailybriefhq.com), a morning newsletter on economics and AI.'
+export const AUTHOR_FULL_NAME = 'Joseph Wah Sing Leung'
+
+// Joseph's personal hub site. Every project links back to it, and the Person
+// entity uses the hub's @id so search engines merge both sites into one person.
+export const HUB_URL = 'https://josephleung-site.vercel.app'
+export const PERSON_ID = `${HUB_URL}/#joseph`
+export const AUTHOR_DESCRIPTION = 'Joseph Leung is the founder and writer of Daily Brief (dailybriefhq.com), a morning newsletter on economics and AI. He is a Grade 11 student in Richmond Hill, Ontario, and a retired national-level chess player who won the Canadian national team championship three times.'
 export const SITE_DESCRIPTION = 'Daily Brief (dailybriefhq) is a morning newsletter on economics and AI, written before school by Joseph Leung, a Grade 11 student and three-time national team chess champion in Richmond Hill, Ontario. Free, in English and Chinese.'
 
 // Public chess records. Linked from the About page and the Person entity so a
@@ -15,13 +22,26 @@ export const CHESS_PROFILES = {
   chesscom: { label: 'Chess.com', url: 'https://www.chess.com/member/squeakycrab', id: 'squeakycrab' },
 }
 
-// Profiles Joseph controls. Add LinkedIn, X, Lichess, Chess.com here as they exist;
-// search engines use these to tie the name to one entity.
+export const PROFILE_LINKS = {
+  linkedin: 'https://www.linkedin.com/in/joseph-leung-21b3473bb/',
+  github: 'https://github.com/idontreallyknow-20',
+  lichess: 'https://lichess.org/@/BigTrustedCrabby',
+  lichessUltra: 'https://lichess.org/@/UltraAddict2010',
+  nerfchess: 'https://nerfchess.com',
+}
+
+// Profiles and projects Joseph controls. Search engines use these to tie the
+// name to one entity, so keep this list in step with the hub site.
 export const SAME_AS: string[] = [
-  'https://github.com/idontreallyknow-20',
+  HUB_URL,
+  PROFILE_LINKS.linkedin,
+  PROFILE_LINKS.github,
   CHESS_PROFILES.fide.url,
   CHESS_PROFILES.cfc.url,
   CHESS_PROFILES.chesscom.url,
+  PROFILE_LINKS.lichess,
+  PROFILE_LINKS.lichessUltra,
+  PROFILE_LINKS.nerfchess,
 ]
 
 export const KNOWS_ABOUT = [
@@ -33,15 +53,15 @@ export function personJsonLd() {
   return {
     '@context': 'https://schema.org',
     '@type': 'Person',
-    '@id': `${SITE_URL}/#joseph`,
+    '@id': PERSON_ID,
     name: AUTHOR_NAME,
     givenName: AUTHOR_FIRST_NAME,
     familyName: 'Leung',
-    alternateName: [AUTHOR_FIRST_NAME, 'Joseph Leung (dailybriefhq)'],
-    url: `${SITE_URL}/about`,
+    alternateName: [AUTHOR_FULL_NAME, 'Wah Sing Leung'],
+    url: HUB_URL,
     image: `${SITE_URL}/joseph.jpg`,
     description: AUTHOR_DESCRIPTION,
-    jobTitle: 'Writer and publisher, Daily Brief',
+    jobTitle: 'Founder, Daily Brief',
     birthDate: '2010',
     identifier: [
       { '@type': 'PropertyValue', propertyID: 'FIDE ID', value: CHESS_PROFILES.fide.id, url: CHESS_PROFILES.fide.url },
@@ -57,7 +77,7 @@ export function personJsonLd() {
     knowsLanguage: ['en', 'zh'],
     award: ['Three-time Canadian national team chess champion'],
     alumniOf: { '@type': 'EducationalOrganization', name: 'York Region District School Board' },
-    sameAs: SAME_AS,
+    sameAs: [...SAME_AS, `${SITE_URL}/about`],
     worksFor: { '@id': `${SITE_URL}/#publication` },
   }
 }
@@ -71,9 +91,8 @@ export function publicationJsonLd() {
     alternateName: [SITE_HANDLE, 'Daily Brief HQ', 'dailybriefhq.com', 'Daily Brief by Joseph Leung'],
     url: SITE_URL,
     logo: `${SITE_URL}/opengraph-image`,
-    founder: { '@id': `${SITE_URL}/#joseph` },
+    founder: { '@id': PERSON_ID },
     description: SITE_DESCRIPTION,
-    sameAs: SAME_AS,
   }
 }
 
@@ -88,7 +107,8 @@ export function websiteJsonLd() {
     description: SITE_DESCRIPTION,
     inLanguage: ['en', 'zh'],
     publisher: { '@id': `${SITE_URL}/#publication` },
-    author: { '@id': `${SITE_URL}/#joseph` },
+    author: { '@id': PERSON_ID },
+    creator: { '@id': PERSON_ID },
   }
 }
 
@@ -107,7 +127,7 @@ export function articleJsonLd(a: { slug: string; title: string; description: str
     isAccessibleForFree: true,
     mainEntityOfPage: `${SITE_URL}/issues/${a.slug}`,
     image: [`${SITE_URL}/issues/${a.slug}/opengraph-image`],
-    author: { '@id': `${SITE_URL}/#joseph`, '@type': 'Person', name: AUTHOR_NAME, url: `${SITE_URL}/about` },
+    author: { '@id': PERSON_ID, '@type': 'Person', name: AUTHOR_NAME, url: HUB_URL },
     publisher: { '@id': `${SITE_URL}/#publication`, '@type': 'Organization', name: SITE_NAME, logo: { '@type': 'ImageObject', url: `${SITE_URL}/opengraph-image` } },
   }
 }

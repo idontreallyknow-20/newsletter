@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import PublicNav from '@/components/PublicNav'
 import SiteFooter from '@/components/SiteFooter'
 import { db } from '@/lib/db'
@@ -7,7 +8,7 @@ import { verifyEmailToken } from '@/lib/token'
 import { normalizeEmail } from '@/lib/validate-email'
 
 export const dynamic = 'force-dynamic'
-export const metadata = { title: 'Email Preferences | Joseph' }
+export const metadata: Metadata = { title: 'Email preferences', robots: { index: false, follow: true } }
 
 const LABELS: Record<string, string> = {
   weekly: 'Weekly only',
@@ -80,7 +81,7 @@ export default async function PreferencesPage(props: { searchParams: Promise<{ u
   return (
     <>
       <PublicNav />
-      <div className="page-fog" style={{ minHeight: '70vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '100px 24px 80px' }}>
+      <main id="main-content" className="page-fog" style={{ minHeight: '70vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '100px 24px 80px' }}>
         <div className="fade-up" style={{ maxWidth: '460px', width: '100%', textAlign: 'center' }}>
           {updated && subscriber ? (
             <>
@@ -148,7 +149,7 @@ export default async function PreferencesPage(props: { searchParams: Promise<{ u
             </>
           )}
         </div>
-      </div>
+      </main>
       <SiteFooter />
     </>
   )

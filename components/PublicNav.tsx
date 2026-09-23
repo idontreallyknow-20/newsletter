@@ -36,8 +36,9 @@ export default function PublicNav({ theme = 'dark' }: { theme?: 'dark' | 'light'
   return (
     <>
       <header className={`mast${theme === 'light' ? ' mast--light' : ''}${scrolled || open ? ' is-scrolled' : ''}`}>
-        <a href="/" className="mast-brand" aria-label="Daily Brief home">
+        <a href="/" className="mast-brand">
           <span className="mast-word">Daily<i>.</i>Brief</span>
+          <span className="sr-only">home</span>
           {dateline && <span className="mast-date">{dateline}</span>}
         </a>
         <nav aria-label="Sections">

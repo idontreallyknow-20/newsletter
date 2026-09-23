@@ -67,7 +67,7 @@ function Author() {
     <div className="author">
       <div className="byline-photo">{hasPortrait
         // eslint-disable-next-line @next/next/no-img-element
-        ? <img src="/joseph.jpg" alt="Joseph" width={88} height={88} /> : <span aria-hidden="true">J</span>}</div>
+        ? <img src="/joseph.jpg" alt="Joseph Leung" width={88} height={88} /> : <span aria-hidden="true">J</span>}</div>
       <div><strong style={{ display: 'block', fontSize: 14 }}>Joseph</strong><span style={{ fontSize: 12, color: 'var(--muted)' }}>Grade 11, Richmond Hill · <a href="/about">About</a></span></div>
     </div>
   )

@@ -29,7 +29,7 @@ export default function FrontPage({ pages, issueCount, dateline, volume }: { pag
               <div className="byline-photo">
                 {hasPortrait
                   // eslint-disable-next-line @next/next/no-img-element
-                  ? <img src="/joseph.jpg" alt="Joseph" width={128} height={128} />
+                  ? <img src="/joseph.jpg" alt="Joseph Leung" width={128} height={128} />
                   : <span aria-hidden="true">J</span>}
               </div>
               <div>
