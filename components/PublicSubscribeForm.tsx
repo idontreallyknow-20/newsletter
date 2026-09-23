@@ -18,7 +18,7 @@ export default function PublicSubscribeForm({ id: idProp }: { id?: string } = {}
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!isValidEmail(email)) {
-      setInputError(true); setErrMsg('That email address does not look right.'); setStatus('error'); return
+      setInputError(true); setErrMsg(email.trim() ? 'That email address does not look right.' : 'Enter your email address.'); setStatus('error'); return
     }
     setInputError(false); setErrMsg(''); setStatus('loading')
     try {
@@ -27,9 +27,14 @@ export default function PublicSubscribeForm({ id: idProp }: { id?: string } = {}
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, language, frequency, website: honeypot }),
       })
-      const data = await res.json()
       if (!res.ok) {
-        setErrMsg(data.error === 'Already subscribed' ? 'You are already on the list.' : (data.error || 'Something went wrong.'))
+        const data = await res.json().catch(() => ({}))
+        setErrMsg(
+          data.error === 'Already subscribed' ? 'You are already on the list.'
+            : res.status === 429 ? 'Too many tries. Wait a minute and try again.'
+            : res.status === 400 ? 'That email address does not look right.'
+            : 'Something went wrong on our end. Try again in a minute.'
+        )
         setStatus('error'); return
       }
       setStatus('done')
