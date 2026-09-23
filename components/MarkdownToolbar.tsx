@@ -1,7 +1,7 @@
 'use client'
 
 interface MarkdownToolbarProps {
-  textareaRef: React.RefObject<HTMLTextAreaElement>
+  textareaRef: React.RefObject<HTMLTextAreaElement | null>
   onChange: (value: string) => void
 }
 

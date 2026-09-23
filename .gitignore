@@ -16,3 +16,7 @@ out/
 # misc
 .DS_Store
 *.pem
+
+# local tooling
+*.tsbuildinfo
+.omc/

@@ -27,7 +27,7 @@ function LoginForm() {
       }
       // Only follow internal paths, never external URLs (open-redirect guard)
       const from = searchParams.get('from') || '/dashboard'
-      router.push(from.startsWith('/') && !from.startsWith('//') ? from : '/dashboard')
+      router.push(/^\/(?![\/\\])/.test(from) ? from : '/dashboard')
     } catch {
       setError('Something went wrong.')
     } finally {
@@ -124,7 +124,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div style={{
+    <main id="main-content" style={{
       minHeight: '100vh',
       background: 'var(--pub-cream)',
       display: 'flex',
@@ -156,7 +156,7 @@ export default function LoginPage() {
             letterSpacing: '-0.02em',
             marginBottom: '10px',
           }}>
-            Newsletter<br />Dashboard
+            Daily Brief<br />Dashboard
           </h1>
           <div style={{ width: '32px', height: '2px', background: 'var(--red)' }} />
         </div>
@@ -197,6 +197,6 @@ export default function LoginPage() {
         </p>
 
       </div>
-    </div>
+    </main>
   )
 }

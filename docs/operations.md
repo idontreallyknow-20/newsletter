@@ -1,0 +1,86 @@
+# Operations
+
+How the daily send works, how to configure it, and what each page does. For a quick start, see the [README](../README.md).
+
+## How a morning works
+
+Everything is keyed by the **issue date**, the calendar day in `America/Toronto`. The cron jobs never check the clock. They ask the database whether today's step is done.
+
+| UTC | Toronto (summer / winter) | Route | What happens |
+|---|---|---|---|
+| 09:00 | 5:00 / 4:00 AM | `/api/cron/generate` | With `ANTHROPIC_API_KEY` set: writes today's issue (Claude Opus 5 with web search, no-search fallback that forbids invented citations) and the Chinese edition. Without it: takes the newest draft saved in Compose. Either way it emails a **preview to you** with a one-tap *Skip today's send* link. |
+| on commit | any time | `/api/cron/preview` | Triggered by GitHub Actions when the Routine commits `queue/<date>.en.json`: stores the draft and emails the preview immediately. |
+| 11:00 | 7:00 / 6:00 AM | `/api/cron/send` | Sends to subscribers, unless autosend is off, today is skipped, no preview was delivered, or it already went out. |
+
+Safety rails:
+
+- A unique index on `sent_emails.issue_date` means a second trigger on the same day does nothing.
+- The send refuses to run if the preview never reached you.
+- Autosend has a kill switch on the Settings and Schedule pages.
+- Every run is written to `send_log` and shown on the dashboard. Failures email you.
+
+Vercel Hobby crons are UTC only and can fire anywhere inside the hour. If you want the send at exactly 7:00 AM Toronto year-round, add a free [cron-job.org](https://cron-job.org) job for `GET https://dailybriefhq.com/api/cron/send` at 07:00 `America/Toronto` with the header `Authorization: Bearer <CRON_SECRET>`. The idempotency above makes the extra trigger harmless.
+
+## Writing the issue with a Claude Routine (no API key)
+
+A scheduled Claude Code Routine writes tomorrow's issue on a claude.ai subscription and commits it to `queue/YYYY-MM-DD.en.json` (and `.zh.json`) on the **`queue` branch**. The 5 AM cron fetches the file from `raw.githubusercontent.com` (checking `queue`, then `main`), previews it to the owner, and the 7 AM cron sends it. See `queue/README.md` for the file shape.
+
+The Routine needs the repository attached to it, otherwise its sandbox has no checkout and a token scoped to nothing. Writing the file through the GitHub API rather than `git push` avoids needing a checkout at all. The `queue` branch is deliberate: `vercel.json` deploys `main` only, so nightly commits never trigger a production build.
+
+**Instant preview.** `.github/workflows/preview.yml` runs on every push to the `queue` branch that touches `queue/*.en.json`. It calls `POST /api/cron/preview?date=<DATE>` (bearer `CRON_SECRET`), which stores the file as that day's draft and emails the preview to the owner within a minute or two of the commit, instead of waiting for 5 AM. Add `CRON_SECRET` as a repository secret (Settings, Secrets and variables, Actions) with the same value as on Vercel. Schedule the Routine at least an hour before the 5 AM job (4:00 AM Toronto works) so the commit is in place when the site looks for it. The prompt to paste into the Routine is in `docs/routine-prompt.md`.
+
+**Read the preview any time.** The dashboard's **Preview** page (`/preview`) lists every issue queued for today or later, from the database and from files on GitHub that have not been imported yet, rendered with the real email template in English and Chinese. From there you can email yourself the preview again, skip or restore a day, or import a GitHub file on the spot.
+
+There is also `POST /api/drafts/queue` (bearer `CRON_SECRET`, same JSON plus `"language"`) for any machine that can reach the site directly. Claude's sandboxes cannot; `dailybriefhq.com` is blocked by their egress policy, which is why the hand-off goes through GitHub.
+
+## Environment variables (Vercel, Production)
+
+| Name | Purpose |
+|---|---|
+| `DATABASE_URL` | Neon connection string |
+| `RESEND_API_KEY` | Resend API key |
+| `FROM_EMAIL` | Sender address on a domain verified in Resend (the Settings page value overrides this) |
+| `OWNER_EMAIL` | Where previews, test sends, and failure alerts go (Settings page overrides) |
+| `ANTHROPIC_API_KEY` | Optional. Morning draft generation and translation. Needs pay-as-you-go API credit, a claude.ai subscription does not cover it. Without the key, you write the issue in Compose the evening before. |
+| `CRON_SECRET` | Bearer token the cron routes require |
+| `EMAIL_TOKEN_SECRET` | Signs unsubscribe, preferences, and skip links |
+| `DASHBOARD_PASSWORD` | Admin login |
+| `NEXT_PUBLIC_BASE_URL` | `https://dailybriefhq.com` |
+
+## First run after deploying
+
+1. Log in to the dashboard and open `/api/setup` once. It creates any missing tables, columns, and the unique index, and seeds default settings. Safe to repeat. The two cron routes and the dashboard also run the same idempotent migration on their first request after a deploy, so a schema change can never break the morning send on its own.
+2. Set your email and the from address on **Settings**.
+3. On **Schedule**, pick every day, weekdays, or weekly, choose the weekly edition day, and turn on automatic sending. Daily readers get every issue; weekly readers get the one sent on the weekly edition day.
+4. Optional dry run from a terminal:
+
+```bash
+curl -H "Authorization: Bearer $CRON_SECRET" https://dailybriefhq.com/api/cron/generate
+curl -H "Authorization: Bearer $CRON_SECRET" https://dailybriefhq.com/api/cron/send
+```
+
+The first call returns `{ ok, issueDate, subject, searched, previewSentTo }` and the preview lands in your inbox. The second returns `{ ok, sent }` the first time and `{ skipped, reason: "already_sent" }` if you run it again.
+
+## Local development
+
+```bash
+cp .env.local.example .env.local   # fill in values
+npm install
+npm run dev
+npm test
+```
+
+## Pages
+
+| Page | URL |
+|---|---|
+| Front page | `/` |
+| Issue | `/issues/[slug]` |
+| Subscribe | `/subscribe` |
+| Dashboard | `/dashboard` |
+| Preview | `/preview` |
+| Compose | `/compose/en`, `/compose/zh` |
+| Subscribers | `/subscribers` |
+| Schedule | `/schedule` |
+| History | `/history` |
+| Settings | `/settings` |

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import PublicNav from '@/components/PublicNav'
 import SmoothScroll from '@/components/SmoothScroll'
@@ -13,6 +14,10 @@ import Reveal from '@/components/Reveal'
 import { ARTICLES } from '@/lib/articles'
 
 export const dynamic = 'force-dynamic'
+
+export const metadata: Metadata = {
+  alternates: { canonical: '/', types: { 'application/rss+xml': [{ url: '/feed.xml', title: 'Daily Brief RSS' }] } },
+}
 
 // The public archive is the fixed set of weekly issues in lib/articles.ts.
 // Daily emails sent from the dashboard stay readable at their /issues/<slug>

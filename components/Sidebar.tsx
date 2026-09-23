@@ -110,8 +110,8 @@ export default function Sidebar() {
           <div className="flex items-start gap-2.5">
             <div className="w-[2px] h-8 mt-0.5 flex-shrink-0" style={{ background: 'var(--accent)' }} />
             <div>
-              <p className="font-mono text-[9px] tracking-[0.2em] uppercase mb-1" style={{ color: 'var(--muted)' }}>AI & Economy</p>
-              <h1 className="font-display text-base font-bold leading-tight" style={{ color: 'var(--cream)' }}>Newsletter<br />HQ</h1>
+              <p className="font-mono text-[9px] tracking-[0.2em] uppercase mb-1" style={{ color: 'var(--muted)' }}>Dashboard</p>
+              <p className="font-display text-base font-bold leading-tight" style={{ color: 'var(--cream)' }}>Daily Brief</p>
             </div>
           </div>
         </Link>
@@ -144,7 +144,7 @@ export default function Sidebar() {
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 h-14 flex items-center justify-between px-5" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <Link href="/dashboard" className="flex items-center gap-2.5">
           <div className="w-[2px] h-5" style={{ background: 'var(--accent)' }} />
-          <span className="font-display text-sm font-bold" style={{ color: 'var(--cream)' }}>NewsletterHQ</span>
+          <span className="font-display text-sm font-bold" style={{ color: 'var(--cream)' }}>Daily Brief</span>
         </Link>
         <button onClick={() => setOpen(o => !o)} className="font-mono text-[10px] tracking-widest uppercase -mr-3 px-3 py-2" style={{ color: 'var(--muted)' }} aria-expanded={open} aria-controls="admin-drawer">
           {open ? 'Close' : 'Menu'}
@@ -157,7 +157,7 @@ export default function Sidebar() {
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setOpen(false)} />
           <aside id="admin-drawer" className="relative w-64 max-w-[85vw] flex flex-col overflow-y-auto" style={{ background: 'var(--surface)', borderRight: '1px solid var(--border)' }}>
             <div className="h-14 px-6 flex items-center justify-between" style={{ borderBottom: '1px solid var(--border)' }}>
-              <h1 className="font-display text-base font-bold" style={{ color: 'var(--cream)' }}>NewsletterHQ</h1>
+              <p className="font-display text-base font-bold" style={{ color: 'var(--cream)' }}>Daily Brief</p>
               <button onClick={() => setOpen(false)} className="font-mono text-[10px] tracking-widest uppercase -mr-3 px-3 py-2" style={{ color: 'var(--muted)' }}>Close</button>
             </div>
             <nav className="flex-1 py-5">

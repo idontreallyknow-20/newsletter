@@ -12,7 +12,7 @@ export default function AboutCredentials() {
           {/* Drop a photo at public/joseph.jpg to replace the monogram. */}
           {hasPortrait
             // eslint-disable-next-line @next/next/no-img-element
-            ? <img src="/joseph.jpg" alt="Joseph Leung, writer of Daily Brief" width={800} height={1000} loading="lazy" decoding="async" style={{ position: 'relative', zIndex: 1 }} />
+            ? <img src="/joseph.jpg" alt="Joseph Leung, founder and writer of Daily Brief" width={841} height={1036} loading="lazy" decoding="async" style={{ position: 'relative', zIndex: 1 }} />
             : <div className="portrait-mono" aria-hidden="true"><span>J.</span></div>}
           <div className="portrait-cap">
             <span className="t-mono">Joseph Leung</span>

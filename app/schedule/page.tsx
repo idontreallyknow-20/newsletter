@@ -22,9 +22,14 @@ export default function SchedulePage() {
   const [log, setLog] = useState<LogRow[]>([])
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
 
   const load = useCallback(async () => {
-    const data = await fetch('/api/schedule').then(r => r.json())
+    // On a failed load, show an error rather than defaults (autosend off) that a click would save.
+    const res = await fetch('/api/schedule').catch(() => null)
+    const data = res?.ok ? await res.json().catch(() => null) : null
+    if (!data || 'error' in data) { setLoadError('Could not load the schedule'); setLoading(false); return }
+    setLoadError('')
     setFrequency(data.schedule_frequency || 'daily')
     setAutosend(data.autosend_enabled === 'true')
     setDay(data.schedule_day || '1')
@@ -73,7 +78,9 @@ export default function SchedulePage() {
         <p style={{ color: 'var(--muted)' }}>Runs on Vercel cron, no computer needed. In winter the clock shifts an hour earlier (cron is UTC). Today&apos;s issue date: {issueDate || '…'}.</p>
       </div>
 
-      {loading ? (
+      {loadError ? (
+        <p className="font-mono text-[10px] tracking-[0.2em] uppercase py-16 text-center" style={{ color: 'var(--accent)' }}>{loadError}. Reload to try again.</p>
+      ) : loading ? (
         <p className="font-mono text-[10px] tracking-[0.2em] uppercase animate-pulse py-16 text-center" style={{ color: 'var(--muted)', opacity: 0.5 }}>Loading…</p>
       ) : (
         <div className="animate-fade-up delay-2 space-y-6">

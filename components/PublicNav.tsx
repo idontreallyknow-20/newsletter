@@ -33,11 +33,20 @@ export default function PublicNav({ theme = 'dark' }: { theme?: 'dark' | 'light'
     return () => { document.body.style.overflow = ''; window.removeEventListener('keydown', onKey) }
   }, [showModal, open])
 
+  // Move keyboard focus into the subscribe dialog, and back to whatever opened it on close.
+  useEffect(() => {
+    if (!showModal) return
+    const opener = document.activeElement as HTMLElement | null
+    document.querySelector<HTMLInputElement>('.modal-card input[type="email"]')?.focus()
+    return () => opener?.focus()
+  }, [showModal])
+
   return (
     <>
       <header className={`mast${theme === 'light' ? ' mast--light' : ''}${scrolled || open ? ' is-scrolled' : ''}`}>
-        <a href="/" className="mast-brand" aria-label="Daily Brief home">
+        <a href="/" className="mast-brand">
           <span className="mast-word">Daily<i>.</i>Brief</span>
+          <span className="sr-only">home</span>
           {dateline && <span className="mast-date">{dateline}</span>}
         </a>
         <nav aria-label="Sections">

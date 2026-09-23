@@ -18,7 +18,8 @@ import Figure from '@/components/Figure'
 
 export const dynamic = 'force-dynamic'
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const params = await props.params
   const article = getArticle(params.slug)
   const images = [{ url: `/issues/${params.slug}/opengraph-image`, width: 1200, height: 630 }]
   if (article) {
@@ -66,7 +67,7 @@ function Author() {
     <div className="author">
       <div className="byline-photo">{hasPortrait
         // eslint-disable-next-line @next/next/no-img-element
-        ? <img src="/joseph.jpg" alt="Joseph" width={88} height={88} /> : <span aria-hidden="true">J</span>}</div>
+        ? <img src="/joseph.jpg" alt="Joseph Leung" width={88} height={88} /> : <span aria-hidden="true">J</span>}</div>
       <div><strong style={{ display: 'block', fontSize: 14 }}>Joseph</strong><span style={{ fontSize: 12, color: 'var(--muted)' }}>Grade 11, Richmond Hill · <a href="/about">About</a></span></div>
     </div>
   )
@@ -89,7 +90,8 @@ function Closing() {
   )
 }
 
-export default async function IssuePage({ params }: { params: { slug: string } }) {
+export default async function IssuePage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params
   const article = getArticle(params.slug)
 
   if (article) {

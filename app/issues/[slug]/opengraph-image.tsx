@@ -28,8 +28,9 @@ async function fraunces(): Promise<ArrayBuffer | null> {
   } catch { return null }
 }
 
-export default async function Image({ params }: { params: { slug: string } }) {
-  const a = getArticle(params.slug)
+export default async function Image(props: { params: Promise<{ slug: string }> }) {
+  const { slug } = await props.params
+  const a = getArticle(slug)
   const [font, photo] = await Promise.all([fraunces(), portrait()])
   const title = a?.title ?? 'Daily Brief'
   const kicker = a ? `${a.tag}  ·  ${a.num}  ·  ${a.date}` : 'Economics and AI, before school'

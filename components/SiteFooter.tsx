@@ -1,3 +1,5 @@
+import { HUB_URL } from '@/lib/seo'
+
 export default function SiteFooter() {
   return (
     <footer className="foot">
@@ -11,7 +13,7 @@ export default function SiteFooter() {
           <a href="/preferences">Preferences</a>
           <a href="/feed.xml">RSS</a>
         </nav>
-        <small>&copy; {new Date().getFullYear()} Joseph Leung · Daily Brief (dailybriefhq.com) · Richmond Hill, Ontario · No tracking, no spam.</small>
+        <small>Built by <a href={HUB_URL} rel="author">Joseph Leung</a> in Richmond Hill, Ontario. &copy; {new Date().getFullYear()} Daily Brief (dailybriefhq.com). No tracking, no spam.</small>
       </div>
     </footer>
   )

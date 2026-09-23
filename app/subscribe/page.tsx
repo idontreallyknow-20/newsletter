@@ -1,14 +1,19 @@
+import type { Metadata } from 'next'
 import PublicNav from '@/components/PublicNav'
 import PublicSubscribeForm from '@/components/PublicSubscribeForm'
 import SiteFooter from '@/components/SiteFooter'
 
-export const metadata = { title: 'Subscribe | Daily Brief' }
+export const metadata: Metadata = {
+  title: 'Subscribe',
+  description: 'Get Daily Brief, the free morning newsletter on economics and AI by Joseph Leung. Sent about 7:00 AM Eastern in English or Simplified Chinese.',
+  alternates: { canonical: '/subscribe' },
+}
 
 export default function SubscribePage() {
   return (
     <>
       <PublicNav />
-      <main className="simple">
+      <main className="simple" id="main-content">
         <div className="wrap" style={{ maxWidth: 760 }}>
           <p className="eyebrow">Subscribe</p>
           <h1 className="t-display">Economics and AI, before school.</h1>

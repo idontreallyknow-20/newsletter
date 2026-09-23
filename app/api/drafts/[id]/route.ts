@@ -3,9 +3,10 @@ import { db } from '@/lib/db'
 import { drafts } from '@/lib/schema'
 import { eq } from 'drizzle-orm'
 
-export async function GET(_req: Request, { params }: { params: { id: string } }) {
+export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = parseInt(params.id, 10)
+    const id = parseInt((await params).id, 10)
+    if (isNaN(id)) return NextResponse.json({ error: 'Invalid id' }, { status: 400 })
     const [row] = await db.select().from(drafts).where(eq(drafts.id, id))
     if (!row) return NextResponse.json({ error: 'Draft not found' }, { status: 404 })
     return NextResponse.json(row)
@@ -14,9 +15,10 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
   }
 }
 
-export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = parseInt(params.id, 10)
+    const id = parseInt((await params).id, 10)
+    if (isNaN(id)) return NextResponse.json({ error: 'Invalid id' }, { status: 400 })
     await db.delete(drafts).where(eq(drafts.id, id))
     return NextResponse.json({ success: true })
   } catch {
