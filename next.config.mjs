@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   poweredByHeader: false,
+  // Next 15 streams <title> and meta tags into <body> for most user agents.
+  // Render them in <head> for every request so crawlers and link previews always see them.
+  htmlLimitedBots: /.*/,
   async headers() {
     return [
       {

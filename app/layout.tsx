@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Fraunces, Newsreader } from 'next/font/google'
-import localFont from 'next/font/local'
+import { Fraunces, Newsreader, Geist, Geist_Mono } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
 import DashboardShell from '@/components/DashboardShell'
 import { SITE_URL, SITE_DESCRIPTION, AUTHOR_NAME, personJsonLd, publicationJsonLd, websiteJsonLd } from '@/lib/seo'
@@ -21,8 +20,9 @@ const serif = Newsreader({
   display: 'swap',
 })
 
-const geist = localFont({ src: './fonts/GeistVF.woff', variable: '--font-geist', weight: '100 900', display: 'swap' })
-const geistMono = localFont({ src: './fonts/GeistMonoVF.woff', variable: '--font-geist-mono', weight: '100 900', display: 'swap' })
+const geist = Geist({ subsets: ['latin'], variable: '--font-geist', display: 'swap' })
+// Labels only, so it is not worth a preload slot ahead of the headline and body fonts.
+const geistMono = Geist_Mono({ subsets: ['latin'], variable: '--font-geist-mono', display: 'swap', preload: false })
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -33,14 +33,13 @@ export const metadata: Metadata = {
   creator: AUTHOR_NAME,
   publisher: 'Daily Brief',
   keywords: ['dailybriefhq', 'dailybriefhq.com', 'Daily Brief HQ', 'Daily Brief', 'Joseph Leung', 'Joseph Leung newsletter', 'Joseph Leung chess', 'Joseph Leung Richmond Hill', 'economics newsletter', 'AI newsletter', 'Canadian economics newsletter', 'Richmond Hill', 'Ontario', 'chess champion', 'Grade 11', 'Canadian economy', 'artificial intelligence', 'Bank of Canada'],
-  alternates: { canonical: '/', types: { 'application/rss+xml': [{ url: '/feed.xml', title: 'Daily Brief RSS' }] } },
+  alternates: { types: { 'application/rss+xml': [{ url: '/feed.xml', title: 'Daily Brief RSS' }] } },
   openGraph: {
     siteName: 'Daily Brief',
     title: `Daily Brief by ${AUTHOR_NAME}`,
     description: SITE_DESCRIPTION,
     type: 'website',
     locale: 'en_CA',
-    url: '/',
     images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: `Daily Brief by ${AUTHOR_NAME}` }],
   },
   twitter: { card: 'summary_large_image', title: `Daily Brief by ${AUTHOR_NAME}`, description: SITE_DESCRIPTION, images: ['/opengraph-image'] },
